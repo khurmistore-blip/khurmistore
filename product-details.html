@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Producto - KhurmiStore</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<!-- Barra de Anuncios -->
+<div class="announcement-bar" id="announcementBar">
+    <div class="announcement-content">
+        <i class="fas fa-bolt"></i>
+        <span class="scroll-text">
+             ¡Mega Rebajas! 50% de DESCUENTO en todos los auriculares • Envío Gratis en pedidos superiores a 50€ • Compra 2 y llévate 1 GRATIS en auriculares inalámbricos • Pago a plazos disponible
+        </span>
+        <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+    <!-- Encabezado -->
+    <header class="header">
+        <div class="nav-container">
+           <div class="logo animated-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+    <div class="logo-icon">
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <i class="fas fa-wave-square"></i>
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+    </div>
+    <h1 class="logo-text">
+        <span class="letter">K</span>
+        <span class="letter">h</span>
+        <span class="letter">u</span>
+        <span class="letter">r</span>
+        <span class="letter">m</span>
+        <span class="letter">i</span>
+        <span class="wave-text">
+            <span class="letter">S</span>
+            <span class="letter">t</span>
+            <span class="letter">o</span>
+            <span class="letter">r</span>
+            <span class="letter">e</span>
+
+        </span>
+    </h1>
+</div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="index.html#categories">Categorías</a></li>
+                    <li><a href="index.html#products">Productos</a></li>
+                    <li><a href="index.html#contact">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-heart"></i>
+                <div class="cart-icon" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor de Detalles del Producto -->
+    <main class="product-details-page">
+        <div id="productDetailsContainer"></div>
+    </main>
+
+    <!-- Características -->
+    <section class="features">
+        <div class="feature-box"><i class="fas fa-truck-fast"></i><h3>Envío Gratis</h3><p>En pedidos +50€</p></div>
+        <div class="feature-box"><i class="fas fa-shield-halved"></i><h3>Pago Seguro</h3><p>100% Protegido</p></div>
+        <div class="feature-box"><i class="fas fa-rotate-left"></i><h3>Devolución Fácil</h3><p>Política de 14 días</p></div>
+        <div class="feature-box"><i class="fas fa-headset"></i><h3>Soporte 24/7</h3><p>Siempre disponibles</p></div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Store</span></h1></div>
+                <p>Tu destino para accesorios tecnológicos premium en España.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Enlaces Rápidos</h3>
+                <ul><li><a href="index.html">Inicio</a></li><li><a href="index.html#products">Tienda</a></li><li><a href="#">Sobre Nosotros</a></li><li><a href="#">Contacto</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h3>Categorías</h3>
+                <ul><li><a href="index.html#products">Auriculares</a></li><li><a href="index.html#products">Relojes</a></li><li><a href="index.html#products">Inalámbricos</a></li><li><a href="index.html#products">Fundas</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                <p><i class="fas fa-phone"></i> +34 600 000 000</p>
+                <p><i class="fas fa-envelope"></i> info@khurmiStore.es</p>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p></div>
+    </footer>
+
+    <!-- Carrito Lateral -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2><i class="fas fa-shopping-cart"></i> Tu Carrito</h2>
+            <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="cart-total"><span>Total:</span><span class="total-price" id="cartTotal">€0,00</span></div>
+            <button class="btn-primary checkout-btn" onclick="openCheckout()">Finalizar Compra <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Finalizar Compra</h2>
+                <button class="close-btn" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="checkout-steps">
+                    <div class="step active"><span>1</span>Datos</div>
+                    <div class="step"><span>2</span>Pago</div>
+                    <div class="step"><span>3</span>Listo</div>
+                </div>
+                <div class="checkout-step" id="step1">
+                    <h3>Información de Envío</h3>
+                    <div class="form-group"><label>Nombre Completo *</label><input type="text" id="custName" placeholder="Tu nombre"></div>
+                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" id="custEmail" placeholder="tu@email.com"></div>
+                    <div class="form-group"><label>Teléfono *</label><input type="tel" id="custPhone" placeholder="+34 600 000 000"></div>
+                    <div class="form-group"><label>Dirección *</label><textarea id="custAddress" placeholder="Dirección completa"></textarea></div>
+                    <div class="form-group"><label>Ciudad *</label><input type="text" id="custCity" placeholder="Madrid"></div>
+                    <div class="form-group"><label>Código Postal *</label><input type="text" id="custPostal" placeholder="28001"></div>
+                    <button class="btn-primary full-btn" onclick="goToPayment()">Continuar al Pago <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div class="checkout-step" id="step2" style="display:none;">
+                    <h3>Selecciona el Método de Pago</h3>
+                    <div class="payment-methods">
+                        <label class="payment-option"><input type="radio" name="payment" value="card" checked>
+                            <div class="payment-card"><i class="fas fa-credit-card"></i><div><h4>Tarjeta de Crédito/Débito</h4><p>Visa, MasterCard, AMEX</p></div></div>
+                        </label>
+                        <label class="payment-option"><input type="radio" name="payment" value="paypal">
+                            <div class="payment-card"><i class="fab fa-paypal"></i><div><h4>PayPal</h4><p>Pago rápido y seguro</p></div></div>
+                        </label>
+                        <label class="payment-option"><input type="radio" name="payment" value="bizum">
+                            <div class="payment-card"><i class="fas fa-mobile-alt"></i><div><h4>Bizum</h4><p>Pago móvil instantáneo</p></div></div>
+                        </label>
+                        <label class="payment-option"><input type="radio" name="payment" value="transfer">
+                            <div class="payment-card"><i class="fas fa-university"></i><div><h4>Transferencia Bancaria</h4><p>Pago directo</p></div></div>
+                        </label>
+                        <label class="payment-option"><input type="radio" name="payment" value="contra">
+                            <div class="payment-card"><i class="fas fa-money-bill-wave"></i><div><h4>Contra Reembolso</h4><p>Paga al recibir (+3€)</p></div></div>
+                        </label>
+                    </div>
+                    <div id="cardDetails" style="display:none; margin-top:20px;">
+                        <div class="form-group"><label>Número de Tarjeta</label><input type="text" placeholder="1234 5678 9012 3456"></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                            <div class="form-group"><label>Caducidad</label><input type="text" placeholder="MM/AA"></div>
+                            <div class="form-group"><label>CVV</label><input type="text" placeholder="123"></div>
+                        </div>
+                    </div>
+                    <div class="order-summary">
+                        <h4>Resumen del Pedido</h4>
+                        <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
+                        <div class="summary-row"><span>Envío:</span><span>€4,99</span></div>
+                        <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-secondary" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button class="btn-primary" style="flex:1;" onclick="placeOrder()">Realizar Pedido <i class="fas fa-check"></i></button>
+                    </div>
+                </div>
+                <div class="checkout-step" id="step3" style="display:none;">
+                    <div class="success-message">
+                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h2>¡Pedido Realizado!</h2>
+                        <p>ID de Pedido: <strong id="orderID">#KW0000</strong></p>
+                        <p>Confirmación enviada a tu correo electrónico.</p>
+                        <button class="btn-primary" onclick="closeCheckout()">Seguir Comprando</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso de Cookies -->
+    <div class="cookie-consent hidden" id="cookieConsent">
+        <div class="cookie-content">
+            <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
+            <div class="cookie-text">
+                <h4>Usamos Cookies 🍪</h4>
+                <p>Utilizamos cookies para mejorar tu experiencia y mostrarte contenido personalizado.</p>
+            </div>
+            <div class="cookie-buttons">
+                <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar Todo</button>
+                <button class="btn-cookie-decline" onclick="declineCookies()">Rechazar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="cjdropshipping-api.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>https://khurmiStore.es/</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <!-- Category Pages -->
+    <url>
+        <loc>https://khurmiStore.es/category/auriculares</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/relojes-inteligentes</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/auriculares-inalambricos</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/fundas-movil</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/cascos-gaming</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/manos-libres</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/category/ratones</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Product Pages Examples (first 5 high-priority products) -->
+    <url>
+        <loc>https://khurmiStore.es/producto/auriculares-dj-profesional-xbass</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=600&q=80</image:loc>
+            <image:title>Auriculares DJ Profesional XBass</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/producto/smartwatch-ultra-gps-sport</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=600&q=80</image:loc>
+            <image:title>Smartwatch Ultra GPS Sport</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/producto/airbuds-pro-plus-anc</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1606741965326-cb990ae01bb2?w=600&q=80</image:loc>
+            <image:title>AirBuds Pro Plus ANC</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/producto/casco-gaming-pro-surround</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1591105575633-922eb6c539ec?w=600&q=80</image:loc>
+            <image:title>Casco Gaming Pro 7.1 Surround RGB</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/producto/raton-gaming-pro-26k-dpi</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1629429407759-01cd3d7cfb38?w=600&q=80</image:loc>
+            <image:title>Ratón Gaming Pro Inalámbrico 26K DPI</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Information Pages -->
+    <url>
+        <loc>https://khurmiStore.es/about</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/privacy</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/terms</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://khurmiStore.es/shipping</loc>
+        <lastmod>2025-05-18</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+</urlset>

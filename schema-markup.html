@@ -1,0 +1,171 @@
+<!-- SCHEMA MARKUP & JSON-LD IMPLEMENTATION -->
+<!-- Add this in the <head> section of your HTML -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "KhurmiWave",
+  "alternateName": "Khurmi Store",
+  "url": "https://khurmiStore.es",
+  "logo": "https://khurmiStore.es/logo.svg",
+  "description": "Tienda online de accesorios tecnológicos premium: auriculares, relojes inteligentes, cascos gaming y más.",
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=61590018628529",
+    "https://www.instagram.com/khurmistore.es/",
+    "https://twitter.com/khurmiStore"
+  ],
+  "contact": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Service",
+    "telephone": "+34-600-000-000",
+    "email": "info@khurmiStore.es"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Calle Principal 123",
+    "addressLocality": "Madrid",
+    "postalCode": "28001",
+    "addressCountry": "ES"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "KhurmiStore - Tienda de Accesorios Tech",
+  "image": "https://khurmistore.es/logo.svg",
+  "description": "Tienda online especializada en auriculares inalámbricos, relojes inteligentes, cascos gaming y accesorios tecnológicos con envío gratis.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Calle Principal 123",
+    "addressLocality": "Madrid",
+    "postalCode": "28001",
+    "addressCountry": "ES"
+  },
+  "telephone": "+34-600-000-000",
+  "email": "info@khurmiwave.es",
+  "url": "https://khurmiStore.es",
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "40.4168",
+    "longitude": "-3.7038"
+  }
+}
+</script>
+
+<!-- FAQPage Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Cuál es el tiempo de envío?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ofrecemos envío gratis en pedidos superiores a 50€ con entrega en 3-5 días laborales. Para pedidos menores, el envío es de 4,99€ con el mismo tiempo de entrega."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puedo devolver un producto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí, ofrecemos una política de devolución de 14 días. Los productos deben estar sin usar y en su embalaje original. Los costos de envío de devolución corren por tu cuenta."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué métodos de pago aceptan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aceptamos tarjeta de crédito/débito, PayPal, Bizum, transferencia bancaria y contra reembolso. Todos los pagos están protegidos con cifrado SSL."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Son productos originales?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "100% sí. Todos nuestros productos son originales con garantía del fabricante. Trabajamos directamente con distribuidores autorizados."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Product Schema Example (use for each product) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Auriculares DJ Profesional XBass",
+  "description": "Auriculares DJ profesionales con sonido de estudio, bajos potentes y aislamiento total del ruido. Perfectos para DJs, productores musicales.",
+  "image": "https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=600&q=80",
+  "brand": {
+    "@type": "Brand",
+    "name": "KhurmiStore Pro"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "119.99",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock",
+    "url": "https://khurmiStore.es/producto/auriculares-dj-profesional-xbass"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "24"
+  }
+}
+</script>
+
+<!-- Breadcrumb Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "https://khurmiStore.es"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Auriculares",
+      "item": "https://khurmiStore.es/category/auriculares"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Auriculares DJ Profesional XBass",
+      "item": "https://khurmiStore.es/producto/auriculares-dj-profesional-xbass"
+    }
+  ]
+}
+</script>
+
+<!-- E-Commerce Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": "https://khurmiStore.es",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://khurmiStore.es/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>

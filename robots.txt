@@ -1,0 +1,40 @@
+# robots.txt - KhurmiWave SEO Configuration
+# Last Updated: May 2025
+
+# Allow all search engines
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /search?
+Disallow: /compare
+Disallow: /*.pdf$
+Disallow: /*?utm_source=
+Disallow: /*?utm_medium=
+Disallow: /*?utm_campaign=
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Disallow: /
+
+# Sitemaps
+Sitemap: https://khurmiStore.es/sitemap.xml
+Sitemap: https://khurmiStore.es/products-sitemap.xml
