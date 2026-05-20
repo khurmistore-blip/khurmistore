@@ -357,12 +357,12 @@ This guide provides detailed fixes for all identified SEO issues with before/aft
         "https://www.instagram.com/khurmistore.es/",
         "https://twitter.com/khurmiStore"
     ],
-  "contact": {
-    "@type": "ContactPoint",
-    "contactType": "Customer Service",
-    "telephone": "+34-600-000-000",
-    "email": "info@khurmiwave.es"
-  },
+        "contact": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "telephone": "+34 607 35 80 33",
+        "email": "info@khurmistore.es"
+    },
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Calle Principal 123",
