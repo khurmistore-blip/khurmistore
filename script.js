@@ -21,7 +21,7 @@ const products = [
     { id: 12, name: "Estilo AirPods Max", category: "earpods", price: 54.99, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80", tag: "HOT", rating: 5 },
     { id: 13, name: "Buds Pro Wireless", category: "earpods", price: 27.99, image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500&q=80", tag: "NUEVO", rating: 5 },
     { id: 14, name: "Earpods Gaming", category: "earpods", price: 39.99, image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80", tag: "GAMING", rating: 4 },
-    { id: 15, name: "Mini Earbuds Compactos", category: "earpods", price: 17.99, image: "https://images.unsplash.com/photo-1608156639585-b3a032e05751?w=500&q=80", tag: "OFERTA", rating: 4 },
+    { id: 15, name: "Mini Earbuds Compactos", category: "earpods", price: 17.99, image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=500&q=80", tag: "OFERTA", rating: 4 },
     { id: 33, name: "Earbuds con ANC", category: "earpods", price: 59.99, image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500&q=80", tag: "PREMIUM", rating: 5 },
 
     // Fundas de Móvil (Mobile Covers)
@@ -40,7 +40,7 @@ const products = [
     // Manos Libres (Hands Free)
     { id: 23, name: "Manos Libres Bluetooth", category: "handsfree", price: 13.99, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80", tag: "HOT", rating: 4 },
     { id: 24, name: "Neckband Inalámbrico", category: "handsfree", price: 22.99, image: "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 25, name: "Manos Libres Ejecutivo", category: "handsfree", price: 36.99, image: "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=500&q=80", tag: "PREMIUM", rating: 5 },
+    { id: 25, name: "Manos Libres Ejecutivo", category: "handsfree", price: 36.99, image: "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=500&q=80", tag: "PREMIUM", rating: 5 },
     { id: 26, name: "Manos Libres Deportivo", category: "handsfree", price: 18.99, image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?w=500&q=80", tag: "DEPORTE", rating: 4 },
 
     // Ratones (Mouse)
@@ -137,9 +137,9 @@ const products = [
     },
     {
         id: 41, name: "Casco Gaming Pro 7.1 Surround RGB", category: "headgear", price: 99.99, oldPrice: 139.99,
-        image: "https://images.unsplash.com/photo-1591105575633-922eb6c539ec?w=500&q=80",
+        image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80",
         gallery: [
-            "https://images.unsplash.com/photo-1591105575633-922eb6c539ec?w=800&q=80",
+            "https://images.unsplash.com/photo-1599669454699-248893623440?w=800&q=80",
             "https://images.unsplash.com/photo-1599669454699-248893623440?w=800&q=80",
             "https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=800&q=80",
             "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=80"
@@ -161,7 +161,7 @@ const products = [
         image: "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=500&q=80",
         gallery: [
             "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=800&q=80",
-            "https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?w=800&q=80",
+            "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=800&q=80",
             "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
             "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=800&q=80"
         ],
@@ -246,7 +246,7 @@ const products = [
         gallery: [
             "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=80",
             "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&q=80",
-            "https://images.unsplash.com/photo-1608156639585-b3a032e05751?w=800&q=80",
+            "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=80",
             "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80"
         ],
         tag: "NUEVO", rating: 5, stock: 19, brand: "KhurmiWave AI",
