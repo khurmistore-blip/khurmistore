@@ -415,6 +415,39 @@ function closeCart() {
     document.getElementById('cartOverlay')?.classList.remove('active');
 }
 
+// Menú móvil
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileNavMenu');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const button = document.getElementById('navToggle');
+    if (!menu || !overlay || !button) return;
+    const menuOpen = !menu.classList.contains('active');
+    menu.classList.toggle('active');
+    overlay.classList.toggle('active', menuOpen);
+    button.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+}
+function closeMobileMenu() {
+    const menu = document.getElementById('mobileNavMenu');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const button = document.getElementById('navToggle');
+    if (!menu || !overlay || !button) return;
+    menu.classList.remove('active');
+    overlay.classList.remove('active');
+    button.setAttribute('aria-expanded', 'false');
+}
+
+// Cerrar menú al pulsar un enlace
+function closeMobileMenuLink() {
+    if (window.innerWidth <= 768) {
+        closeMobileMenu();
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', closeMobileMenuLink);
+    });
+});
+
 // Funciones de Pago
 function openCheckout() {
     if (cart.length === 0) {

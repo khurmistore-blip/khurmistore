@@ -44,6 +44,9 @@ body {
     line-height: 1.6;
 }
 
+img, picture, video, iframe { max-width: 100%; height: auto; display: block; }
+button, input, textarea { font-family: inherit; }
+
 /* ==================== ACCESSIBILITY ==================== */
 /* Focus visible for keyboard navigation */
 :focus-visible {
@@ -191,6 +194,67 @@ body {
     font-weight: bold;
     min-width: 20px;
     text-align: center;
+}
+
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1101;
+}
+
+.mobile-nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1090;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.nav-menu.active {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 90px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 22px;
+    background: rgba(10, 14, 39, 0.98);
+    backdrop-filter: blur(16px);
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.nav-menu.active ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding: 0;
+}
+
+.nav-menu.active a {
+    font-size: 1.05rem;
+    padding: 10px 24px;
 }
 
 /* ==================== HERO SECTION ==================== */
@@ -790,8 +854,13 @@ body {
 /* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
     .header { padding: 12px 0; }
-    .nav-menu { gap: 20px; font-size: 14px; }
+    .nav-toggle { display: inline-flex; }
+    .nav-menu { display: none; gap: 20px; font-size: 14px; }
+    .nav-menu.active { display: flex; }
+    .nav-menu ul { flex-direction: column; align-items: center; gap: 20px; }
+    .nav-menu a { font-size: 1rem; }
     .nav-icons { gap: 15px; }
+    .nav-container { flex-wrap: wrap; justify-content: space-between; gap: 12px; }
     
     .hero {
         padding: clamp(60px, 15vh, 80px) 15px 40px;
@@ -805,11 +874,18 @@ body {
         width: 100%;
         justify-content: center;
     }
+    
+    .banner-content { grid-template-columns: 1fr; padding: 30px; }
+    .footer-content { grid-template-columns: 1fr 1fr; }
+    .section-header h2 { font-size: 32px; }
+    .slider-btn { width: 40px; height: 40px; }
+    .cart-sidebar { width: 100%; }
 }
 
 @media (max-width: 480px) {
-    .nav-menu { display: none; }
-    
+    .nav-menu.active { padding-top: 80px; }
+    .nav-menu ul { padding: 0 20px; }
+    .nav-menu a { width: 100%; text-align: center; }
     .hero-text h1 { font-size: 28px; }
     .hero-text p { font-size: 14px; }
     
@@ -822,6 +898,13 @@ body {
     .categories-grid {
         grid-template-columns: 1fr;
     }
+    
+    .features { grid-template-columns: 1fr; }
+    .footer-content { grid-template-columns: 1fr; }
+    .hero-buttons { flex-direction: column; }
+    .banner-content { padding: 20px; }
+    .product-img { height: 220px; }
+    .cart-sidebar { width: 100%; }
 }
 
 /* ==================== ANIMATIONS ==================== */

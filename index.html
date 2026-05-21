@@ -98,7 +98,11 @@
         </span>
     </h1>
 </div>
-            <nav class="nav-menu">
+            <button class="nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+            <nav class="nav-menu" id="mobileNavMenu">
                 <ul>
                     <li><a href="#home">Inicio</a></li>
                     <li><a href="#categories">Categorías</a></li>
