@@ -415,7 +415,7 @@ function closeCart() {
     document.getElementById('cartOverlay')?.classList.remove('active');
 }
 
-// Menú móvil
+// Menú móvil - Toggle mobile menu
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileNavMenu');
     const overlay = document.getElementById('mobileNavOverlay');
@@ -426,26 +426,48 @@ function toggleMobileMenu() {
     overlay.classList.toggle('active', menuOpen);
     button.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
 }
+
+// Toggle the categories dropdown on mobile
+function toggleCategoryDropdown(event) {
+    const button = event.currentTarget;
+    const dropdown = button.closest('.nav-item.dropdown');
+    if (!dropdown) return;
+    const isOpen = dropdown.classList.toggle('dropdown-open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+// Close mobile menu - used when a link is clicked
 function closeMobileMenu() {
     const menu = document.getElementById('mobileNavMenu');
     const overlay = document.getElementById('mobileNavOverlay');
     const button = document.getElementById('navToggle');
+    const dropdowns = document.querySelectorAll('.nav-item.dropdown');
+    const dropdownToggles = document.querySelectorAll('.nav-item.dropdown .dropdown-toggle');
+    
     if (!menu || !overlay || !button) return;
+    
     menu.classList.remove('active');
     overlay.classList.remove('active');
     button.setAttribute('aria-expanded', 'false');
+    dropdowns.forEach(dropdown => dropdown.classList.remove('dropdown-open'));
+    dropdownToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
 }
 
-// Cerrar menú al pulsar un enlace
+// Close mobile menu when a link is clicked (only on mobile)
 function closeMobileMenuLink() {
     if (window.innerWidth <= 768) {
         closeMobileMenu();
     }
 }
+
+// Attach click listeners to mobile menu links only
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', closeMobileMenuLink);
-    });
+    const mobileMenu = document.getElementById('mobileNavMenu');
+    if (mobileMenu) {
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileMenuLink);
+        });
+    }
 });
 
 // Funciones de Pago

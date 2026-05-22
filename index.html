@@ -68,48 +68,73 @@
     </div>
 </div>
 
-    <!-- Encabezado -->
+    <!-- ===== HEADER / NAVIGATION ===== -->
     <header class="header">
         <div class="nav-container">
-           <div class="logo animated-logo">
-    <div class="logo-icon">
-        <div class="wave-ring"></div>
-        <div class="wave-ring"></div>
-        <div class="wave-ring"></div>
-        <i class="fas fa-wave-square"></i>
-        <div class="particle p1"></div>
-        <div class="particle p2"></div>
-        <div class="particle p3"></div>
-        <div class="particle p4"></div>
-    </div>
-    <h1 class="logo-text">
-        <span class="letter">K</span>
-        <span class="letter">h</span>
-        <span class="letter">u</span>
-        <span class="letter">r</span>
-        <span class="letter">m</span>
-        <span class="letter">i</span>
-        <span class="wave-text">
-            <span class="letter">S</span>
-            <span class="letter">t</span>
-            <span class="letter">o</span>
-            <span class="letter">r</span>
-            <span class="letter">e</span>
-        </span>
-    </h1>
-</div>
-            <button class="nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
-            <nav class="nav-menu" id="mobileNavMenu">
+            <!-- Logo -->
+            <div class="logo animated-logo">
+                <div class="logo-icon">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <i class="fas fa-wave-square"></i>
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                </div>
+                <h1 class="logo-text">
+                    <span class="letter">K</span>
+                    <span class="letter">h</span>
+                    <span class="letter">u</span>
+                    <span class="letter">r</span>
+                    <span class="letter">m</span>
+                    <span class="letter">i</span>
+                    <span class="wave-text">
+                        <span class="letter">S</span>
+                        <span class="letter">t</span>
+                        <span class="letter">o</span>
+                        <span class="letter">r</span>
+                        <span class="letter">e</span>
+                    </span>
+                </h1>
+            </div>
+
+            <!-- Desktop Navigation Menu (shown on desktop, hidden on mobile) -->
+            <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
+                    <!-- Inicio (Home) Link -->
                     <li><a href="#home">Inicio</a></li>
-                    <li><a href="#categories">Categorías</a></li>
-                    <li><a href="#products">Productos</a></li>
+                    
+                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
+                            <li><a href="#categories" data-category="headphones">Auriculares</a></li>
+                            <li><a href="#categories" data-category="smartwatch">Relojes Inteligentes</a></li>
+                            <li><a href="#categories" data-category="earpods">Auriculares Inalámbricos</a></li>
+                            <li><a href="#categories" data-category="covers">Fundas de Móvil</a></li>
+                            <li><a href="#categories" data-category="headgear">Cascos Gaming</a></li>
+                            <li><a href="#categories" data-category="handsfree">Manos Libres</a></li>
+                            <li><a href="#categories" data-category="mouse">Ratones</a></li>
+                            <li><a href="#products">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Blog Link -->
+                    <li><a href="#blog">Blog</a></li>
+                    
+                    <!-- Sobre Nosotros (About Us) Link -->
+                    <li><a href="#about">Sobre Nosotros</a></li>
+                    
+                    <!-- Contacto (Contact) Link -->
                     <li><a href="#contact">Contacto</a></li>
                 </ul>
             </nav>
+
+            <!-- Navigation Icons (Search, Heart, Cart) -->
             <div class="nav-icons">
                 <i class="fas fa-search"></i>
                 <i class="fas fa-heart"></i>
@@ -118,6 +143,48 @@
                     <span class="cart-count">0</span>
                 </div>
             </div>
+
+            <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Mobile Navigation Overlay (backdrop for mobile menu) -->
+            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+
+            <!-- Mobile Navigation Menu (hidden on desktop, shown only on mobile) -->
+            <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
+                <ul>
+                    <!-- Inicio (Home) Link -->
+                    <li><a href="#home" onclick="closeMobileMenu()">Inicio</a></li>
+                    
+                    <!-- Categorías Dropdown for Mobile -->
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
+                            <li><a href="#categories" data-category="headphones" onclick="closeMobileMenu()">Auriculares</a></li>
+                            <li><a href="#categories" data-category="smartwatch" onclick="closeMobileMenu()">Relojes Inteligentes</a></li>
+                            <li><a href="#categories" data-category="earpods" onclick="closeMobileMenu()">Auriculares Inalámbricos</a></li>
+                            <li><a href="#categories" data-category="covers" onclick="closeMobileMenu()">Fundas de Móvil</a></li>
+                            <li><a href="#categories" data-category="headgear" onclick="closeMobileMenu()">Cascos Gaming</a></li>
+                            <li><a href="#categories" data-category="handsfree" onclick="closeMobileMenu()">Manos Libres</a></li>
+                            <li><a href="#categories" data-category="mouse" onclick="closeMobileMenu()">Ratones</a></li>
+                            <li><a href="#products" onclick="closeMobileMenu()">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Blog Link -->
+                    <li><a href="#blog" onclick="closeMobileMenu()">Blog</a></li>
+                    
+                    <!-- Sobre Nosotros (About Us) Link -->
+                    <li><a href="#about" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
+                    
+                    <!-- Contacto (Contact) Link -->
+                    <li><a href="#contact" onclick="closeMobileMenu()">Contacto</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
@@ -406,7 +473,6 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="cjdropshipping-api.js"></script>
 
     <!-- Popup de Bienvenida -->
 <div class="welcome-popup-overlay" id="welcomePopup">

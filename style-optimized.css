@@ -126,7 +126,7 @@ button, input, textarea { font-family: inherit; }
 
 .logo i { font-size: 32px; color: var(--primary); }
 .logo h1 { font-size: clamp(20px, 5vw, 26px); font-weight: 800; color: #fff; }
-.logo h1 span { background: var(--gradient2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo h1 span { background: var(--gradient2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* Navigation Menu */
 .nav-menu { display: flex; list-style: none; gap: 35px; }
@@ -495,7 +495,7 @@ button, input, textarea { font-family: inherit; }
     font-weight: 800;
 }
 
-.section-header h2 span { background: var(--gradient2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.section-header h2 span { background: var(--gradient2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* ==================== CATEGORIES SECTION ==================== */
 .categories { 

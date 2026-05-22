@@ -1,4 +1,4 @@
-# robots.txt - KhurmiWave SEO Configuration
+# robots.txt - khurmiStore SEO Configuration
 # Last Updated: May 2025
 
 # Allow all search engines
