@@ -1,4 +1,4 @@
-// Catálogo de Productos - KhurmiWave España
+// Catálogo de Productos - KhurmiStore España
 const products = [
     // Auriculares (Headphones)
     { id: 1, name: "Auriculares Inalámbricos Premium", category: "headphones", price: 49.99, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80", tag: "HOT", rating: 5 },
@@ -60,7 +60,7 @@ const products = [
             "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80",
             "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80"
         ],
-        tag: "NUEVO", rating: 5, stock: 24, brand: "KhurmiWave Pro",
+        tag: "NUEVO", rating: 5, stock: 24, brand: "KhurmiStore Pro",
         colors: ["#000000", "#ff6b35", "#004e89"],
         description: "Auriculares DJ profesionales con sonido de estudio, bajos potentes y aislamiento total del ruido. Perfectos para DJs, productores musicales y amantes del audio de alta fidelidad.",
         features: [
@@ -81,7 +81,7 @@ const products = [
             "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=800&q=80",
             "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80"
         ],
-        tag: "HOT", rating: 5, stock: 18, brand: "KhurmiWave Ultra",
+        tag: "HOT", rating: 5, stock: 18, brand: "KhurmiStore Ultra",
         colors: ["#1a1a1a", "#c0c0c0", "#ff6b35"],
         description: "Smartwatch deportivo con GPS integrado, monitor de salud avanzado y pantalla AMOLED de 1.91\". Diseñado para atletas que quieren llevar su rendimiento al siguiente nivel.",
         features: [
@@ -102,7 +102,7 @@ const products = [
             "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
             "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&q=80"
         ],
-        tag: "TENDENCIA", rating: 5, stock: 56, brand: "KhurmiWave Audio",
+        tag: "TENDENCIA", rating: 5, stock: 56, brand: "KhurmiStore Audio",
         colors: ["#ffffff", "#000000", "#ff6b35"],
         description: "AirBuds Pro Plus con cancelación activa de ruido, sonido espacial 3D y estuche de carga inalámbrica. La libertad inalámbrica que siempre quisiste.",
         features: [
@@ -123,7 +123,7 @@ const products = [
             "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=800&q=80",
             "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&q=80"
         ],
-        tag: "NUEVO", rating: 4, stock: 42, brand: "KhurmiWave Cover",
+        tag: "NUEVO", rating: 4, stock: 42, brand: "KhurmiStore Cover",
         colors: ["#000000", "#964B00", "#0066cc", "#cc0000"],
         description: "Funda magnética para iPad Pro con cierre inteligente, soporte multi-ángulo y compartimento para Apple Pencil. Hecha de piel sintética premium.",
         features: [
@@ -144,7 +144,7 @@ const products = [
             "https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=800&q=80",
             "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=80"
         ],
-        tag: "GAMING", rating: 5, stock: 15, brand: "KhurmiWave Gaming",
+        tag: "GAMING", rating: 5, stock: 15, brand: "KhurmiStore Gaming",
         colors: ["#000000", "#ff0000", "#00ff00"],
         description: "Casco gaming con sonido envolvente 7.1, iluminación RGB personalizable y micrófono con cancelación de ruido. Domina cada partida.",
         features: [
@@ -165,7 +165,7 @@ const products = [
             "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
             "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=800&q=80"
         ],
-        tag: "NUEVO", rating: 5, stock: 33, brand: "KhurmiWave Office",
+        tag: "NUEVO", rating: 5, stock: 33, brand: "KhurmiStore Office",
         colors: ["#000000", "#c0c0c0"],
         description: "Pinganillo Bluetooth empresarial con doble micrófono, cancelación de ruido y hasta 12h de conversación. Perfecto para profesionales en movimiento.",
         features: [
@@ -186,7 +186,7 @@ const products = [
             "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=800&q=80",
             "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80"
         ],
-        tag: "GAMING", rating: 5, stock: 22, brand: "KhurmiWave Gaming",
+        tag: "GAMING", rating: 5, stock: 22, brand: "KhurmiStore Gaming",
         colors: ["#000000", "#ffffff"],
         description: "Ratón gaming inalámbrico de alta precisión con sensor óptico 26000 DPI, 8 botones programables e iluminación RGB. Para gamers profesionales y e-sports.",
         features: [
@@ -207,7 +207,7 @@ const products = [
             "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
             "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80"
         ],
-        tag: "PREMIUM", rating: 5, stock: 12, brand: "KhurmiWave Studio",
+        tag: "PREMIUM", rating: 5, stock: 12, brand: "KhurmiStore Studio",
         colors: ["#1a1a1a", "#964B00"],
         description: "Auriculares de monitor de estudio con certificación Hi-Res Audio, drivers planares y respuesta de frecuencia ampliada. Pureza de sonido absoluta.",
         features: [
@@ -228,7 +228,7 @@ const products = [
             "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
             "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=800&q=80"
         ],
-        tag: "OFERTA", rating: 4, stock: 38, brand: "KhurmiWave Kids",
+        tag: "OFERTA", rating: 4, stock: 38, brand: "KhurmiStore Kids",
         colors: ["#ff69b4", "#0066cc", "#00cc66"],
         description: "Reloj inteligente para niños con GPS 4G en tiempo real, llamadas, SOS y cámara. La tranquilidad que los padres necesitan.",
         features: [
@@ -249,7 +249,7 @@ const products = [
             "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=80",
             "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80"
         ],
-        tag: "NUEVO", rating: 5, stock: 19, brand: "KhurmiWave AI",
+        tag: "NUEVO", rating: 5, stock: 19, brand: "KhurmiStore AI",
         colors: ["#ffffff", "#000000"],
         description: "Earbuds revolucionarios con traducción simultánea por IA en 40 idiomas. Habla con cualquiera en el mundo en tiempo real.",
         features: [
@@ -710,7 +710,7 @@ function declineCookies() {
 function getProductDetails(p) {
     // Devuelve detalles enriquecidos para cualquier producto
     const defaults = {
-        description: `${p.name} - Producto premium de KhurmiWave con la mejor relación calidad-precio. Diseñado con materiales de alta calidad para ofrecerte una experiencia única. Garantía de 1 año incluida.`,
+        description: `${p.name} - Producto premium de KhurmiStore con la mejor relación calidad-precio. Diseñado con materiales de alta calidad para ofrecerte una experiencia única. Garantía de 1 año incluida.`,
         features: [
             "Calidad Premium garantizada",
             "Diseño moderno y ergonómico",
@@ -721,7 +721,7 @@ function getProductDetails(p) {
         ],
         gallery: [p.image, p.image.replace('w=500', 'w=800'), p.image, p.image],
         stock: Math.floor(Math.random() * 40) + 10,
-        brand: "KhurmiWave",
+        brand: "KhurmiStore",
         colors: ["#000000", "#ff6b35", "#004e89"]
     };
     return {
@@ -908,7 +908,7 @@ function renderProductDetails() {
     `;
 
     // Actualizar título de la página
-    document.title = `${p.name} - KhurmiWave`;
+    document.title = `${p.name} - KhurmiStore`;
 }
 
 function changeMainImage(src, thumb) {
@@ -968,3 +968,4 @@ function switchTab(tabId, btn) {
 
 // Renderizar detalles si estamos en la página de detalles
 renderProductDetails();
+

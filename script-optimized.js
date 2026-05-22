@@ -1,5 +1,5 @@
 /**
- * OPTIMIZED KHURMIWAVE JAVASCRIPT
+ * OPTIMIZED KhurmiStore JAVASCRIPT
  * Production-Ready with Performance Improvements
  * 
  * Features:
@@ -706,3 +706,4 @@ window.addEventListener('unload', () => {
     // Save cart one final time
     saveCart();
 });
+
