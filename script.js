@@ -438,6 +438,8 @@ function renderCategoryPage() {
     const title = config ? config.name : formatCategorySlug(slug);
     const description = config ? config.description : 'Lo sentimos, no se reconoce esta categoría. Explora otras opciones desde el menú.';
     const categories = config ? config.categories : [];
+    const categoryEmptyMessage = document.getElementById('categoryEmptyMessage');
+    const categoryEmptyText = document.getElementById('categoryEmptyText');
 
     categoryTitleHeading.textContent = title;
     categoryTitle.textContent = title;
@@ -446,16 +448,15 @@ function renderCategoryPage() {
 
     const filteredProducts = categories.length ? products.filter(p => categories.includes(p.category)) : [];
     if (filteredProducts.length === 0) {
-        productsGrid.innerHTML = `
-            <div class="no-results-content" style="min-height:240px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; text-align:center; padding:40px;">
-                <i class="fas fa-box-open" style="font-size:48px;color:var(--primary);"></i>
-                <h3>No hay productos disponibles</h3>
-                <p>${config ? 'Revisa otra categoría o vuelve al listado principal.' : 'Selecciona una categoría válida desde el menú.'}</p>
-            </div>
-        `;
+        productsGrid.innerHTML = '';
+        productsGrid.style.display = 'none';
+        if (categoryEmptyMessage) categoryEmptyMessage.classList.add('active');
+        if (categoryEmptyText) categoryEmptyText.textContent = `Estamos preparando los mejores productos de ${title} para ti. ¡Vuelve pronto!`;
         return;
     }
 
+    if (categoryEmptyMessage) categoryEmptyMessage.classList.remove('active');
+    productsGrid.style.display = '';
     productsGrid.innerHTML = filteredProducts.map(p => `
         <div class="product-card" onclick="goToProduct(${p.id})">
             <div class="product-img">

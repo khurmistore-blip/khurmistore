@@ -487,6 +487,11 @@ button, input, textarea { font-family: inherit; }
 .filter-btn { padding: 10px 25px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50px; cursor: pointer; transition: 0.3s; font-size: 14px; }
 .filter-btn:hover, .filter-btn.active { background: var(--gradient2); border-color: var(--primary); }
 .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.category-empty-message { display: none; min-height: 320px; align-items: center; justify-content: center; flex-direction: column; gap: 18px; text-align: center; padding: 60px 30px; color: #fff; animation: fadeInUp 0.35s ease both; }
+.category-empty-message i { font-size: 52px; color: var(--primary); }
+.category-empty-message h2 { font-size: clamp(2.2rem, 4vw, 3.4rem); margin: 0; font-weight: 800; letter-spacing: -0.04em; }
+.category-empty-message p { max-width: 670px; margin: 0 auto; color: #c6c6c6; line-height: 1.8; font-size: 1rem; }
+.category-empty-message.active { display: flex; }
 .product-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; transition: 0.4s; }
 .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(255,107,53,0.2); border-color: var(--primary); }
 .product-img { height: 250px; overflow: hidden; position: relative; background: #1a1f3a; }
@@ -532,6 +537,11 @@ button, input, textarea { font-family: inherit; }
 @keyframes fadeInOverlay {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Search Modal */
