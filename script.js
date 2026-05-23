@@ -288,7 +288,9 @@ function renderProducts(filter = 'all') {
                 <div class="product-rating">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
                 <div class="product-price">
                     <span class="price">${formatPrice(p.price)}${p.oldPrice ? ` <small style="color:#888;text-decoration:line-through;font-size:13px;">${formatPrice(p.oldPrice)}</small>` : ''}</span>
-                    <button class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-cart-plus"></i></button>
+                    <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Añadir ${p.name} al carrito">
+                        <i class="fas fa-cart-plus"></i> Añadir al carrito
+                    </button>
                 </div>
             </div>
         </div>
@@ -376,10 +378,14 @@ function changeQty(id, change) {
 
 function updateCart() {
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const totalPrice = subtotal; // Modify here if shipping or fees are added later
+
     const cartCountEl = document.querySelector('.cart-count');
+    const cartSubtotalEl = document.getElementById('cartSubtotal');
     const cartTotalEl = document.getElementById('cartTotal');
     if (cartCountEl) cartCountEl.textContent = totalItems;
+    if (cartSubtotalEl) cartSubtotalEl.textContent = formatPrice(subtotal);
     if (cartTotalEl) cartTotalEl.textContent = formatPrice(totalPrice);
 
     const cartItemsDiv = document.getElementById('cartItems');
@@ -394,12 +400,12 @@ function updateCart() {
                     <h4>${item.name}</h4>
                     <span class="price">${formatPrice(item.price)}</span>
                     <div class="qty-controls">
-                        <button onclick="changeQty(${item.id}, -1)">-</button>
+                        <button type="button" onclick="changeQty(${item.id}, -1)">-</button>
                         <span>${item.qty}</span>
-                        <button onclick="changeQty(${item.id}, 1)">+</button>
+                        <button type="button" onclick="changeQty(${item.id}, 1)">+</button>
                     </div>
                 </div>
-                <button class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>
+                <button type="button" class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>
             </div>
         `).join('');
     }
@@ -409,10 +415,12 @@ function updateCart() {
 function openCart() {
     document.getElementById('cartSidebar')?.classList.add('active');
     document.getElementById('cartOverlay')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 function closeCart() {
     document.getElementById('cartSidebar')?.classList.remove('active');
     document.getElementById('cartOverlay')?.classList.remove('active');
+    document.body.style.overflow = 'auto';
 }
 
 // Menú móvil - Toggle mobile menu
@@ -990,4 +998,175 @@ function switchTab(tabId, btn) {
 
 // Renderizar detalles si estamos en la página de detalles
 renderProductDetails();
+
+// ===== FUNCIONALIDAD DE BÚSQUEDA =====
+
+// Variable global para almacenar el término de búsqueda actual
+let currentSearchTerm = '';
+
+/**
+ * Abre la modal de búsqueda
+ */
+function openSearch() {
+    const overlay = document.getElementById('searchOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.focus();
+            // No limpiar la búsqueda anterior para continuidad
+        }
+        // Prevenir scroll del body cuando la modal está abierta
+        document.body.style.overflow = 'hidden';
+        // Scroll a la sección de productos
+        setTimeout(() => {
+            const productsSection = document.getElementById('products');
+            if (productsSection) {
+                productsSection.scrollIntoView({behavior: 'smooth'});
+            }
+        }, 300);
+    }
+}
+
+/**
+ * Cierra la modal de búsqueda
+ */
+function closeSearch(event) {
+    // Si el evento viene del overlay, solo cerrar si se hace clic en el overlay mismo
+    if (event && event.target.id !== 'searchOverlay') {
+        return;
+    }
+    
+    const overlay = document.getElementById('searchOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        // Restaurar scroll del body
+        document.body.style.overflow = 'auto';
+    }
+}
+
+/**
+ * Realiza la búsqueda de productos en tiempo real
+ * Filtra los productos en el grid y muestra/oculta según coincidencia
+ */
+function performSearch(query) {
+    currentSearchTerm = query.trim().toLowerCase();
+    
+    // Obtener el contenedor de productos
+    const productsGrid = document.getElementById('productsGrid');
+    if (!productsGrid) return;
+
+    // Obtener todas las tarjetas de productos
+    const productCards = productsGrid.querySelectorAll('.product-card');
+    let visibleCount = 0;
+
+    // Iterar sobre cada tarjeta de producto
+    productCards.forEach(card => {
+        // Obtener el nombre del producto desde la tarjeta
+        const productName = card.querySelector('h3')?.textContent.toLowerCase() || '';
+        
+        // Verificar si el nombre coincide con la búsqueda
+        const matches = !currentSearchTerm || productName.includes(currentSearchTerm);
+        
+        // Mostrar u ocultar la tarjeta
+        if (matches) {
+            card.style.display = '';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Mostrar u ocultar el mensaje de "No se encontraron productos"
+    let noResultsMessage = productsGrid.querySelector('.no-search-results');
+    
+    if (visibleCount === 0 && currentSearchTerm) {
+        // Si no hay resultados y hay búsqueda activa, mostrar mensaje
+        if (!noResultsMessage) {
+            noResultsMessage = document.createElement('div');
+            noResultsMessage.className = 'no-search-results';
+            noResultsMessage.innerHTML = `
+                <div class="no-results-content">
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron productos</h3>
+                    <p>Intenta con otro término de búsqueda</p>
+                </div>
+            `;
+            productsGrid.appendChild(noResultsMessage);
+        }
+        noResultsMessage.style.display = 'flex';
+    } else if (noResultsMessage) {
+        // Ocultar el mensaje si hay resultados o si la búsqueda está vacía
+        noResultsMessage.style.display = 'none';
+    }
+}
+
+/**
+ * Muestra los resultados de búsqueda en la modal (para navegación desde búsqueda)
+ */
+function displaySearchResults(results) {
+    const resultsContainer = document.getElementById('searchResults');
+    if (!resultsContainer) return;
+
+    // Si no hay resultados, mostrar mensaje
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `
+            <div class="search-no-results">
+                <i class="fas fa-search"></i>
+                <h3>No se encontraron productos</h3>
+                <p>Intenta con otro término de búsqueda</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Mostrar resultados como lista
+    resultsContainer.innerHTML = results.map(product => `
+        <div class="search-result-item" onclick="goToProduct(${product.id})">
+            <div class="search-result-img">
+                <img src="${product.image}" alt="${product.name}">
+            </div>
+            <div class="search-result-info">
+                <div class="search-result-name">${product.name}</div>
+                <div class="search-result-category">${getCategoryName(product.category)}</div>
+                <div class="search-result-price">${formatPrice(product.price)}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ===== INICIALIZAR LISTENERS DE BÚSQUEDA =====
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Escuchar entrada en el campo de búsqueda
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+    }
+
+    // Cerrar búsqueda al presionar Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSearch();
+        }
+    });
+
+    // Cerrar búsqueda al hacer clic en el overlay
+    const searchOverlay = document.getElementById('searchOverlay');
+    if (searchOverlay) {
+        searchOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'searchOverlay') {
+                closeSearch(e);
+            }
+        });
+    }
+
+    // Cerrar búsqueda al hacer clic en el botón X
+    const closeBtn = document.querySelector('.search-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeSearch);
+    }
+});
 

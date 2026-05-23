@@ -112,13 +112,28 @@
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="#categories" data-category="headphones">Auriculares</a></li>
-                            <li><a href="#categories" data-category="smartwatch">Relojes Inteligentes</a></li>
-                            <li><a href="#categories" data-category="earpods">Auriculares Inalámbricos</a></li>
-                            <li><a href="#categories" data-category="covers">Fundas de Móvil</a></li>
-                            <li><a href="#categories" data-category="headgear">Cascos Gaming</a></li>
-                            <li><a href="#categories" data-category="handsfree">Manos Libres</a></li>
-                            <li><a href="#categories" data-category="mouse">Ratones</a></li>
+                            <li><a href="#categories">Bebé</a></li>
+                            <li><a href="#categories">Belleza</a></li>
+                            <li><a href="#categories">Coche y moto</a></li>
+                            <li><a href="#categories">Ropa</a></li>
+                            <li><a href="#categories">Informática</a></li>
+                            <li><a href="#categories">Bricolaje y herramientas</a></li>
+                            <li><a href="#categories">Electrónica</a></li>
+                            <li><a href="#categories">Alimentación y bebidas</a></li>
+                            <li><a href="#categories">Jardín</a></li>
+                            <li><a href="#categories">Salud y cuidado personal</a></li>
+                            <li><a href="#categories">Hogar y cocina</a></li>
+                            <li><a href="#categories">Industria empresas y ciencia</a></li>
+                            <li><a href="#categories">Joyería</a></li>
+                            <li><a href="#categories">Iluminación</a></li>
+                            <li><a href="#categories">Equipaje</a></li>
+                            <li><a href="#categories">Oficina y papelería</a></li>
+                            <li><a href="#categories">Productos para mascotas</a></li>
+                            <li><a href="#categories">Sexo y sensualidad</a></li>
+                            <li><a href="#categories">Calzado y accesorios</a></li>
+                            <li><a href="#categories">Deportes y aire libre</a></li>
+                            <li><a href="#categories">Juguetes y juegos</a></li>
+                            <li><a href="#categories">Relojes</a></li>
                             <li><a href="#products">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -136,7 +151,7 @@
 
             <!-- Navigation Icons (Search, Heart, Cart) -->
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
                 <i class="fas fa-heart"></i>
                 <div class="cart-icon" onclick="openCart()">
                     <i class="fas fa-shopping-cart"></i>
@@ -164,13 +179,28 @@
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="#categories" data-category="headphones" onclick="closeMobileMenu()">Auriculares</a></li>
-                            <li><a href="#categories" data-category="smartwatch" onclick="closeMobileMenu()">Relojes Inteligentes</a></li>
-                            <li><a href="#categories" data-category="earpods" onclick="closeMobileMenu()">Auriculares Inalámbricos</a></li>
-                            <li><a href="#categories" data-category="covers" onclick="closeMobileMenu()">Fundas de Móvil</a></li>
-                            <li><a href="#categories" data-category="headgear" onclick="closeMobileMenu()">Cascos Gaming</a></li>
-                            <li><a href="#categories" data-category="handsfree" onclick="closeMobileMenu()">Manos Libres</a></li>
-                            <li><a href="#categories" data-category="mouse" onclick="closeMobileMenu()">Ratones</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Bebé</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Belleza</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Coche y moto</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Ropa</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Informática</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Electrónica</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Jardín</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Hogar y cocina</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Joyería</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Iluminación</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Equipaje</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Oficina y papelería</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Productos para mascotas</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
+                            <li><a href="#categories" onclick="closeMobileMenu()">Relojes</a></li>
                             <li><a href="#products" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -358,7 +388,7 @@
     <footer class="footer" id="contact">
         <div class="footer-content">
             <div class="footer-col">
-                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Wave</span></h1></div>
+                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Store</span></h1></div>
                 <p>Tu destino para accesorios tecnológicos premium en España.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
@@ -379,10 +409,11 @@
                 <h3>Contacto</h3>
                 <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
                 <p><i class="fas fa-phone"></i> +34 607 35 80 33</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
                 <p><i class="fas fa-envelope"></i> info@khurmistore.es</p>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p></div>
+        <div class="footer-bottom"><p>&copy; 2025 Khurmi Store España. Todos los derechos reservados.</p></div>
     </footer>
 
     <!-- Carrito Lateral -->
@@ -394,7 +425,10 @@
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer">
-            <div class="cart-total"><span>Total:</span><span class="total-price" id="cartTotal">€0,00</span></div>
+            <div class="cart-totals">
+                <div class="cart-line"><span>Subtotal:</span><span id="cartSubtotal">€0,00</span></div>
+                <div class="cart-line total"><span>Total:</span><span class="total-price" id="cartTotal">€0,00</span></div>
+            </div>
             <button class="btn-primary checkout-btn" onclick="openCheckout()">Finalizar Compra <i class="fas fa-arrow-right"></i></button>
         </div>
     </div>
@@ -472,7 +506,20 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Search Modal -->
+    <div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+        <div class="search-modal">
+            <div class="search-header">
+                <h2>Buscar Productos</h2>
+                <button class="search-close-btn" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Escribe el nombre del producto..." autocomplete="off">
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
 
     <!-- Popup de Bienvenida -->
 <div class="welcome-popup-overlay" id="welcomePopup">
@@ -536,6 +583,11 @@
         </div>
     </div>
 </div>
+
+    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta%20sobre%20un%20producto" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat de WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-tooltip">¿Necesitas ayuda?</span>
+    </a>
+    <script src="script.js"></script>
 </body>
 </html>
-

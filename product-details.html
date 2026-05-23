@@ -23,50 +23,150 @@
     <!-- Encabezado -->
     <header class="header">
         <div class="nav-container">
-           <div class="logo animated-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
-    <div class="logo-icon">
-        <div class="wave-ring"></div>
-        <div class="wave-ring"></div>
-        <div class="wave-ring"></div>
-        <i class="fas fa-wave-square"></i>
-        <div class="particle p1"></div>
-        <div class="particle p2"></div>
-        <div class="particle p3"></div>
-        <div class="particle p4"></div>
-    </div>
-    <h1 class="logo-text">
-        <span class="letter">K</span>
-        <span class="letter">h</span>
-        <span class="letter">u</span>
-        <span class="letter">r</span>
-        <span class="letter">m</span>
-        <span class="letter">i</span>
-        <span class="wave-text">
-            <span class="letter">S</span>
-            <span class="letter">t</span>
-            <span class="letter">o</span>
-            <span class="letter">r</span>
-            <span class="letter">e</span>
+            <!-- Logo -->
+            <div class="logo animated-logo">
+                <div class="logo-icon">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <i class="fas fa-wave-square"></i>
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                </div>
+                <h1 class="logo-text">
+                    <span class="letter">K</span>
+                    <span class="letter">h</span>
+                    <span class="letter">u</span>
+                    <span class="letter">r</span>
+                    <span class="letter">m</span>
+                    <span class="letter">i</span>
+                    <span class="wave-text">
+                        <span class="letter">S</span>
+                        <span class="letter">t</span>
+                        <span class="letter">o</span>
+                        <span class="letter">r</span>
+                        <span class="letter">e</span>
+                    </span>
+                </h1>
+            </div>
 
-        </span>
-    </h1>
-</div>
-            <nav class="nav-menu">
+            <!-- Desktop Navigation Menu (shown on desktop, hidden on mobile) -->
+            <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
+                    <!-- Inicio (Home) Link -->
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="index.html#categories">Categorías</a></li>
-                    <li><a href="index.html#products">Productos</a></li>
+                    
+                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
+                            <li><a href="index.html#categories">Bebé</a></li>
+                            <li><a href="index.html#categories">Belleza</a></li>
+                            <li><a href="index.html#categories">Coche y moto</a></li>
+                            <li><a href="index.html#categories">Ropa</a></li>
+                            <li><a href="index.html#categories">Informática</a></li>
+                            <li><a href="index.html#categories">Bricolaje y herramientas</a></li>
+                            <li><a href="index.html#categories">Electrónica</a></li>
+                            <li><a href="index.html#categories">Alimentación y bebidas</a></li>
+                            <li><a href="index.html#categories">Jardín</a></li>
+                            <li><a href="index.html#categories">Salud y cuidado personal</a></li>
+                            <li><a href="index.html#categories">Hogar y cocina</a></li>
+                            <li><a href="index.html#categories">Industria empresas y ciencia</a></li>
+                            <li><a href="index.html#categories">Joyería</a></li>
+                            <li><a href="index.html#categories">Iluminación</a></li>
+                            <li><a href="index.html#categories">Equipaje</a></li>
+                            <li><a href="index.html#categories">Oficina y papelería</a></li>
+                            <li><a href="index.html#categories">Productos para mascotas</a></li>
+                            <li><a href="index.html#categories">Sexo y sensualidad</a></li>
+                            <li><a href="index.html#categories">Calzado y accesorios</a></li>
+                            <li><a href="index.html#categories">Deportes y aire libre</a></li>
+                            <li><a href="index.html#categories">Juguetes y juegos</a></li>
+                            <li><a href="index.html#categories">Relojes</a></li>
+                            <li><a href="index.html#products">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Blog Link -->
+                    <li><a href="index.html#blog">Blog</a></li>
+                    
+                    <!-- Sobre Nosotros (About Us) Link -->
+                    <li><a href="index.html#about">Sobre Nosotros</a></li>
+                    
+                    <!-- Contacto (Contact) Link -->
                     <li><a href="index.html#contact">Contacto</a></li>
                 </ul>
             </nav>
+
+            <!-- Navigation Icons (Search, Heart, Cart) -->
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
                 <i class="fas fa-heart"></i>
                 <div class="cart-icon" onclick="openCart()">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
                 </div>
             </div>
+
+            <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Mobile Navigation Overlay (backdrop for mobile menu) -->
+            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+
+            <!-- Mobile Navigation Menu (hidden on desktop, shown only on mobile) -->
+            <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
+                <ul>
+                    <!-- Inicio (Home) Link -->
+                    <li><a href="index.html" onclick="closeMobileMenu()">Inicio</a></li>
+                    
+                    <!-- Categorías Dropdown for Mobile -->
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Bebé</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Belleza</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Coche y moto</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Ropa</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Informática</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Electrónica</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Jardín</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Hogar y cocina</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Joyería</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Iluminación</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Equipaje</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Oficina y papelería</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Productos para mascotas</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
+                            <li><a href="index.html#categories" onclick="closeMobileMenu()">Relojes</a></li>
+                            <li><a href="index.html#products" onclick="closeMobileMenu()">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Blog Link -->
+                    <li><a href="index.html#blog" onclick="closeMobileMenu()">Blog</a></li>
+                    
+                    <!-- Sobre Nosotros (About Us) Link -->
+                    <li><a href="index.html#about" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
+                    
+                    <!-- Contacto (Contact) Link -->
+                    <li><a href="index.html#contact" onclick="closeMobileMenu()">Contacto</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
@@ -217,5 +317,10 @@
     </div>
 
     <script src="script.js"></script>
+
+    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta%20sobre%20un%20producto" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat de WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-tooltip">¿Necesitas ayuda?</span>
+    </a>
 </body>
 </html>
