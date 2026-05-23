@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <!-- Core Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Categorías | KhurmiStore</title>
+    <meta name="description" content="Explora todas las categorías disponibles en KhurmiStore: electrónica, informática, hogar, deportes, moda y más.">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="author" content="KhurmiStore">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
+
+    <!-- CSS and Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo animated-logo">
+                <div class="logo-icon">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <i class="fas fa-wave-square"></i>
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                </div>
+                <h1 class="logo-text">
+                    <span class="letter">K</span>
+                    <span class="letter">h</span>
+                    <span class="letter">u</span>
+                    <span class="letter">r</span>
+                    <span class="letter">m</span>
+                    <span class="letter">i</span>
+                    <span class="wave-text">
+                        <span class="letter">S</span>
+                        <span class="letter">t</span>
+                        <span class="letter">o</span>
+                        <span class="letter">r</span>
+                        <span class="letter">e</span>
+                    </span>
+                </h1>
+            </div>
+            <nav class="nav-menu desktop-nav" id="desktopNav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
+                            <li><a href="categorias.html#categories">Bebé</a></li>
+                            <li><a href="categorias.html#categories">Belleza</a></li>
+                            <li><a href="categorias.html#categories">Coche y moto</a></li>
+                            <li><a href="categorias.html#categories">Ropa</a></li>
+                            <li><a href="categorias.html#categories">Informática</a></li>
+                            <li><a href="categorias.html#categories">Bricolaje y herramientas</a></li>
+                            <li><a href="categorias.html#categories">Electrónica</a></li>
+                            <li><a href="categorias.html#categories">Alimentación y bebidas</a></li>
+                            <li><a href="categorias.html#categories">Jardín</a></li>
+                            <li><a href="categorias.html#categories">Salud y cuidado personal</a></li>
+                            <li><a href="categorias.html#categories">Hogar y cocina</a></li>
+                            <li><a href="categorias.html#categories">Industria empresas y ciencia</a></li>
+                            <li><a href="categorias.html#categories">Joyería</a></li>
+                            <li><a href="categorias.html#categories">Iluminación</a></li>
+                            <li><a href="categorias.html#categories">Equipaje</a></li>
+                            <li><a href="categorias.html#categories">Oficina y papelería</a></li>
+                            <li><a href="categorias.html#categories">Productos para mascotas</a></li>
+                            <li><a href="categorias.html#categories">Sexo y sensualidad</a></li>
+                            <li><a href="categorias.html#categories">Calzado y accesorios</a></li>
+                            <li><a href="categorias.html#categories">Deportes y aire libre</a></li>
+                            <li><a href="categorias.html#categories">Juguetes y juegos</a></li>
+                            <li><a href="categorias.html#categories">Relojes</a></li>
+                            <li><a href="categorias.html">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+                <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
+                <i class="fas fa-heart"></i>
+                <div class="cart-icon" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
+            <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
+                <ul>
+                    <li><a href="index.html" onclick="closeMobileMenu()">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Bebé</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Belleza</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Coche y moto</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Ropa</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Informática</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Electrónica</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Jardín</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Hogar y cocina</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Joyería</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Iluminación</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Equipaje</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Oficina y papelería</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Productos para mascotas</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
+                            <li><a href="categorias.html#categories" onclick="closeMobileMenu()">Relojes</a></li>
+                            <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="blog.html" onclick="closeMobileMenu()">Blog</a></li>
+                    <li><a href="sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-main">
+        <section class="page-hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Todas las Categorías</span>
+                <h1>Explora nuestras secciones</h1>
+                <p>Encuentra productos en las categorías más populares y descubre qué hay disponible en KhurmiStore.</p>
+            </div>
+        </section>
+        <section class="categories-grid" id="categories">
+            <div class="category-card"><h3>Electrónica</h3><p>Audio, cámaras, gadgets y más.</p></div>
+            <div class="category-card"><h3>Informática</h3><p>Portátiles, equipos y componentes de alto rendimiento.</p></div>
+            <div class="category-card"><h3>Hogar y cocina</h3><p>Electrodomésticos, decoración y accesorios para el hogar.</p></div>
+            <div class="category-card"><h3>Belleza</h3><p>Cuidado personal y cosmética premium.</p></div>
+            <div class="category-card"><h3>Ropa</h3><p>Moda urbana y accesorios tecnológicos con estilo.</p></div>
+            <div class="category-card"><h3>Deportes y aire libre</h3><p>Equipo para actividad física, excursiones y vida al aire libre.</p></div>
+            <div class="category-card"><h3>Relojes</h3><p>Smartwatches y relojes deportivos con diseño premium.</p></div>
+            <div class="category-card"><h3>Juguetes y juegos</h3><p>Regalos y gadgets para entretenimiento familiar.</p></div>
+        </section>
+    </main>
+
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Store</span></h1></div>
+                <p>Tu destino para accesorios tecnológicos premium en España.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Añadir enlace de Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="categorias.html">Categorías</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Categorías</h3>
+                <ul>
+                    <li><a href="categorias.html#categories">Electrónica</a></li>
+                    <li><a href="categorias.html#categories">Informática</a></li>
+                    <li><a href="categorias.html#categories">Hogar y cocina</a></li>
+                    <li><a href="categorias.html#categories">Belleza</a></li>
+                    <li><a href="categorias.html#categories">Ropa</a></li>
+                    <li><a href="categorias.html#categories">Deportes y aire libre</a></li>
+                    <li><a href="categorias.html#categories">Relojes</a></li>
+                    <li><a href="categorias.html#categories">Juguetes y juegos</a></li>
+                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:info@khurmistore.es">info@khurmistore.es</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p></div>
+    </footer>
+
+    <div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+        <div class="search-modal">
+            <div class="search-header">
+                <h2>Buscar Productos</h2>
+                <button class="search-close-btn" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Escribe el nombre del producto..." autocomplete="off">
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2><i class="fas fa-shopping-cart"></i> Tu Carrito</h2>
+            <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="cart-total"><span>Total:</span><span class="total-price" id="cartTotal">€0,00</span></div>
+            <button class="btn-primary checkout-btn" onclick="openCheckout()">Finalizar Compra <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
