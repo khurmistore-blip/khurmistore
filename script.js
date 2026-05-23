@@ -683,6 +683,36 @@ function closeCheckout() {
     });
 }
 
+const benefitDetails = {
+    envio: {
+        title: 'Envío Gratis',
+        text: 'Disfruta de envío gratuito en todos los pedidos superiores a 50€. Entrega en 24-72 horas en toda España. Para pedidos menores, se aplica una tarifa de envío estándar.'
+    },
+    pago: {
+        title: 'Pago 100% Seguro',
+        text: 'Tus pagos están protegidos con cifrado SSL. Aceptamos tarjeta, PayPal y transferencia. Tu información nunca se comparte con terceros.'
+    },
+    devolucion: {
+        title: 'Devolución Fácil',
+        text: 'Dispones de 14 días para devolver cualquier producto sin complicaciones. Reembolso completo una vez recibido el artículo en buen estado.'
+    }
+};
+
+function openBenefitModal(key) {
+    const detail = benefitDetails[key];
+    if (!detail) return;
+    const overlay = document.getElementById('benefitModal');
+    const title = document.getElementById('benefitModalTitle');
+    const text = document.getElementById('benefitModalText');
+    if (title) title.textContent = detail.title;
+    if (text) text.textContent = detail.text;
+    overlay?.classList.add('active');
+}
+
+function closeBenefitModal() {
+    document.getElementById('benefitModal')?.classList.remove('active');
+}
+
 function goToPayment() {
     const name = document.getElementById('custName').value;
     const email = document.getElementById('custEmail').value;
@@ -1327,10 +1357,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cerrar búsqueda al presionar Escape
+    // Cerrar búsqueda y modales al presionar Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeSearch();
+            closeBenefitModal();
         }
     });
 
@@ -1348,6 +1379,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.search-close-btn');
     if (closeBtn) {
         closeBtn.addEventListener('click', closeSearch);
+    }
+
+    // Abrir modal de beneficio al pulsar los cards
+    document.querySelectorAll('.feature-box.benefit-card').forEach(card => {
+        card.addEventListener('click', () => openBenefitModal(card.dataset.benefit));
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openBenefitModal(card.dataset.benefit);
+            }
+        });
+    });
+
+    const benefitModal = document.getElementById('benefitModal');
+    if (benefitModal) {
+        benefitModal.addEventListener('click', (e) => {
+            if (e.target.id === 'benefitModal') {
+                closeBenefitModal();
+            }
+        });
+    }
+
+    const closeBenefitBtn = document.getElementById('closeBenefitModal');
+    if (closeBenefitBtn) {
+        closeBenefitBtn.addEventListener('click', closeBenefitModal);
     }
 
     renderCategoryPage();
