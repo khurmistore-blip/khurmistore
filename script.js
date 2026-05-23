@@ -274,8 +274,189 @@ function formatPrice(price) {
 function renderProducts(filter = 'all') {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
-    const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+    const filtered = filter === 'all'
+        ? products
+        : Array.isArray(filter)
+            ? products.filter(p => filter.includes(p.category))
+            : products.filter(p => p.category === filter);
+
     grid.innerHTML = filtered.map(p => `
+        <div class="product-card" onclick="goToProduct(${p.id})">
+            <div class="product-img">
+                <span class="product-tag">${p.tag}</span>
+                <img src="${p.image}" alt="${p.name}">
+                <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
+            </div>
+            <div class="product-info">
+                <h3>${p.name}</h3>
+                <p class="product-cat">${getCategoryName(p.category)}</p>
+                <div class="product-rating">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
+                <div class="product-price">
+                    <span class="price">${formatPrice(p.price)}${p.oldPrice ? ` <small style="color:#888;text-decoration:line-through;font-size:13px;">${formatPrice(p.oldPrice)}</small>` : ''}</span>
+                    <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Añadir ${p.name} al carrito">
+                        <i class="fas fa-cart-plus"></i> Añadir al carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getCategoryPageConfig(slug) {
+    const config = {
+        'bebe': {
+            name: 'Bebé',
+            description: 'Productos seleccionados para recién nacidos y familias.',
+            categories: []
+        },
+        'belleza': {
+            name: 'Belleza',
+            description: 'Cuidado personal y tecnología de estilo de vida.',
+            categories: ['earpods', 'headphones']
+        },
+        'coche-y-moto': {
+            name: 'Coche y moto',
+            description: 'Accesorios ideales para viajes y manos libres.',
+            categories: ['handsfree']
+        },
+        'ropa': {
+            name: 'Ropa',
+            description: 'Moda y accesorios para tu estilo diario.',
+            categories: []
+        },
+        'informatica': {
+            name: 'Informática',
+            description: 'Fundas y ratones para tu equipo de trabajo.',
+            categories: ['covers', 'mouse']
+        },
+        'bricolaje-y-herramientas': {
+            name: 'Bricolaje y herramientas',
+            description: 'Herramientas y accesorios prácticos para el hogar.',
+            categories: []
+        },
+        'electronica': {
+            name: 'Electrónica',
+            description: 'Los productos tecnológicos más populares de KhurmiStore.',
+            categories: ['headphones', 'smartwatch', 'earpods', 'covers', 'headgear', 'handsfree', 'mouse']
+        },
+        'alimentacion-y-bebidas': {
+            name: 'Alimentación y bebidas',
+            description: 'Productos para una vida más conveniente y saludable.',
+            categories: []
+        },
+        'jardin': {
+            name: 'Jardín',
+            description: 'Soluciones para tu espacio exterior y descanso.',
+            categories: []
+        },
+        'salud-y-cuidado-personal': {
+            name: 'Salud y cuidado personal',
+            description: 'Tecnología enfocada en bienestar y fitness.',
+            categories: ['smartwatch', 'earpods']
+        },
+        'hogar-y-cocina': {
+            name: 'Hogar y cocina',
+            description: 'Accesorios prácticos para el hogar conectado.',
+            categories: ['covers']
+        },
+        'industria-empresas-y-ciencia': {
+            name: 'Industria, empresas y ciencia',
+            description: 'Equipamiento y herramientas para profesionales.',
+            categories: ['handsfree', 'smartwatch']
+        },
+        'joyeria': {
+            name: 'Joyería',
+            description: 'Piezas de estilo con tecnología elegante.',
+            categories: ['smartwatch']
+        },
+        'iluminacion': {
+            name: 'Iluminación',
+            description: 'Iluminación inteligente para tus espacios.',
+            categories: []
+        },
+        'equipaje': {
+            name: 'Equipaje',
+            description: 'Accesorios para viajes y movilidad.',
+            categories: []
+        },
+        'oficina-y-papeleria': {
+            name: 'Oficina y papelería',
+            description: 'Productos para trabajar con estilo y comodidad.',
+            categories: ['mouse', 'covers']
+        },
+        'productos-para-mascotas': {
+            name: 'Productos para mascotas',
+            description: 'Artículos pensados para el cuidado de tu mascota.',
+            categories: []
+        },
+        'sexo-y-sensualidad': {
+            name: 'Sexo y sensualidad',
+            description: 'Selección discreta y moderna.',
+            categories: []
+        },
+        'calzado-y-accesorios': {
+            name: 'Calzado y accesorios',
+            description: 'Accesorios que complementan tu estilo.',
+            categories: []
+        },
+        'deportes-y-aire-libre': {
+            name: 'Deportes y aire libre',
+            description: 'Gadgets y tecnología para mantenerse activo.',
+            categories: ['smartwatch', 'headgear']
+        },
+        'juguetes-y-juegos': {
+            name: 'Juguetes y juegos',
+            description: 'Entretenimiento y gadgets para la familia.',
+            categories: ['headgear', 'earpods']
+        },
+        'relojes': {
+            name: 'Relojes',
+            description: 'Relojes inteligentes y wearables de última generación.',
+            categories: ['smartwatch']
+        }
+    };
+    return config[slug];
+}
+
+function formatCategorySlug(slug) {
+    return slug
+        ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+        : 'Categoría no encontrada';
+}
+
+function renderCategoryPage() {
+    const categoryTitleHeading = document.getElementById('categoryTitleHeading');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const categoryDescription = document.getElementById('categoryDescription');
+    const productsGrid = document.getElementById('productsGrid');
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('cat');
+
+    if (!categoryTitleHeading || !categoryTitle || !categoryDescription || !productsGrid) return;
+
+    const config = getCategoryPageConfig(slug);
+    const title = config ? config.name : formatCategorySlug(slug);
+    const description = config ? config.description : 'Lo sentimos, no se reconoce esta categoría. Explora otras opciones desde el menú.';
+    const categories = config ? config.categories : [];
+
+    categoryTitleHeading.textContent = title;
+    categoryTitle.textContent = title;
+    categoryDescription.textContent = description;
+    document.title = `${title} | KhurmiStore`;
+
+    const filteredProducts = categories.length ? products.filter(p => categories.includes(p.category)) : [];
+    if (filteredProducts.length === 0) {
+        productsGrid.innerHTML = `
+            <div class="no-results-content" style="min-height:240px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; text-align:center; padding:40px;">
+                <i class="fas fa-box-open" style="font-size:48px;color:var(--primary);"></i>
+                <h3>No hay productos disponibles</h3>
+                <p>${config ? 'Revisa otra categoría o vuelve al listado principal.' : 'Selecciona una categoría válida desde el menú.'}</p>
+            </div>
+        `;
+        return;
+    }
+
+    productsGrid.innerHTML = filteredProducts.map(p => `
         <div class="product-card" onclick="goToProduct(${p.id})">
             <div class="product-img">
                 <span class="product-tag">${p.tag}</span>
@@ -1168,5 +1349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeBtn) {
         closeBtn.addEventListener('click', closeSearch);
     }
+
+    renderCategoryPage();
 });
 

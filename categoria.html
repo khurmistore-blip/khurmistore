@@ -1,19 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es-ES">
 <head>
-    <!-- Core Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Blog | KhurmiStore</title>
-    <meta name="description" content="Lee noticias, consejos, reseñas y novedades sobre dispositivos tecnológicos en el blog de KhurmiStore.">
+    <title>Categoría | KhurmiStore</title>
+    <meta name="description" content="Explora productos por categoría en KhurmiStore: electrónica, hogar, relojes y más.">
     <meta name="theme-color" content="#ff6b35">
     <meta name="author" content="KhurmiStore">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
-
-    <!-- CSS and Fonts -->
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -150,24 +146,22 @@
     <main class="page-main">
         <section class="page-hero">
             <div class="hero-copy">
-                <span class="eyebrow">Noticias y Consejos</span>
-                <h1>Blog KhurmiStore</h1>
-                <p>Encuentra artículos sobre tecnología, reseñas, guías de compra y novedades del mercado.</p>
+                <span class="eyebrow">Categoría</span>
+                <h1 id="categoryTitleHeading">Electrónica</h1>
+                <p id="categoryDescription">Descubre los productos más destacados dentro de esta categoría.</p>
             </div>
         </section>
-        <section class="blog-list">
-            <article class="blog-card">
-                <h2>Cómo elegir los mejores auriculares inalámbricos</h2>
-                <p>Descubre los factores clave que debes tener en cuenta para comprar auriculares con sonido premium, autonomía y comodidad.</p>
-            </article>
-            <article class="blog-card">
-                <h2>Guía de regalos tech para este año</h2>
-                <p>Las mejores ideas de accesorios y gadgets para regalar a cualquier amante de la tecnología.</p>
-            </article>
-            <article class="blog-card">
-                <h2>Tendencias en smartwatches y wearables</h2>
-                <p>Lo último en relojes inteligentes, monitoreo de salud y conectividad para tu día a día.</p>
-            </article>
+
+        <section class="breadcrumb">
+            <a href="index.html">Inicio</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="categorias.html">Categorías</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current" id="categoryTitle">Electrónica</span>
+        </section>
+
+        <section class="products">
+            <div class="products-grid" id="productsGrid"></div>
         </section>
     </main>
 
@@ -202,7 +196,6 @@
                     <li><a href="categoria.html?cat=ropa">Ropa</a></li>
                     <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
                     <li><a href="categoria.html?cat=relojes">Relojes</a></li>
-                    <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                 </ul>
             </div>
@@ -246,4 +239,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
