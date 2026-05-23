@@ -420,6 +420,36 @@ button, input, textarea { font-family: inherit; }
 .section-header h2 span { background: var(--gradient2); -webkit-background-clip: text;
     background-clip: text; -webkit-text-fill-color: transparent; }
 
+.page-main.page-offset { padding-top: 110px; }
+.contact-section { padding: 100px 30px 80px; max-width: 1200px; margin: 0 auto; }
+.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; align-items: start; }
+.contact-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 35px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.contact-card h2 { margin-bottom: 24px; font-size: 30px; font-weight: 700; color: #fff; }
+.contact-form { display: grid; gap: 22px; max-width: 600px; width: 100%; margin: 0 auto; }
+.contact-form .form-group { display: grid; gap: 8px; }
+.contact-form label { color: #ddd; font-size: 0.95rem; font-weight: 600; }
+.contact-form input,
+.contact-form textarea { width: 100%; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #fff; font-size: 0.98rem; transition: 0.3s; }
+.contact-form input:focus,
+.contact-form textarea:focus { outline: none; border-color: var(--primary); background: rgba(255,107,53,0.08); box-shadow: 0 0 0 4px rgba(255,107,53,0.08); }
+.contact-form textarea { min-height: 180px; resize: vertical; }
+.contact-form .btn-primary { width: 100%; justify-content: center; }
+.contact-info p { color: #eee; line-height: 1.75; margin-bottom: 16px; }
+.contact-info a { color: #fff; text-decoration: none; transition: color 0.25s ease; }
+.contact-info a:hover { color: var(--primary); text-decoration: none; }
+.contact-info i { width: 22px; display: inline-block; text-align: center; color: var(--primary); margin-right: 10px; }
+.contact-info .whatsapp-btn { margin-top: 20px; }
+
+@media (max-width: 900px) {
+    .contact-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .contact-section { padding: 80px 20px 60px; }
+    .contact-card { padding: 26px; }
+    .contact-form input, .contact-form textarea { padding: 14px 16px; }
+}
+
 /* Categories */
 .categories { padding: 100px 30px; max-width: 1400px; margin: 0 auto; }
 .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
