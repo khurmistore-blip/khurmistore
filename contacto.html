@@ -1,30 +1,34 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-ES">
 <head>
+    <!-- Core Meta Tags -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del Producto - KhurmiStore</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Contacto | KhurmiStore</title>
+    <meta name="description" content="Contacta con KhurmiStore para preguntas, soporte o pedidos. Envía un mensaje, llama o chatea por WhatsApp.">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="author" content="KhurmiStore">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS and Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 </head>
 <body>
-<!-- Barra de Anuncios -->
-<div class="announcement-bar" id="announcementBar">
-    <div class="announcement-content">
-        <i class="fas fa-bolt"></i>
-        <span class="scroll-text">
-             ¡Mega Rebajas! 50% de DESCUENTO en todos los auriculares • Envío Gratis en pedidos superiores a 50€ • Compra 2 y llévate 1 GRATIS en auriculares inalámbricos • Pago a plazos disponible
-        </span>
-        <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
-    </div>
-</div>
-
-    <!-- Encabezado -->
     <header class="header">
         <div class="nav-container">
-            <!-- Logo -->
             <div class="logo animated-logo">
                 <div class="logo-icon">
                     <div class="wave-ring"></div>
@@ -52,14 +56,9 @@
                     </span>
                 </h1>
             </div>
-
-            <!-- Desktop Navigation Menu (shown on desktop, hidden on mobile) -->
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
-                    <!-- Inicio (Home) Link -->
                     <li><a href="index.html">Inicio</a></li>
-                    
-                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
                     <li class="nav-item dropdown">
                         <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -90,19 +89,11 @@
                             <li><a href="categorias.html">Ver Todo</a></li>
                         </ul>
                     </li>
-                    
-                    <!-- Blog Link -->
                     <li><a href="blog.html">Blog</a></li>
-                    
-                    <!-- Sobre Nosotros (About Us) Link -->
                     <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
-                    
-                    <!-- Contacto (Contact) Link -->
                     <li><a href="contacto.html">Contacto</a></li>
                 </ul>
             </nav>
-
-            <!-- Navigation Icons (Search, Heart, Cart) -->
             <div class="nav-icons">
                 <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
                 <i class="fas fa-heart"></i>
@@ -111,22 +102,13 @@
                     <span class="cart-count">0</span>
                 </div>
             </div>
-
-            <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
             <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
             </button>
-
-            <!-- Mobile Navigation Overlay (backdrop for mobile menu) -->
             <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
-
-            <!-- Mobile Navigation Menu (hidden on desktop, shown only on mobile) -->
             <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
                 <ul>
-                    <!-- Inicio (Home) Link -->
                     <li><a href="index.html" onclick="closeMobileMenu()">Inicio</a></li>
-                    
-                    <!-- Categorías Dropdown for Mobile -->
                     <li class="nav-item dropdown">
                         <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -157,34 +139,49 @@
                             <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
-                    
-                    <!-- Blog Link -->
                     <li><a href="blog.html" onclick="closeMobileMenu()">Blog</a></li>
-                    
-                    <!-- Sobre Nosotros (About Us) Link -->
                     <li><a href="sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
-                    
-                    <!-- Contacto (Contact) Link -->
                     <li><a href="contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Contenedor de Detalles del Producto -->
-    <main class="product-details-page">
-        <div id="productDetailsContainer"></div>
+    <main class="page-main">
+        <section class="page-hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Contáctanos</span>
+                <h1>¿Tienes alguna pregunta?</h1>
+                <p>Envíanos un mensaje, llámanos o chatea por WhatsApp. Estamos aquí para ayudarte.</p>
+            </div>
+        </section>
+        <section class="contact-section">
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h2>Escríbenos</h2>
+                    <form action="#" method="post" class="contact-form">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="tu@correo.com">
+                        <label for="mensaje">Mensaje</label>
+                        <textarea id="mensaje" name="mensaje" rows="5" placeholder="Cuéntanos cómo podemos ayudarte..."></textarea>
+                        <button type="submit" class="btn-primary">Enviar Mensaje</button>
+                    </form>
+                </div>
+                <div class="contact-card contact-info">
+                    <h2>Contacto Directo</h2>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:info@khurmistore.es">info@khurmistore.es</a></p>
+                    <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                    <a class="btn-secondary whatsapp-btn" href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta" target="_blank" rel="noopener">
+                        <i class="fab fa-whatsapp"></i> Chatear por WhatsApp
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Características -->
-    <section class="features">
-        <div class="feature-box"><i class="fas fa-truck-fast"></i><h3>Envío Gratis</h3><p>En pedidos +50€</p></div>
-        <div class="feature-box"><i class="fas fa-shield-halved"></i><h3>Pago Seguro</h3><p>100% Protegido</p></div>
-        <div class="feature-box"><i class="fas fa-rotate-left"></i><h3>Devolución Fácil</h3><p>Política de 14 días</p></div>
-        <div class="feature-box"><i class="fas fa-headset"></i><h3>Soporte 24/7</h3><p>Siempre disponibles</p></div>
-    </section>
-
-    <!-- Pie de Página -->
     <footer class="footer" id="contact">
         <div class="footer-content">
             <div class="footer-col">
@@ -193,29 +190,57 @@
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" title="Añadir enlace de Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
             <div class="footer-col">
                 <h3>Enlaces Rápidos</h3>
-                <ul><li><a href="index.html">Inicio</a></li><li><a href="index.html#products">Tienda</a></li><li><a href="#">Sobre Nosotros</a></li><li><a href="#">Contacto</a></li></ul>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="categorias.html">Categorías</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
             </div>
             <div class="footer-col">
                 <h3>Categorías</h3>
-                <ul><li><a href="index.html#products">Auriculares</a></li><li><a href="index.html#products">Relojes</a></li><li><a href="index.html#products">Inalámbricos</a></li><li><a href="index.html#products">Fundas</a></li></ul>
+                <ul>
+                    <li><a href="categorias.html#categories">Electrónica</a></li>
+                    <li><a href="categorias.html#categories">Informática</a></li>
+                    <li><a href="categorias.html#categories">Hogar y cocina</a></li>
+                    <li><a href="categorias.html#categories">Belleza</a></li>
+                    <li><a href="categorias.html#categories">Ropa</a></li>
+                    <li><a href="categorias.html#categories">Deportes y aire libre</a></li>
+                    <li><a href="categorias.html#categories">Relojes</a></li>
+                    <li><a href="categorias.html#categories">Juguetes y juegos</a></li>
+                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
+                </ul>
             </div>
             <div class="footer-col">
                 <h3>Contacto</h3>
                 <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
-                <p><i class="fas fa-phone"></i> +34 607 35 80 33</p>
-                <p><i class="fas fa-envelope"></i> info@khurmistore.es</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:info@khurmistore.es">info@khurmistore.es</a></p>
             </div>
         </div>
         <div class="footer-bottom"><p>&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p></div>
     </footer>
 
-    <!-- Carrito Lateral -->
+    <div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+        <div class="search-modal">
+            <div class="search-header">
+                <h2>Buscar Productos</h2>
+                <button class="search-close-btn" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Escribe el nombre del producto..." autocomplete="off">
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
     <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -229,99 +254,6 @@
         </div>
     </div>
 
-    <!-- Modal de Pago -->
-    <div class="modal-overlay" id="checkoutModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-credit-card"></i> Finalizar Compra</h2>
-                <button class="close-btn" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="checkout-steps">
-                    <div class="step active"><span>1</span>Datos</div>
-                    <div class="step"><span>2</span>Pago</div>
-                    <div class="step"><span>3</span>Listo</div>
-                </div>
-                <div class="checkout-step" id="step1">
-                    <h3>Información de Envío</h3>
-                    <div class="form-group"><label>Nombre Completo *</label><input type="text" id="custName" placeholder="Tu nombre"></div>
-                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" id="custEmail" placeholder="tu@email.com"></div>
-                    <div class="form-group"><label>Teléfono *</label><input type="tel" id="custPhone" placeholder="+34 607 35 80 33"></div>
-                    <div class="form-group"><label>Dirección *</label><textarea id="custAddress" placeholder="Dirección completa"></textarea></div>
-                    <div class="form-group"><label>Ciudad *</label><input type="text" id="custCity" placeholder="Madrid"></div>
-                    <div class="form-group"><label>Código Postal *</label><input type="text" id="custPostal" placeholder="28001"></div>
-                    <button class="btn-primary full-btn" onclick="goToPayment()">Continuar al Pago <i class="fas fa-arrow-right"></i></button>
-                </div>
-                <div class="checkout-step" id="step2" style="display:none;">
-                    <h3>Selecciona el Método de Pago</h3>
-                    <div class="payment-methods">
-                        <label class="payment-option"><input type="radio" name="payment" value="card" checked>
-                            <div class="payment-card"><i class="fas fa-credit-card"></i><div><h4>Tarjeta de Crédito/Débito</h4><p>Visa, MasterCard, AMEX</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="paypal">
-                            <div class="payment-card"><i class="fab fa-paypal"></i><div><h4>PayPal</h4><p>Pago rápido y seguro</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="bizum">
-                            <div class="payment-card"><i class="fas fa-mobile-alt"></i><div><h4>Bizum</h4><p>Pago móvil instantáneo</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="transfer">
-                            <div class="payment-card"><i class="fas fa-university"></i><div><h4>Transferencia Bancaria</h4><p>Pago directo</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="contra">
-                            <div class="payment-card"><i class="fas fa-money-bill-wave"></i><div><h4>Contra Reembolso</h4><p>Paga al recibir (+3€)</p></div></div>
-                        </label>
-                    </div>
-                    <div id="cardDetails" style="display:none; margin-top:20px;">
-                        <div class="form-group"><label>Número de Tarjeta</label><input type="text" placeholder="1234 5678 9012 3456"></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div class="form-group"><label>Caducidad</label><input type="text" placeholder="MM/AA"></div>
-                            <div class="form-group"><label>CVV</label><input type="text" placeholder="123"></div>
-                        </div>
-                    </div>
-                    <div class="order-summary">
-                        <h4>Resumen del Pedido</h4>
-                        <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
-                        <div class="summary-row"><span>Envío:</span><span>€4,99</span></div>
-                        <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-secondary" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
-                        <button class="btn-primary" style="flex:1;" onclick="placeOrder()">Realizar Pedido <i class="fas fa-check"></i></button>
-                    </div>
-                </div>
-                <div class="checkout-step" id="step3" style="display:none;">
-                    <div class="success-message">
-                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
-                        <h2>¡Pedido Realizado!</h2>
-                        <p>ID de Pedido: <strong id="orderID">#KW0000</strong></p>
-                        <p>Confirmación enviada a tu correo electrónico.</p>
-                        <button class="btn-primary" onclick="closeCheckout()">Seguir Comprando</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Aviso de Cookies -->
-    <div class="cookie-consent hidden" id="cookieConsent">
-        <div class="cookie-content">
-            <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
-            <div class="cookie-text">
-                <h4>Usamos Cookies 🍪</h4>
-                <p>Utilizamos cookies para mejorar tu experiencia y mostrarte contenido personalizado.</p>
-            </div>
-            <div class="cookie-buttons">
-                <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar Todo</button>
-                <button class="btn-cookie-decline" onclick="declineCookies()">Rechazar</button>
-            </div>
-        </div>
-    </div>
-
     <script src="script.js"></script>
-
-    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta%20sobre%20un%20producto" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat de WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-        <span class="whatsapp-tooltip">¿Necesitas ayuda?</span>
-    </a>
 </body>
 </html>
