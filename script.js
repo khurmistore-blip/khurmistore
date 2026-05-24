@@ -840,7 +840,131 @@ if (heroEl) {
     });
 }
 
+// Chatbot Widget
+const chatConfig = {
+    welcomeText: '¡Hola! 👋 Soy el asistente de Khurmi Store. ¿En qué puedo ayudarte?',
+    answers: {
+        envio: 'Envío gratis en pedidos superiores a 50€. Entrega en 24-72h en toda España.',
+        pagos: 'Aceptamos tarjeta, PayPal y transferencia. Pago 100% seguro con cifrado SSL.',
+        devoluciones: 'Tienes 14 días para devolver cualquier producto. Reembolso completo tras recibir el artículo.',
+        categorias: 'Tenemos muchas categorías: electrónica, informática, hogar, belleza, ropa y más. ¡Explóralas en el menú!',
+        contacto: 'Puedes llamarnos al +34 662 24 18 60 o escribirnos a info@khurmistore.es'
+    },
+    fallback: 'Lo siento, no entendí tu pregunta. ¿Quieres hablar con nosotros por WhatsApp?',
+    whatsappUrl: 'https://wa.me/34662241860'
+};
+
+const chatKeywords = [
+    { topic: 'envio', keywords: ['envío', 'envio', 'shipping', 'entrega', 'pedido'] },
+    { topic: 'pagos', keywords: ['pago', 'pagos', 'payment', 'paypal', 'tarjeta', 'transferencia', 'bizum'] },
+    { topic: 'devoluciones', keywords: ['devolución', 'devoluciones', 'devolucion', 'reembolso', 'devolver'] },
+    { topic: 'categorias', keywords: ['categoría', 'categorias', 'categoria', 'menu', 'menú', 'categorías', 'categorias'] },
+    { topic: 'contacto', keywords: ['contacto', 'teléfono', 'telefono', 'email', 'correo', 'llamar', 'whatsapp'] }
+];
+
+function toggleChatWidget() {
+    const panel = document.getElementById('chatWidgetPanel');
+    if (!panel) return;
+    const open = !panel.classList.contains('active');
+    panel.classList.toggle('active', open);
+    panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) {
+        const body = document.getElementById('chatWidgetBody');
+        if (body && body.innerHTML.trim() === '') {
+            showChatGreeting();
+        }
+    }
+}
+
+function closeChatWidget() {
+    const panel = document.getElementById('chatWidgetPanel');
+    if (!panel) return;
+    panel.classList.remove('active');
+    panel.setAttribute('aria-hidden', 'true');
+}
+
+function appendChatMessage(text, type = 'bot') {
+    const body = document.getElementById('chatWidgetBody');
+    if (!body) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = `message ${type}`;
+    wrapper.innerHTML = `<span>${text}</span>`;
+    body.appendChild(wrapper);
+    body.scrollTop = body.scrollHeight;
+}
+
+function renderQuickReplies() {
+    const body = document.getElementById('chatWidgetBody');
+    if (!body) return;
+    const row = document.createElement('div');
+    row.className = 'button-row';
+    const topics = [
+        { key: 'envio', label: 'Envío' },
+        { key: 'pagos', label: 'Pagos' },
+        { key: 'devoluciones', label: 'Devoluciones' },
+        { key: 'categorias', label: 'Categorías' },
+        { key: 'contacto', label: 'Contacto' }
+    ];
+    topics.forEach(topic => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'quick-reply-btn';
+        button.textContent = topic.label;
+        button.addEventListener('click', () => handleChatReply(topic.key));
+        row.appendChild(button);
+    });
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+}
+
+function showChatGreeting() {
+    appendChatMessage(chatConfig.welcomeText, 'bot');
+    renderQuickReplies();
+}
+
+function handleChatReply(topic) {
+    const label = topic === 'envio' ? 'Envío' : topic === 'pagos' ? 'Pagos' : topic === 'devoluciones' ? 'Devoluciones' : topic === 'categorias' ? 'Categorías' : 'Contacto';
+    appendChatMessage(label, 'user');
+    appendBotResponse(chatConfig.answers[topic]);
+}
+
+function handleChatSubmit(event) {
+    event.preventDefault();
+    const input = document.getElementById('chatMessageInput');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    appendChatMessage(text, 'user');
+    input.value = '';
+    const response = getChatResponse(text);
+    appendBotResponse(response);
+}
+
+function appendBotResponse(message) {
+    appendChatMessage(message, 'bot');
+}
+
+function getChatResponse(message) {
+    const text = message.toLowerCase();
+    for (const rule of chatKeywords) {
+        if (rule.keywords.some(keyword => text.includes(keyword))) {
+            return chatConfig.answers[rule.topic];
+        }
+    }
+    return `${chatConfig.fallback} <div class="button-row"><a class="quick-reply-btn" href="${chatConfig.whatsappUrl}" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a></div>`;
+}
+
+function initChatWidget() {
+    const toggle = document.getElementById('chatWidgetToggle');
+    const closeBtn = document.getElementById('chatWidgetClose');
+    const form = document.getElementById('chatForm');
+    if (toggle) toggle.addEventListener('click', toggleChatWidget);
+    if (closeBtn) closeBtn.addEventListener('click', closeChatWidget);
+    if (form) form.addEventListener('submit', handleChatSubmit);
+}
+
 // Inicializar
+initChatWidget();
 loadCart();
 renderProducts();
 updateCart();
