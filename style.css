@@ -465,9 +465,16 @@ button, input, textarea { font-family: inherit; }
 /* Categories */
 .categories { padding: 100px 30px; max-width: 1400px; margin: 0 auto; }
 .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
-.category-card { display: block; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px 20px; text-align: center; cursor: pointer; transition: 0.4s; }
-.category-card:hover { transform: translateY(-15px); background: rgba(255,107,53,0.1); border-color: var(--primary); box-shadow: 0 20px 40px rgba(255,107,53,0.2); }
-.cat-img { width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(102,126,234,0.2)); display: flex; align-items: center; justify-content: center; transition: 0.4s; }
+    .category-card,
+    .category-card:link,
+    .category-card:visited,
+    .category-card:hover,
+    .category-card:active {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+    }
+    .category-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px 20px; text-align: center; cursor: pointer; transition: 0.4s; }
 .category-card:hover .cat-img { transform: scale(1.1) rotate(5deg); }
 .cat-img img { width: 100%; height: 100%; object-fit: cover; }
 .view-all { font-size: 40px; color: var(--primary); }
