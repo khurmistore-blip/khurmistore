@@ -1227,6 +1227,17 @@ function renderProductDetails() {
                     </span>
                 </div>
 
+                <div class="quick-summary">
+                    <h3>Resumen rápido</h3>
+                    <p>Producto ideal para quienes buscan ${getCategoryName(p.category).toLowerCase()} premium, envío rápido desde España y garantía de 12 meses.</p>
+                    <div class="summary-grid">
+                        <div class="summary-item"><strong>Uso recomendado</strong><span>${getCategoryName(p.category)} de alta calidad para uso diario y regalo.</span></div>
+                        <div class="summary-item"><strong>Precio</strong><span>${formatPrice(p.price)}${p.oldPrice ? ` (${formatPrice(p.oldPrice)} antes)` : ''}</span></div>
+                        <div class="summary-item"><strong>Disponibilidad</strong><span>${p.stock > 5 ? `${p.stock} unidades disponibles` : `Solo ${p.stock} unidades restantes`}</span></div>
+                        <div class="summary-item"><strong>Envío</strong><span>2-4 días laborables. Gratis en pedidos +50€.</span></div>
+                    </div>
+                </div>
+
                 <div class="price-section">
                     <span class="current-price">${formatPrice(p.price)}</span>
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
@@ -1234,6 +1245,36 @@ function renderProductDetails() {
                 </div>
 
                 <p class="product-description">${p.description}</p>
+
+                <div class="faq-accordion">
+                    <div class="faq-item" data-faq-index="0">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
+                            <strong>¿Cuánto tarda el envío?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer0">
+                            El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
+                        </div>
+                    </div>
+                    <div class="faq-item" data-faq-index="1">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
+                            <strong>¿Qué garantía ofrece este producto?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer1">
+                            Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
+                        </div>
+                    </div>
+                    <div class="faq-item" data-faq-index="2">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
+                            <strong>¿Puedo cambiarlo o devolverlo?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer2">
+                            Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
+                        </div>
+                    </div>
+                </div>
 
                 <div class="color-selector">
                     <h4>Color:</h4>
@@ -1339,6 +1380,50 @@ function renderProductDetails() {
 
     // Actualizar título de la página
     document.title = `${p.name} - KhurmiStore`;
+    injectProductFAQSchema(p);
+}
+
+function injectProductFAQSchema(p) {
+    const schemaId = 'faqSchemaScript';
+    const existing = document.getElementById(schemaId);
+    if (existing) existing.remove();
+
+    const faqData = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "¿Cuánto tarda el envío?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "El envío estándar para este producto llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "¿Qué garantía ofrece este producto?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "¿Puedo cambiarlo o devolverlo?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado."
+                }
+            }
+        ]
+    };
+
+    const schema = document.createElement('script');
+    schema.id = schemaId;
+    schema.type = 'application/ld+json';
+    schema.text = JSON.stringify(faqData, null, 2);
+    document.head.appendChild(schema);
 }
 
 function changeMainImage(src, thumb) {
@@ -1361,6 +1446,26 @@ function changeDetailQty(change) {
     if (val < 1) val = 1;
     if (val > max) val = max;
     input.value = val;
+}
+
+function toggleFAQ(index) {
+    const item = document.querySelector(`.faq-item[data-faq-index="${index}"]`);
+    if (!item) return;
+    const question = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
+    const isActive = question.classList.contains('active');
+
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.classList.remove('active');
+        q.setAttribute('aria-expanded', 'false');
+    });
+    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('active'));
+
+    if (!isActive) {
+        question.classList.add('active');
+        question.setAttribute('aria-expanded', 'true');
+        answer.classList.add('active');
+    }
 }
 
 function addToCartFromDetails(id) {
