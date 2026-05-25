@@ -566,9 +566,28 @@ function updateCart() {
     const cartCountEl = document.querySelector('.cart-count');
     const cartSubtotalEl = document.getElementById('cartSubtotal');
     const cartTotalEl = document.getElementById('cartTotal');
+    const cartSummaryEl = document.getElementById('cartSummary');
+    const cartSummaryItemsEl = document.getElementById('cartSummaryItems');
+    const cartSummarySubtotalEl = document.getElementById('cartSummarySubtotal');
+    const cartSummaryTotalEl = document.getElementById('cartSummaryTotal');
     if (cartCountEl) cartCountEl.textContent = totalItems;
     if (cartSubtotalEl) cartSubtotalEl.textContent = formatPrice(subtotal);
     if (cartTotalEl) cartTotalEl.textContent = formatPrice(totalPrice);
+
+    if (cartSummaryEl) {
+        cartSummaryEl.style.display = cart.length ? 'block' : 'none';
+    }
+
+    if (cartSummaryItemsEl) {
+        cartSummaryItemsEl.innerHTML = cart.length ? cart.map(item => `
+            <div class="cart-summary-item">
+                <span>${item.name}</span>
+                <span>${item.qty} x ${formatPrice(item.price)}</span>
+            </div>
+        `).join('') : '';
+    }
+    if (cartSummarySubtotalEl) cartSummarySubtotalEl.textContent = formatPrice(subtotal);
+    if (cartSummaryTotalEl) cartSummaryTotalEl.textContent = formatPrice(totalPrice);
 
     const cartItemsDiv = document.getElementById('cartItems');
     if (!cartItemsDiv) return;
@@ -667,21 +686,66 @@ function openCheckout() {
         return;
     }
     closeCart();
-    document.getElementById('checkoutModal')?.classList.add('active');
+    document.getElementById('checkoutForm')?.reset();
     updateSummary();
+    document.getElementById('checkoutModal')?.classList.add('active');
 }
 
 function closeCheckout() {
     document.getElementById('checkoutModal')?.classList.remove('active');
-    const s1 = document.getElementById('step1');
-    const s2 = document.getElementById('step2');
-    const s3 = document.getElementById('step3');
-    if (s1) s1.style.display = 'block';
-    if (s2) s2.style.display = 'none';
-    if (s3) s3.style.display = 'none';
-    document.querySelectorAll('.step').forEach((s, i) => {
-        s.classList.toggle('active', i === 0);
-    });
+}
+
+function updateSummary() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const subtotalEl = document.getElementById('summarySubtotal');
+    const totalEl = document.getElementById('summaryTotal');
+    if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+    if (totalEl) totalEl.textContent = formatPrice(subtotal);
+}
+
+function submitWhatsappOrder(event) {
+    event.preventDefault();
+    const name = document.getElementById('custName')?.value.trim();
+    const phone = document.getElementById('custPhone')?.value.trim();
+    const address = document.getElementById('custAddress')?.value.trim();
+    const city = document.getElementById('custCity')?.value.trim();
+    const postal = document.getElementById('custPostal')?.value.trim();
+    const notes = document.getElementById('custNotes')?.value.trim();
+
+    if (!name || !phone || !address || !city || !postal) {
+        showNotification('Por favor rellena todos los campos obligatorios.');
+        return;
+    }
+
+    if (cart.length === 0) {
+        showNotification('Tu carrito está vacío. Añade productos antes de finalizar.');
+        closeCheckout();
+        return;
+    }
+
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const itemsText = cart.map(item => `• ${item.name} x${item.qty} - ${formatPrice(item.price * item.qty)}`).join('\n');
+    const message = `🛒 NUEVO PEDIDO - Khurmi Store\n\nPedido:\n${itemsText}\n\nTOTAL: ${formatPrice(total)}\n\nDatos del cliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo postal: ${postal}\nNotas: ${notes || 'Ninguna'}`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/34662241860?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+    showOrderConfirmation('¡Gracias! Tu pedido se ha enviado por WhatsApp. Te contactaremos pronto para confirmar.');
+    closeCheckout();
+    cart = [];
+    saveCart();
+    updateCart();
+}
+
+function showOrderConfirmation(message) {
+    const banner = document.getElementById('orderConfirmationBanner');
+    if (!banner) {
+        showNotification(message);
+        return;
+    }
+    banner.textContent = message;
+    banner.classList.add('active');
+    setTimeout(() => banner.classList.remove('active'), 8000);
 }
 
 const benefitDetails = {
