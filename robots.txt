@@ -1,40 +1,44 @@
-# robots.txt - khurmiStore SEO Configuration
-# Last Updated: May 2025
+# robots.txt for Khurmi Store (https://khurmistore.es)
+# Purpose: allow normal search engines AND AI / generative-engine crawlers,
+# and point them to the sitemap.
 
-# Allow all search engines
+# ----- Default rule for all standard crawlers (Google, Bing, etc.) -----
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /private/
-Disallow: /checkout/
-Disallow: /cart/
-Disallow: /search?
-Disallow: /compare
-Disallow: /*.pdf$
-Disallow: /*?utm_source=
-Disallow: /*?utm_medium=
-Disallow: /*?utm_campaign=
 
-# Specific rules for Google
-User-agent: Googlebot
+# ----- AI / Generative Engine crawlers (explicitly allowed) -----
+
+# OpenAI - ChatGPT training & browsing
+User-agent: GPTBot
 Allow: /
-Crawl-delay: 1
 
-# Specific rules for Bing
-User-agent: Bingbot
+User-agent: ChatGPT-User
 Allow: /
-Crawl-delay: 2
 
-# Block bad bots
-User-agent: MJ12bot
-Disallow: /
+User-agent: OAI-SearchBot
+Allow: /
 
-User-agent: AhrefsBot
-Crawl-delay: 10
+# Anthropic - Claude
+User-agent: ClaudeBot
+Allow: /
 
-User-agent: SemrushBot
-Disallow: /
+User-agent: Claude-Web
+Allow: /
 
-# Sitemaps
-Sitemap: https://khurmiStore.es/sitemap.xml
-Sitemap: https://khurmiStore.es/products-sitemap.xml
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Google AI (Gemini / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+# Microsoft Copilot / Bing AI
+User-agent: bingbot
+Allow: /
+
+# ----- Sitemap location -----
+Sitemap: https://khurmistore.es/sitemap.xml
