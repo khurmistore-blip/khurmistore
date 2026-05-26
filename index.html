@@ -55,6 +55,40 @@
     
     <!-- Preload Critical Resources -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <!-- ============================================================
+     ORGANIZATION SCHEMA (JSON-LD) — for GEO / SEO
+     WHERE TO PASTE: in index.html, just before the closing </head> tag.
+     This is invisible on the page — only Google & AI engines read it.
+     REPLACE the items marked with  <<< REPLACE  below.
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Khurmi Store",
+  "url": "https://khurmistore.es",
+  "logo": "https://khurmistore.es/images/logo.png",
+  "description": "Tienda online de accesorios tecnológicos premium en España: auriculares, relojes inteligentes, fundas, electrónica y mucho más.",
+  "email": "info@khurmistore.es",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+34662241860",
+    "contactType": "customer service",
+    "areaServed": "ES",
+    "availableLanguage": ["Spanish"]
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "ES",
+    "addressLocality": "Madrid"
+  },
+  "sameAs": [
+    "https://www.facebook.com/TU_PAGINA",
+    "https://www.instagram.com/TU_PERFIL",
+    "https://twitter.com/TU_PERFIL"
+  ]
+}
+</script>
 </head>
 <body>
 <!-- Barra de Anuncios -->
