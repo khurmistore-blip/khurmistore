@@ -193,8 +193,13 @@
             </div>
 
             <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
-            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Abrir menú de navegación" onclick="toggleMobileMenu()">
+                <!-- Contenedor para animación personalizada de hamburguesa a X -->
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </button>
 
             <!-- Mobile Navigation Overlay (backdrop for mobile menu) -->

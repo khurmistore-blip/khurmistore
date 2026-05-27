@@ -630,10 +630,16 @@ function toggleMobileMenu() {
     const overlay = document.getElementById('mobileNavOverlay');
     const button = document.getElementById('navToggle');
     if (!menu || !overlay || !button) return;
-    const menuOpen = !menu.classList.contains('active');
+    
+    const isOpening = !menu.classList.contains('active');
+    
     menu.classList.toggle('active');
-    overlay.classList.toggle('active', menuOpen);
-    button.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+    overlay.classList.toggle('active', isOpening);
+    
+    // Bloquea el scroll del body cuando el menú está abierto (ISSUE 1)
+    document.body.classList.toggle('menu-open', isOpening);
+    
+    button.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
 }
 
 // Toggle the categories dropdown on mobile
@@ -658,6 +664,10 @@ function closeMobileMenu() {
     menu.classList.remove('active');
     overlay.classList.remove('active');
     button.setAttribute('aria-expanded', 'false');
+    
+    // Restaura el scroll del body al cerrar (ISSUE 1)
+    document.body.classList.remove('menu-open');
+    
     dropdowns.forEach(dropdown => dropdown.classList.remove('dropdown-open'));
     dropdownToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
 }
@@ -1702,4 +1712,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCategoryPage();
 });
-
