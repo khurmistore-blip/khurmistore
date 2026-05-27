@@ -953,10 +953,10 @@ button, input, textarea { font-family: inherit; }
     align-items: center;
     justify-content: center;
     padding: 12px 25px;
-    background: rgba(255,255,255,0.05); /* Dark background for the pill */
-    border: 1px solid rgba(255,255,255,0.1); /* Subtle border */
+    background: rgba(255, 107, 53, 0.12); /* Soft transparent orange tint */
+    border: 1px solid rgba(255, 107, 53, 0.3); /* Thin soft orange border */
     border-radius: 50px; /* Pill shape */
-    color: #fff; /* White text */
+    color: #ff6b35; /* Light orange text for readability */
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
@@ -967,10 +967,10 @@ button, input, textarea { font-family: inherit; }
 
 .category-pill:hover,
 .category-pill:focus {
-    background: var(--gradient2); /* Orange gradient on hover */
-    border-color: var(--primary); /* Orange border on hover */
+    background: rgba(255, 107, 53, 0.25); /* Slightly brighter orange on hover */
+    border-color: #ff6b35;
+    color: #fff; /* Switch to white on hover for extra pop */
     transform: translateY(-3px) scale(1.02); /* Slight lift and scale on hover */
-    box-shadow: 0 8px 20px rgba(255,107,53,0.3); /* Orange shadow on hover */
 }
 
 /* Keyframe animation for the continuous scrolling effect */
