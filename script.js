@@ -1514,6 +1514,35 @@ function switchTab(tabId, btn) {
 // Renderizar detalles si estamos en la página de detalles
 renderProductDetails();
 
+// ===== MOBILE MENU DRAWER LOGIC =====
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+    const drawerClose = document.getElementById('drawerClose');
+    const drawerLinks = document.querySelectorAll('.drawer-nav a');
+
+    const openDrawer = () => {
+        mobileMenuToggle.classList.add('active');
+        mobileNavDrawer.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        mobileMenuToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeDrawer = () => {
+        mobileMenuToggle.classList.remove('active');
+        mobileNavDrawer.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    };
+
+    if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', openDrawer);
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    if (mobileNavOverlay) mobileNavOverlay.addEventListener('click', closeDrawer);
+    drawerLinks.forEach(link => link.addEventListener('click', closeDrawer));
+});
 // ===== FUNCIONALIDAD DE BÚSQUEDA =====
 
 // Variable global para almacenar el término de búsqueda actual

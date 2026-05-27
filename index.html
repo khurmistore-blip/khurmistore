@@ -105,6 +105,10 @@
     <!-- ===== HEADER / NAVIGATION ===== -->
     <header class="header">
         <div class="nav-container">
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
             <!-- Logo -->
             <div class="logo animated-logo">
                 <div class="logo-icon">
@@ -192,68 +196,26 @@
                 </div>
             </div>
 
-            <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
-            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" aria-label="Abrir menú de navegación" onclick="toggleMobileMenu()">
-                <!-- Contenedor para animación personalizada de hamburguesa a X -->
-                <div class="hamburger-icon">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </button>
-
-            <!-- Mobile Navigation Overlay (backdrop for mobile menu) -->
-            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
-
-            <!-- Mobile Navigation Menu (hidden on desktop, shown only on mobile) -->
-            <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
-                <ul>
-                    <!-- Inicio (Home) Link -->
-                    <li><a href="index.html" onclick="closeMobileMenu()">Inicio</a></li>
-                    
-                    <!-- Categorías Dropdown for Mobile -->
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.html?cat=bebe" onclick="closeMobileMenu()">Bebé</a></li>
-                            <li><a href="categoria.html?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="categoria.html?cat=coche-y-moto" onclick="closeMobileMenu()">Coche y moto</a></li>
-                            <li><a href="categoria.html?cat=ropa" onclick="closeMobileMenu()">Ropa</a></li>
-                            <li><a href="categoria.html?cat=informatica" onclick="closeMobileMenu()">Informática</a></li>
-                            <li><a href="categoria.html?cat=bricolaje-y-herramientas" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
-                            <li><a href="categoria.html?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="categoria.html?cat=alimentacion-y-bebidas" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
-                            <li><a href="categoria.html?cat=jardin" onclick="closeMobileMenu()">Jardín</a></li>
-                            <li><a href="categoria.html?cat=salud-y-cuidado-personal" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
-                            <li><a href="categoria.html?cat=hogar-y-cocina" onclick="closeMobileMenu()">Hogar y cocina</a></li>
-                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
-                            <li><a href="categoria.html?cat=joyeria" onclick="closeMobileMenu()">Joyería</a></li>
-                            <li><a href="categoria.html?cat=iluminacion" onclick="closeMobileMenu()">Iluminación</a></li>
-                            <li><a href="categoria.html?cat=equipaje" onclick="closeMobileMenu()">Equipaje</a></li>
-                            <li><a href="categoria.html?cat=oficina-y-papeleria" onclick="closeMobileMenu()">Oficina y papelería</a></li>
-                            <li><a href="categoria.html?cat=productos-para-mascotas" onclick="closeMobileMenu()">Productos para mascotas</a></li>
-                            <li><a href="categoria.html?cat=sexo-y-sensualidad" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
-                            <li><a href="categoria.html?cat=calzado-y-accesorios" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
-                            <li><a href="categoria.html?cat=deportes-y-aire-libre" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
-                            <li><a href="categoria.html?cat=juguetes-y-juegos" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
-                            <li><a href="categoria.html?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
-                        </ul>
-                    </li>
-                    
-                    <!-- Blog Link -->
-                    <li><a href="blog.html" onclick="closeMobileMenu()">Blog</a></li>
-                    
-                    <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
-                    
-                    <!-- Contacto (Contact) Link -->
-                    <li><a href="contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <div class="drawer-header">
+            <button class="drawer-close" id="drawerClose" aria-label="Close menu">&times;</button>
+        </div>
+        <nav class="drawer-nav">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="#products">Productos</a></li>
+                <li><a href="categorias.html">Categorías</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </div>
 
     <!-- Slider Principal -->
     <section class="hero" id="home">
