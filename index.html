@@ -106,7 +106,7 @@
     <header class="header">
         <div class="nav-container">
             <!-- Mobile Hamburger Button -->
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu" aria-expanded="false">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false">
                 <span></span><span></span><span></span>
             </button>
             <!-- Logo -->
@@ -201,21 +201,29 @@
 
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
-    <div class="mobile-nav-drawer" id="mobileNavDrawer">
-        <div class="drawer-header">
-            <button class="drawer-close" id="drawerClose" aria-label="Close menu">&times;</button>
+    <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Menú móvil">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-logo">Khurmi Store</span>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <nav class="drawer-nav">
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="#products">Productos</a></li>
-                <li><a href="categorias.html">Categorías</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
-                <li><a href="contacto.html">Contacto</a></li>
-            </ul>
-        </nav>
-    </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#home"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#categories"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
+            <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
+            <li class="divider"></li>
+            <li><a href="#"><i class="fas fa-user"></i> Mi Cuenta</a></li>
+            <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+        </ul>
+        <div class="mobile-nav-footer">
+            <a href="https://wa.me/34662241860" class="mobile-nav-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+    </nav>
 
     <!-- Slider Principal -->
     <section class="hero" id="home">
