@@ -1003,6 +1003,124 @@ button, input, textarea { font-family: inherit; }
     }
     .category-marquee { animation-duration: 30s; } /* Further adjust speed for very small screens */
 }
+
+/* ============================================
+   PAYMENT METHOD BANNER
+   ============================================ */
+.payment-banner-section {
+    padding: 60px 0; /* Vertical padding for the section */
+    background: var(--dark); /* Dark navy background */
+    border-top: 1px solid rgba(255,255,255,0.05); /* Subtle top border */
+    border-bottom: 1px solid rgba(255,255,255,0.05); /* Subtle bottom border */
+    text-align: center; /* Center align content */
+    opacity: 0; /* Start hidden for entrance animation */
+    transform: translateY(20px); /* Start slightly below for entrance animation */
+    animation: fadeInUp 0.8s ease-out forwards; /* Entrance animation */
+    animation-delay: 0.2s; /* Delay animation slightly */
+}
+
+.payment-banner-container {
+    max-width: 1200px; /* Max width for the content */
+    margin: 0 auto; /* Center the container */
+    padding: 30px 40px; /* Inner padding */
+    background: rgba(255, 107, 53, 0.08); /* Light orange transparent background */
+    border: 1px solid rgba(255, 107, 53, 0.2); /* Soft orange border */
+    border-radius: 20px; /* Rounded corners */
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Vertically align items */
+    justify-content: center; /* Horizontally center content */
+    gap: 40px; /* Space between text and icon */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Soft shadow */
+    transition: all 0.3s ease; /* Smooth transition for hover */
+}
+
+.payment-banner-container:hover {
+    box-shadow: 0 15px 40px rgba(255,107,53,0.2); /* Slightly larger shadow on hover */
+    transform: translateY(-5px); /* Slight lift on hover */
+}
+
+.payment-banner-content {
+    flex-grow: 1; /* Allow content to take available space */
+    text-align: left; /* Align text to the left */
+}
+
+.payment-banner-content h2 {
+    font-size: 32px; /* Bold heading size */
+    font-weight: 800; /* Extra bold */
+    color: #fff; /* White text */
+    margin-bottom: 10px; /* Space below heading */
+    line-height: 1.2;
+}
+
+.payment-banner-content h3 {
+    font-size: 20px; /* Subtitle size */
+    font-weight: 600; /* Semi-bold */
+    color: var(--primary); /* Orange subtitle */
+    margin-bottom: 15px; /* Space below subtitle */
+}
+
+.payment-banner-content p {
+    font-size: 15px; /* Paragraph text size */
+    color: #ccc; /* Light gray text */
+    line-height: 1.6;
+    max-width: 500px; /* Limit paragraph width for readability */
+}
+
+.payment-banner-icon i {
+    font-size: 80px; /* Large PayPal icon */
+    color: var(--primary); /* Orange PayPal icon */
+    transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition for hover */
+}
+
+.payment-banner-container:hover .payment-banner-icon i {
+    transform: scale(1.1); /* Slightly enlarge icon on hover */
+    color: #fff; /* Change icon color to white on hover */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 992px) {
+    .payment-banner-container {
+        flex-direction: column; /* Stack content and icon vertically */
+        text-align: center; /* Center align text */
+        gap: 30px; /* Adjust gap */
+        padding: 30px;
+    }
+    .payment-banner-content {
+        text-align: center; /* Center align text on mobile */
+    }
+    .payment-banner-content h2 {
+        font-size: 28px; /* Adjust heading size */
+    }
+    .payment-banner-content h3 {
+        font-size: 18px; /* Adjust subtitle size */
+    }
+    .payment-banner-content p {
+        font-size: 14px; /* Adjust paragraph size */
+        max-width: none; /* Remove max-width constraint */
+    }
+    .payment-banner-icon i {
+        font-size: 70px; /* Adjust icon size */
+    }
+}
+
+@media (max-width: 576px) {
+    .payment-banner-section {
+        padding: 40px 0;
+    }
+    .payment-banner-container {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    .payment-banner-content h2 {
+        font-size: 24px;
+    }
+    .payment-banner-content h3 {
+        font-size: 16px;
+    }
+    .payment-banner-icon i {
+        font-size: 60px;
+    }
+}
 /* ==================== ANIMATIONS ==================== */
 @keyframes slideIn { 
     from { transform: translateX(400px); opacity: 0; } 
