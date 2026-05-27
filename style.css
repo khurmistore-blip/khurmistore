@@ -2561,4 +2561,99 @@ body.announcement-active .product-details-page { padding-top: 172px; }
     .breadcrumb { font-size: 12px; }
 }
 
+/* ============================================
+   AUTO-SCROLLING CATEGORY MARQUEE
+   ============================================ */
+.category-marquee-section {
+    padding: 60px 0; /* Vertical padding for the section */
+    max-width: 100%;
+    overflow: hidden; /* Hide content outside the container */
+    background: #0f1430; /* Slightly different background for visual separation */
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 
+.category-marquee-section .section-header {
+    margin-bottom: 40px; /* Spacing below the heading */
+}
+
+.category-marquee-container {
+    width: 100%;
+    overflow: hidden; /* Ensures the marquee stays within bounds */
+    position: relative;
+    padding: 20px 0; /* Vertical padding for the marquee track */
+}
+
+.category-marquee {
+    display: flex;
+    width: fit-content; /* Allows content to define its width (will be 2x the actual content) */
+    animation: marquee-scroll 60s linear infinite; /* Animation for continuous scroll */
+}
+
+.category-marquee:hover {
+    animation-play-state: paused; /* Pause animation on hover */
+}
+
+.category-marquee-wrapper {
+    display: flex;
+    flex-shrink: 0; /* Prevents items from shrinking */
+    align-items: center;
+    gap: 20px; /* Space between individual category pills */
+    /* Width will be determined by its content */
+}
+
+.category-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 25px;
+    background: rgba(255,255,255,0.05); /* Dark background for the pill */
+    border: 1px solid rgba(255,255,255,0.1); /* Subtle border */
+    border-radius: 50px; /* Pill shape */
+    color: #fff; /* White text */
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    white-space: nowrap; /* Prevent text from wrapping */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    min-width: 150px; /* Ensure minimum width for readability */
+}
+
+.category-pill:hover,
+.category-pill:focus {
+    background: var(--gradient2); /* Orange gradient on hover */
+    border-color: var(--primary); /* Orange border on hover */
+    transform: translateY(-3px) scale(1.02); /* Slight lift and scale on hover */
+    box-shadow: 0 8px 20px rgba(255,107,53,0.3); /* Orange shadow on hover */
+}
+
+/* Keyframe animation for the continuous scrolling effect */
+@keyframes marquee-scroll {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); } /* Scrolls the full width of one .category-marquee-wrapper */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .category-marquee-section {
+        padding: 40px 0;
+    }
+    .category-marquee-section .section-header {
+        margin-bottom: 30px;
+    }
+    .category-pill {
+        padding: 10px 20px;
+        font-size: 14px;
+        min-width: 120px;
+    }
+    .category-marquee { animation-duration: 40s; } /* Adjust speed for less content */
+}
+
+@media (max-width: 480px) {
+    .category-pill {
+        padding: 8px 18px;
+        font-size: 13px;
+        min-width: 100px;
+    }
+    .category-marquee { animation-duration: 30s; } /* Further adjust speed for very small screens */
+}
