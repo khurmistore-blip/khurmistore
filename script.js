@@ -1066,7 +1066,7 @@ function subscribeNow() {
         showNotification('¡Por favor, introduce un correo válido!');
         return;
     }
-    showNotification('🎉 ¡Éxito! Revisa tu correo para el código de 20% de descuento');
+    showNotification('🎉 ¡Éxito! Revisa tu correo para activar tu envío gratis en pedidos superiores a 50€');
     closeWelcomePopup();
 }
 
