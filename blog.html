@@ -77,6 +77,18 @@
         @media (max-width: 768px) { .blog-list { padding: 50px 20px; } }
         @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
     </style>
+<style>
+  /* Fix: header solid dark navy background, no transparency on blog page */
+  .header,
+  header.header,
+  .site-header,
+  .main-header {
+    background: rgba(10, 14, 39, 0.98) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+</style>
 </head>
 <body>
     <header class="header">
@@ -92,21 +104,7 @@
                     <div class="particle p3"></div>
                     <div class="particle p4"></div>
                 </div>
-                <h1 class="logo-text">
-                    <span class="letter">K</span>
-                    <span class="letter">h</span>
-                    <span class="letter">u</span>
-                    <span class="letter">r</span>
-                    <span class="letter">m</span>
-                    <span class="letter">i</span>
-                    <span class="wave-text">
-                        <span class="letter">S</span>
-                        <span class="letter">t</span>
-                        <span class="letter">o</span>
-                        <span class="letter">r</span>
-                        <span class="letter">e</span>
-                    </span>
-                </h1>
+                <h1 class="logo-text">Khurmi<span>Store</span></h1>
             </div>
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
@@ -209,6 +207,23 @@
         </section>
         <section class="blog-list">
             <div class="blog-grid">
+                <a href="blog-mejores-auriculares-inalambricos-calidad-precio-2025.html" class="blog-card-link">
+                  <div class="blog-card-thumb">
+                    <i class="fas fa-headphones"></i>
+                    <span class="blog-category-tag">Guía de Compra</span>
+                  </div>
+                  <div class="blog-card-content">
+                    <div class="blog-card-date">
+                      <i class="far fa-calendar"></i> 15 de enero de 2025
+                    </div>
+                    <h3>Los Mejores Auriculares Inalámbricos Calidad-Precio en 2025</h3>
+                    <p>Guía honesta y completa para acertar con tus próximos auriculares inalámbricos: qué mirar antes de comprar, comparativa por presupuesto y nuestras recomendaciones reales.</p>
+                    <div class="blog-card-footer">
+                      <span class="blog-author">Por Khurram Shahzad — CEO</span>
+                      <span class="blog-read-more">Leer más <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                  </div>
+                </a>
                 <!-- ARTÍCULO REAL DESTACADO -->
                 <a href="blog-mejores-auriculares-inalambricos-calidad-precio-2025.html" class="blog-card-link">
                     <article class="blog-card-item">
