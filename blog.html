@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="es-ES">
 <head>
     <!-- Core Meta Tags -->
@@ -25,6 +25,58 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <style>
+        /* Blog Grid & Cards Styling */
+        .blog-list { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 60px 30px; 
+        }
+        .blog-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 30px; 
+        }
+        .blog-card-link { 
+            text-decoration: none; 
+            color: inherit; 
+            display: block; 
+            height: 100%;
+        }
+        .blog-card-item { 
+            background: rgba(255, 255, 255, 0.04); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 24px; 
+            overflow: hidden; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; 
+        }
+        .blog-card-link:hover .blog-card-item { 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); 
+            border-color: var(--primary); 
+        }
+        .blog-card-thumb { height: 210px; background: #1a1f3a; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .blog-card-thumb i { font-size: 60px; color: var(--primary); opacity: 0.45; transition: 0.4s ease; }
+        .blog-card-link:hover .blog-card-thumb i { opacity: 0.8; transform: scale(1.1); }
+        .blog-category-tag { position: absolute; top: 15px; left: 15px; background: var(--primary); color: #fff; padding: 5px 14px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+        .blog-soon-badge { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); color: #fff; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; z-index: 2; border: 1px solid rgba(255, 255, 255, 0.15); }
+        .blog-card-content { padding: 25px; display: flex; flex-direction: column; flex: 1; }
+        .blog-card-date { font-size: 13px; color: #888; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .blog-card-content h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; line-height: 1.35; color: #fff; transition: color 0.3s; }
+        .blog-card-link:hover h3 { color: var(--primary); }
+        .blog-card-content p { color: #b0b0b0; font-size: 0.95rem; line-height: 1.65; margin-bottom: 25px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .blog-card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 15px; }
+        .blog-author { font-size: 13px; color: #666; font-style: italic; }
+        .blog-read-more { color: var(--primary); font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
+        .blog-card-link:hover .blog-read-more { gap: 10px; }
+
+        @media (max-width: 1024px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .blog-list { padding: 50px 20px; } }
+        @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -156,18 +208,81 @@
             </div>
         </section>
         <section class="blog-list">
-            <article class="blog-card">
-                <h2>Cómo elegir los mejores auriculares inalámbricos</h2>
-                <p>Descubre los factores clave que debes tener en cuenta para comprar auriculares con sonido premium, autonomía y comodidad.</p>
-            </article>
-            <article class="blog-card">
-                <h2>Guía de regalos tech para este año</h2>
-                <p>Las mejores ideas de accesorios y gadgets para regalar a cualquier amante de la tecnología.</p>
-            </article>
-            <article class="blog-card">
-                <h2>Tendencias en smartwatches y wearables</h2>
-                <p>Lo último en relojes inteligentes, monitoreo de salud y conectividad para tu día a día.</p>
-            </article>
+            <div class="blog-grid">
+                <!-- ARTÍCULO REAL DESTACADO -->
+                <a href="blog-mejores-auriculares-inalambricos-calidad-precio-2025.html" class="blog-card-link">
+                    <article class="blog-card-item">
+                        <div class="blog-card-thumb">
+                            <span class="blog-category-tag">Guía de Compra</span>
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-card-date"><i class="far fa-calendar-alt"></i> 15 de enero de 2025</div>
+                            <h3>Los Mejores Auriculares Inalámbricos Calidad-Precio en 2025</h3>
+                            <p>Guía honesta y completa para acertar con tus próximos auriculares inalámbricos: qué mirar antes de comprar, comparativa por presupuesto y nuestras recomendaciones reales.</p>
+                            <div class="blog-card-footer">
+                                <span class="blog-author">Por Khurram Shahzad — CEO</span>
+                                <span class="blog-read-more">Leer más →</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- ARTÍCULOS PRÓXIMAMENTE -->
+                <a href="#" class="blog-card-link">
+                    <article class="blog-card-item">
+                        <div class="blog-card-thumb">
+                            <span class="blog-soon-badge">Próximamente</span>
+                            <span class="blog-category-tag">Audio</span>
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-card-date"><i class="far fa-calendar-alt"></i> Próximamente</div>
+                            <h3>Cómo elegir los mejores auriculares inalámbricos</h3>
+                            <p>Descubre los factores clave que debes tener en cuenta para comprar auriculares con sonido premium, autonomía y comodidad.</p>
+                            <div class="blog-card-footer">
+                                <span class="blog-read-more">Leer más →</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <a href="#" class="blog-card-link">
+                    <article class="blog-card-item">
+                        <div class="blog-card-thumb">
+                            <span class="blog-soon-badge">Próximamente</span>
+                            <span class="blog-category-tag">Regalos</span>
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-card-date"><i class="far fa-calendar-alt"></i> Próximamente</div>
+                            <h3>Guía de regalos tech para este año</h3>
+                            <p>Las mejores ideas de accesorios y gadgets para regalar a cualquier amante de la tecnología.</p>
+                            <div class="blog-card-footer">
+                                <span class="blog-read-more">Leer más →</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <a href="#" class="blog-card-link">
+                    <article class="blog-card-item">
+                        <div class="blog-card-thumb">
+                            <span class="blog-soon-badge">Próximamente</span>
+                            <span class="blog-category-tag">Smartwatches</span>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-card-date"><i class="far fa-calendar-alt"></i> Próximamente</div>
+                            <h3>Tendencias en smartwatches y wearables</h3>
+                            <p>Lo último en relojes inteligentes, monitoreo de salud y conectividad para tu día a día.</p>
+                            <div class="blog-card-footer">
+                                <span class="blog-read-more">Leer más →</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+            </div>
         </section>
     </main>
 
