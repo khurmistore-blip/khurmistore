@@ -2819,3 +2819,7 @@ html, body { margin-top: 0 !important; padding-top: 0 !important; }
         font-size: 60px;
     }
 }
+/* ===== Footer logo letters: identical to header ===== */
+footer .letter { display: inline-block; color: #fff; animation: letterDrop 0.6s ease-out both, letterFloat 3s ease-in-out infinite; opacity: 0; }
+footer .wave-text { display: inline-flex; margin-left: 4px; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd700 100%); background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 3s ease infinite; }
+footer .wave-text .letter { color: transparent; background: inherit; -webkit-background-clip: text; background-clip: text; }

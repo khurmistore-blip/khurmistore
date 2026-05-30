@@ -1,3 +1,40 @@
+/* ===== FOOTER LOGO LETTER ANIMATION (match header) ===== */
+(function () {
+  function wrap(el) {
+    if (!el || el.querySelector('.letter')) return;
+    var full = el.textContent.replace(/\s+/g, '');
+    var idx = full.indexOf('Store');
+    var part1 = idx >= 0 ? full.slice(0, idx) : full;
+    var part2 = idx >= 0 ? full.slice(idx) : '';
+    var html = '';
+    for (var i = 0; i < part1.length; i++) html += '<span class="letter">' + part1[i] + '</span>';
+    if (part2) {
+      html += '<span class="wave-text">';
+      for (var j = 0; j < part2.length; j++) html += '<span class="letter">' + part2[j] + '</span>';
+      html += '</span>';
+    }
+    el.innerHTML = html;
+  }
+  function run() {
+    try {
+      var footer = document.querySelector('footer');
+      if (!footer) return;
+      var all = footer.querySelectorAll('*');
+      var best = null;
+      for (var k = 0; k < all.length; k++) {
+        var c = all[k];
+        if (c.querySelector('.letter')) continue;
+        if (c.textContent.replace(/\s+/g, '') === 'KhurmiStore') {
+          if (!best || c.querySelectorAll('*').length < best.querySelectorAll('*').length) best = c;
+        }
+      }
+      if (best) wrap(best);
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+
 /* ===== LOGO LETTER ANIMATION (header + footer, every page) ===== */
 (function () {
   function wrap(el) {
