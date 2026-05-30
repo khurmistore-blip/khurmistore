@@ -1,3 +1,32 @@
+/* ===== LOGO LETTER ANIMATION (every page, header + footer) ===== */
+(function () {
+  function wrapLogoLetters() {
+    try {
+      var logos = document.querySelectorAll('.logo h1');
+      logos.forEach(function (logoText) {
+        if (logoText.querySelector('.letter')) return;
+        var full = logoText.textContent.replace(/\s+/g, '');
+        var idx = full.indexOf('Store');
+        var part1 = idx >= 0 ? full.slice(0, idx) : full;
+        var part2 = idx >= 0 ? full.slice(idx) : '';
+        var html = '';
+        for (var i = 0; i < part1.length; i++) html += '<span class="letter">' + part1[i] + '</span>';
+        if (part2) {
+          html += '<span class="wave-text">';
+          for (var j = 0; j < part2.length; j++) html += '<span class="letter">' + part2[j] + '</span>';
+          html += '</span>';
+        }
+        logoText.innerHTML = html;
+      });
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wrapLogoLetters);
+  } else {
+    wrapLogoLetters();
+  }
+})();
+
 // Catálogo de Productos - KhurmiStore España
 const products = [
     // Auriculares (Headphones)

@@ -2332,6 +2332,10 @@ body.announcement-active .product-details-page { padding-top: 172px; }
     letter-spacing: 1px;
 }
 .colors { display: flex; gap: 12px; }
+
+/* ===== Remove empty gap above announcement bar ===== */
+html, body { margin-top: 0 !important; padding-top: 0 !important; }
+.announcement-bar { margin-top: 0 !important; top: 0 !important; }
 .color-dot {
     width: 36px;
     height: 36px;
