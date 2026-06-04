@@ -17,8 +17,7 @@
     <meta property="og:locale" content="es_ES">
 
     <!-- CSS and Fonts -->
-    <link rel="stylesheet" href="style-optimized.css">
-    <link rel="stylesheet" href="Khurmi.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
@@ -28,6 +27,100 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
+
+    <style>
+        .blog-post {
+            max-width: 860px;
+            margin: 130px auto 80px;
+            padding: 0 24px;
+            color: #e7e9f2;
+        }
+        .blog-post h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+            line-height: 1.05;
+            color: #ffffff;
+        }
+        .blog-post h2 {
+            margin-top: 2.6rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+        }
+        .blog-post h3 {
+            margin-top: 1.8rem;
+            color: #ffffff;
+            font-size: 1.18rem;
+        }
+        .blog-post p,
+        .blog-post li,
+        .blog-post th,
+        .blog-post td {
+            color: #d2d5dc;
+            line-height: 1.8;
+        }
+        .blog-post ul {
+            padding-left: 1.2rem;
+            margin: 1rem 0 1.4rem;
+        }
+        .blog-post ul li {
+            margin-bottom: 0.9rem;
+        }
+        .blog-post table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+        }
+        .blog-post th,
+        .blog-post td {
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .blog-post th {
+            background: rgba(255,107,53,0.14);
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            font-size: 0.9rem;
+        }
+        .blog-post a {
+            color: #ff9b65;
+            text-decoration: underline;
+        }
+        .blog-post a:hover {
+            color: #ffc79c;
+        }
+        .blog-post strong {
+            color: #ffffff;
+        }
+        .blog-post blockquote {
+            margin: 1.8rem 0;
+            padding: 20px 22px;
+            border-left: 4px solid rgba(255,107,53,0.6);
+            background: rgba(255,107,53,0.08);
+            color: #eef2f7;
+        }
+        .blog-post details {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            padding: 1rem 1.2rem;
+        }
+        .blog-post summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        @media (max-width: 768px) {
+            .blog-post {
+                margin: 120px auto 60px;
+                padding: 0 18px;
+            }
+        }
+    </style>
 
     <!-- ===== Schema FAQ (ayuda a salir en Google con preguntas) ===== -->
     <script type="application/ld+json">
@@ -82,6 +175,11 @@
 <body>
     <header class="header">
         <div class="nav-container">
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <!-- Logo -->
             <div class="logo animated-logo">
                 <div class="logo-icon">
                     <div class="wave-ring"></div>
@@ -95,6 +193,8 @@
                 </div>
                 <h1 class="logo-text">Khurmi<span>Store</span></h1>
             </div>
+
+            <!-- Desktop Navigation Menu (shown on desktop, hidden on mobile) -->
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
@@ -125,7 +225,6 @@
                             <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
                             <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
                             <li><a href="categoria.html?cat=relojes">Relojes</a></li>
-                            <li><a href="categorias.html">Ver Todo</a></li>
                         </ul>
                     </li>
                     <li><a href="blog.html">Blog</a></li>
@@ -133,6 +232,8 @@
                     <li><a href="contacto.html">Contacto</a></li>
                 </ul>
             </nav>
+
+            <!-- Navigation Icons (Search, Heart, Cart) -->
             <div class="nav-icons">
                 <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
                 <i class="fas fa-heart"></i>
@@ -141,50 +242,35 @@
                     <span class="cart-count">0</span>
                 </div>
             </div>
-            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
-            <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
-                <ul>
-                    <li><a href="index.html" onclick="closeMobileMenu()">Inicio</a></li>
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.html?cat=bebe" onclick="closeMobileMenu()">Bebé</a></li>
-                            <li><a href="categoria.html?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="categoria.html?cat=coche-y-moto" onclick="closeMobileMenu()">Coche y moto</a></li>
-                            <li><a href="categoria.html?cat=ropa" onclick="closeMobileMenu()">Ropa</a></li>
-                            <li><a href="categoria.html?cat=informatica" onclick="closeMobileMenu()">Informática</a></li>
-                            <li><a href="categoria.html?cat=bricolaje-y-herramientas" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
-                            <li><a href="categoria.html?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="categoria.html?cat=alimentacion-y-bebidas" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
-                            <li><a href="categoria.html?cat=jardin" onclick="closeMobileMenu()">Jardín</a></li>
-                            <li><a href="categoria.html?cat=salud-y-cuidado-personal" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
-                            <li><a href="categoria.html?cat=hogar-y-cocina" onclick="closeMobileMenu()">Hogar y cocina</a></li>
-                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
-                            <li><a href="categoria.html?cat=joyeria" onclick="closeMobileMenu()">Joyería</a></li>
-                            <li><a href="categoria.html?cat=iluminacion" onclick="closeMobileMenu()">Iluminación</a></li>
-                            <li><a href="categoria.html?cat=equipaje" onclick="closeMobileMenu()">Equipaje</a></li>
-                            <li><a href="categoria.html?cat=oficina-y-papeleria" onclick="closeMobileMenu()">Oficina y papelería</a></li>
-                            <li><a href="categoria.html?cat=productos-para-mascotas" onclick="closeMobileMenu()">Productos para mascotas</a></li>
-                            <li><a href="categoria.html?cat=sexo-y-sensualidad" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
-                            <li><a href="categoria.html?cat=calzado-y-accesorios" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
-                            <li><a href="categoria.html?cat=deportes-y-aire-libre" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
-                            <li><a href="categoria.html?cat=juguetes-y-juegos" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
-                            <li><a href="categoria.html?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
-                            <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="blog.html" onclick="closeMobileMenu()">Blog</a></li>
-                    <li><a href="sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
-                    <li><a href="contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
-                </ul>
-            </nav>
+
         </div>
     </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Menú móvil">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-logo">Khurmi Store</span>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#home"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#categories"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
+            <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
+            <li class="divider"></li>
+            <li><a href="#"><i class="fas fa-user"></i> Mi Cuenta</a></li>
+            <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+        </ul>
+        <div class="mobile-nav-footer">
+            <a href="https://wa.me/34662241860" class="mobile-nav-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+    </nav>
 
     <main class="page-main">
         <article class="blog-post">
@@ -352,5 +438,6 @@
         </div>
         <div class="footer-bottom"><p>&copy; 2025 Khurmi Store España. Todos los derechos reservados.</p></div>
     </footer>
+    <script src="script.js"></script>
 </body>
 </html>
