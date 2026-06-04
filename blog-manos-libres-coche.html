@@ -92,6 +92,19 @@
         padding: 10px 12px; text-align: left;
       }
       .blog-post th { background: rgba(255,255,255,0.05); }
+      /* Blog header styles - matched from reference */
+      .blog-breadcrumb { display: flex; align-items: center; gap: 10px; color: #888; font-size: 14px; margin-bottom: 25px; flex-wrap: wrap; }
+      .blog-breadcrumb a { color: #ccc; text-decoration: none; transition: color 0.3s; }
+      .blog-breadcrumb a:hover { color: var(--primary); }
+      .blog-breadcrumb i { font-size: 10px; color: #555; }
+      .blog-breadcrumb .current { color: var(--primary); font-weight: 600; }
+      .blog-eyebrow { display: inline-block; color: var(--primary); font-weight: 700; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 15px; }
+      .blog-article-title { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800; line-height: 1.2; margin: 0 0 20px; color: #fff; }
+      .blog-meta-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; color: #b8b8b8; font-size: 14px; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .blog-author-block { display: flex; align-items: center; gap: 12px; }
+      .blog-author-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--gradient2); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 15px; flex-shrink: 0; }
+      .blog-author-name { color: #fff; font-weight: 600; font-size: 14px; }
+      .blog-author-role { color: #888; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -218,31 +231,31 @@
 
     <article class="blog-post">
 
-            <nav class="blog-breadcrumb" aria-label="Migas de pan">
-            <a href="index.html">Inicio</a>
-            <i class="fas fa-chevron-right"></i>
-            <a href="blog.html">Blog</a>
-            <i class="fas fa-chevron-right"></i>
-            <span class="current">Manos libres Bluetooth para el coche: cuál elegir (y qué es legal en España)</span>
-        </nav>
+    <nav class="blog-breadcrumb" aria-label="Migas de pan">
+        <a href="index.html">Inicio</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="blog.html">Blog</a>
+        <i class="fas fa-chevron-right"></i>
+        <span class="current">Manos libres Bluetooth para el coche: cuál elegir (y qué es legal en España)</span>
+    </nav>
 
-        <span class="blog-eyebrow">Coche</span>
-        <h1 class="blog-article-title">Manos libres Bluetooth para el coche: cuál elegir (y qué es legal en España)</h1>
+    <span class="blog-eyebrow">GUÍA</span>
+    <h1 class="blog-article-title">Manos libres Bluetooth para el coche: cuál elegir (y qué es legal en España)</h1>
 
-        <div class="blog-meta-row">
-            <div class="blog-author-block">
-                <div class="blog-author-avatar">EK</div>
-                <div>
-                    <div class="blog-author-name">Equipo de KhurmiStore</div>
-                    <div class="blog-author-role">Redacción de KhurmiStore</div>
-                </div>
+    <div class="blog-meta-row">
+        <div class="blog-author-block">
+            <div class="blog-author-avatar">EK</div>
+            <div>
+                <div class="blog-author-name">Equipo de KhurmiStore</div>
+                <div class="blog-author-role">Redacción de KhurmiStore</div>
             </div>
-            <span><i class="far fa-calendar"></i> 4 de junio de 2026</span>
-            <span><i class="far fa-clock"></i> 5 min de lectura</span>
         </div>
+        <span><i class="far fa-calendar"></i> 19 de mayo de 2024</span>
+        <span><i class="far fa-clock"></i> 5 min de lectura</span>
+    </div>
 
-        <div class="blog-body">
-    <p>Atender una llamada al volante de forma segura y legal es muy fácil con un buen manos libres. Pero ojo: no todos los dispositivos valen. En esta guía te explicamos <strong>qué dice la ley en España</strong>, qué tipos de manos libres existen y en qué fijarte para elegir el mejor para tu coche.</p>
+    <div class="blog-body">
+        <p>Atender una llamada al volante de forma segura y legal es muy fácil con un buen manos libres. Pero ojo: no todos los dispositivos valen. En esta guía te explicamos <strong>qué dice la ley en España</strong>, qué tipos de manos libres existen y en qué fijarte para elegir el mejor para tu coche.</p>
 
     <h2>¿Es legal conducir con auriculares en España?</h2>
     <p><strong>No.</strong> El Reglamento General de Circulación prohíbe expresamente conducir utilizando cascos o auriculares conectados a aparatos de sonido. La sanción es de <strong>200 euros y 3 puntos</strong> del carnet, y se aplica a coches, motos, bicicletas y patinetes.</p>
@@ -324,8 +337,7 @@
         <a href="https://khurmistore.es/blog-como-conectar-auriculares-bluetooth">Cómo conectar Bluetooth</a>
     </p>
 
-</div>
-
+    </div>
 </article>
 
     <footer class="footer" id="contact">
@@ -375,5 +387,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
