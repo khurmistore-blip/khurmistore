@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== SEO META ===== -->
+    <title>Cómo Conectar Auriculares Bluetooth al Móvil: Guía Paso a Paso | KhurmiStore</title>
+    <meta name="description" content="Aprende cómo conectar tus auriculares Bluetooth al móvil paso a paso, en Android y iPhone. Incluye el modo emparejamiento y soluciones si no se conectan.">
+    <link rel="canonical" href="https://khurmistore.es/blog-como-conectar-auriculares-bluetooth">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Cómo Conectar Auriculares Bluetooth al Móvil: Guía Paso a Paso">
+    <meta property="og:description" content="Conecta tus auriculares Bluetooth en Android e iPhone fácilmente, paso a paso.">
+    <meta property="og:url" content="https://khurmistore.es/blog-como-conectar-auriculares-bluetooth">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- CSS and Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- ===== Schema FAQ ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Cómo pongo los auriculares en modo emparejamiento?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Normalmente debes mantener pulsado el botón de encendido (o el botón del estuche en los modelos TWS) durante unos 3-5 segundos, hasta que el LED parpadee en azul o alternando azul y rojo. Ese parpadeo indica que están listos para emparejarse."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Por qué no aparecen mis auriculares en la lista de Bluetooth?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Suele deberse a que no están en modo emparejamiento, están descargados, o están conectados a otro dispositivo. Asegúrate de que tengan batería, ponlos en modo emparejamiento cerca del móvil y, si ya estuvieron emparejados antes, elimina el dispositivo y vuelve a conectarlos."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo conectar los auriculares a dos dispositivos a la vez?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solo si tus auriculares tienen función multipunto. En ese caso pueden mantener conexión con dos dispositivos al mismo tiempo (por ejemplo, móvil y portátil). Si no la tienen, debes desconectarlos de un dispositivo antes de usarlos en otro."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo cambio los auriculares de un móvil a otro?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Desconéctalos o desactiva el Bluetooth en el primer móvil, vuelve a poner los auriculares en modo emparejamiento y conéctalos al segundo móvil siguiendo los mismos pasos."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- ===== ESTILO PROPIO DEL ARTÍCULO (self-contained) ===== -->
+    <style>
+      .blog-post {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
+        line-height: 1.75;
+        font-size: 1.05rem;
+      }
+      .blog-post h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 24px; }
+      .blog-post h2 { font-size: 1.5rem; margin: 42px 0 14px; }
+      .blog-post h3 { font-size: 1.2rem; margin: 28px 0 10px; }
+      .blog-post p  { margin: 0 0 18px; }
+      .blog-post ul, .blog-post ol { margin: 0 0 18px; padding-left: 22px; }
+      .blog-post li { margin-bottom: 8px; }
+      .blog-post a  { color: #ff6a2c; text-decoration: underline; }
+      .blog-post table { width: 100%; border-collapse: collapse; margin: 22px 0; }
+      .blog-post th, .blog-post td {
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 10px 12px; text-align: left;
+      }
+      .blog-post th { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Anuncios -->
+    <div class="announcement-bar" id="announcementBar">
+        <div class="announcement-content">
+            <i class="fas fa-bolt"></i>
+            <span class="scroll-text">
+                 ⚠️ AVISO IMPORTANTE: khurmistore.es es nuestra ÚNICA web oficial. Desconfía de sitios falsos o imitaciones. Compra siempre solo en khurmistore.es
+            </span>
+            <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- ===== HEADER / NAVIGATION ===== -->
+    <header class="header">
+        <div class="nav-container">
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <!-- Logo -->
+            <div class="logo animated-logo">
+                <div class="logo-icon">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <i class="fas fa-wave-square"></i>
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                </div>
+                <h1 class="logo-text">Khurmi<span>Store</span></h1>
+            </div>
+
+            <!-- Desktop Navigation Menu (shown on desktop, hidden on mobile) -->
+            <nav class="nav-menu desktop-nav" id="desktopNav">
+                <ul>
+                    <!-- Inicio (Home) Link -->
+                    <li><a href="index.html">Inicio</a></li>
+                    
+                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
+                            <li><a href="categoria.html?cat=bebe">Bebé</a></li>
+                            <li><a href="categoria.html?cat=belleza">Belleza</a></li>
+                            <li><a href="categoria.html?cat=coche-y-moto">Coche y moto</a></li>
+                            <li><a href="categoria.html?cat=ropa">Ropa</a></li>
+                            <li><a href="categoria.html?cat=informatica">Informática</a></li>
+                            <li><a href="categoria.html?cat=bricolaje-y-herramientas">Bricolaje y herramientas</a></li>
+                            <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
+                            <li><a href="categoria.html?cat=alimentacion-y-bebidas">Alimentación y bebidas</a></li>
+                            <li><a href="categoria.html?cat=jardin">Jardín</a></li>
+                            <li><a href="categoria.html?cat=salud-y-cuidado-personal">Salud y cuidado personal</a></li>
+                            <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
+                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia">Industria empresas y ciencia</a></li>
+                            <li><a href="categoria.html?cat=joyeria">Joyería</a></li>
+                            <li><a href="categoria.html?cat=iluminacion">Iluminación</a></li>
+                            <li><a href="categoria.html?cat=equipaje">Equipaje</a></li>
+                            <li><a href="categoria.html?cat=oficina-y-papeleria">Oficina y papelería</a></li>
+                            <li><a href="categoria.html?cat=productos-para-mascotas">Productos para mascotas</a></li>
+                            <li><a href="categoria.html?cat=sexo-y-sensualidad">Sexo y sensualidad</a></li>
+                            <li><a href="categoria.html?cat=calzado-y-accesorios">Calzado y accesorios</a></li>
+                            <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
+                            <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
+                            <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Blog Link -->
+                    <li><a href="blog.html">Blog</a></li>
+                    
+                    <!-- Sobre Nosotros (About Us) Link -->
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    
+                    <!-- Contacto (Contact) Link -->
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+
+            <!-- Navigation Icons (Search, Heart, Cart) -->
+            <div class="nav-icons">
+                <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
+                <i class="fas fa-heart"></i>
+                <div class="cart-icon" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Menú móvil">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-logo">Khurmi Store</span>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#home"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#categories"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
+            <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
+            <li class="divider"></li>
+            <li><a href="#"><i class="fas fa-user"></i> Mi Cuenta</a></li>
+            <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+        </ul>
+        <div class="mobile-nav-footer">
+            <a href="https://wa.me/34662241860" class="mobile-nav-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+    </nav>
+
+    <article class="blog-post">
+
+        <h1>Cómo conectar auriculares Bluetooth al móvil: guía paso a paso</h1>
+
+        <p>Conectar unos auriculares Bluetooth al móvil es muy sencillo una vez que sabes cómo. En esta guía te explicamos el proceso <strong>paso a paso para Android e iPhone</strong>, cómo activar el modo emparejamiento y qué hacer si no se conectan a la primera. En menos de un minuto estarás disfrutando de tu música sin cables.</p>
+
+        <h2>Antes de empezar</h2>
+        <p>Asegúrate de dos cosas:</p>
+        <ul>
+            <li>Que tus auriculares tengan <strong>batería</strong> (cárgalos un poco si es la primera vez).</li>
+            <li>Que estén <strong>cerca del móvil</strong> durante el emparejamiento.</li>
+        </ul>
+
+        <h2>Cómo poner los auriculares en modo emparejamiento</h2>
+        <p>Este es el paso clave. En la mayoría de auriculares:</p>
+        <ul>
+            <li><strong>Auriculares TWS (in-ear con estuche):</strong> sácalos del estuche o mantén pulsado el botón del estuche unos 3-5 segundos.</li>
+            <li><strong>Auriculares de diadema:</strong> mantén pulsado el botón de encendido unos 3-5 segundos.</li>
+        </ul>
+        <p>Sabrás que están listos cuando el <strong>LED parpadee en azul</strong> (o alternando azul y rojo).</p>
+
+        <h2>Cómo conectar auriculares Bluetooth en Android</h2>
+        <ol>
+            <li>Abre <strong>Ajustes &gt; Conexiones &gt; Bluetooth</strong> (o desliza la barra de notificaciones y mantén pulsado el icono de Bluetooth).</li>
+            <li>Activa el <strong>Bluetooth</strong>.</li>
+            <li>Pon los auriculares en <strong>modo emparejamiento</strong> (paso anterior).</li>
+            <li>En la lista de dispositivos disponibles, <strong>toca el nombre de tus auriculares</strong>.</li>
+            <li>Espera unos segundos: cuando ponga "Conectado", ¡listo!</li>
+        </ol>
+
+        <h2>Cómo conectar auriculares Bluetooth en iPhone</h2>
+        <ol>
+            <li>Abre <strong>Ajustes &gt; Bluetooth</strong> y actívalo.</li>
+            <li>Pon los auriculares en <strong>modo emparejamiento</strong>.</li>
+            <li>En "Otros dispositivos", <strong>toca el nombre de tus auriculares</strong>.</li>
+            <li>Cuando aparezcan en "Mis dispositivos" como "Conectado", ya puedes usarlos.</li>
+        </ol>
+
+        <h2>¿Los auriculares no se conectan? Soluciones rápidas</h2>
+        <ul>
+            <li>Comprueba que tengan <strong>batería</strong> y estén en modo emparejamiento.</li>
+            <li>Si ya estuvieron conectados antes: en Bluetooth, <strong>"olvida" el dispositivo</strong> y vuelve a emparejarlo.</li>
+            <li>Apaga y enciende el Bluetooth del móvil.</li>
+            <li>Aléjalos de otros dispositivos Bluetooth que puedan interferir.</li>
+            <li>Si solo conecta un auricular, mételos ambos en el estuche unos segundos y vuelve a sacarlos.</li>
+        </ul>
+
+        <h2>Preguntas frecuentes</h2>
+
+        <h3>¿Cómo pongo los auriculares en modo emparejamiento?</h3>
+        <p>Mantén pulsado el botón de encendido (o del estuche) unos 3-5 segundos hasta que el LED parpadee en azul.</p>
+
+        <h3>¿Por qué no aparecen en la lista de Bluetooth?</h3>
+        <p>Normalmente porque no están en modo emparejamiento, están descargados o conectados a otro dispositivo. Cárgalos, ponlos en emparejamiento cerca del móvil y, si hace falta, elimina el dispositivo y vuelve a conectarlo.</p>
+
+        <h3>¿Puedo conectarlos a dos dispositivos a la vez?</h3>
+        <p>Solo si tienen función multipunto. En ese caso, sí; si no, debes desconectarlos de un dispositivo antes de usarlos en otro.</p>
+
+        <h3>¿Cómo los cambio de un móvil a otro?</h3>
+        <p>Desconéctalos del primer móvil, ponlos de nuevo en modo emparejamiento y conéctalos al segundo móvil siguiendo los mismos pasos.</p>
+
+        <h2>Conclusión</h2>
+        <p>Conectar auriculares Bluetooth al móvil es cuestión de tres pasos: activar el Bluetooth, poner los auriculares en modo emparejamiento y seleccionarlos en la lista. Si algún día no se conectan, casi siempre se soluciona olvidando el dispositivo y volviendo a emparejarlo.</p>
+        <p>¿Buscas unos auriculares nuevos? Echa un vistazo a nuestra selección y guías:</p>
+        <p>
+            <a href="https://khurmistore.es/category/auriculares-inalambricos">Auriculares inalámbricos</a> &nbsp;|&nbsp;
+            <a href="https://khurmistore.es/blog-mejores-auriculares-inalambricos">Mejores auriculares calidad-precio</a> &nbsp;|&nbsp;
+            <a href="https://khurmistore.es/category/auriculares">Todos los auriculares</a>
+        </p>
+
+    </article>
+
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Store</span></h1></div>
+                <p>Tu destino para accesorios tecnológicos premium en España.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="categorias.html">Tienda</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Categorías</h3>
+                <ul>
+                    <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
+                    <li><a href="categoria.html?cat=informatica">Informática</a></li>
+                    <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
+                    <li><a href="categoria.html?cat=belleza">Belleza</a></li>
+                    <li><a href="categoria.html?cat=ropa">Ropa</a></li>
+                    <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
+                    <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                    <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
+                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
+                <p><i class="fas fa-envelope"></i> info@khurmistore.es</p>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 Khurmi Store España. Todos los derechos reservados.</p></div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
