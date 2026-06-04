@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="es-ES">
 <head>
     <!-- Core Meta Tags -->
@@ -26,6 +26,24 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <style>
+        /* Ajuste específico para centrar el contenido y evitar recortes en los bordes */
+        .about-content-wrapper {
+            max-width: 1100px;
+            margin: 0 auto !important;
+            padding: 60px 20px !important;
+            /* Reseteo de posibles transformaciones o márgenes negativos heredados */
+            transform: none !important;
+            position: relative !important;
+            left: 0 !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .about-content-wrapper h2 { margin-top: 40px; margin-bottom: 20px; color: #fff; }
+        .about-content-wrapper p, .about-content-wrapper ul { margin-bottom: 20px; line-height: 1.8; color: #d1d5db; font-size: 1.1rem; }
+        .about-content-wrapper ul { padding-left: 20px; }
+        .about-content-wrapper li { margin-bottom: 12px; }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -143,17 +161,19 @@
             </div>
         </section>
         <section class="about-content">
-            <h2>Nuestra misión</h2>
-            <p>En KhurmiStore ofrecemos dispositivos y accesorios seleccionados para quienes buscan diseño, precio justo y desempeño. Nuestra misión es acercar tecnología práctica y elegante a cada hogar.</p>
-            <h2>Valores</h2>
-            <ul>
-                <li>Calidad y confianza</li>
-                <li>Atención personalizada</li>
-                <li>Envío seguro y rápido</li>
-                <li>Pasión por la innovación</li>
-            </ul>
-            <h2>Equipo</h2>
-            <p>Un equipo joven y creativo trabaja con pasión para ofrecer los mejores productos tecnológicos y una experiencia de compra sencilla en España.</p>
+            <div class="about-content-wrapper">
+                <h2>Nuestra misión</h2>
+                <p>En KhurmiStore ofrecemos dispositivos y accesorios seleccionados para quienes buscan diseño, precio justo y desempeño. Nuestra misión es acercar tecnología práctica y elegante a cada hogar.</p>
+                <h2>Valores</h2>
+                <ul>
+                    <li>Calidad y confianza</li>
+                    <li>Atención personalizada</li>
+                    <li>Envío seguro y rápido</li>
+                    <li>Pasión por la innovación</li>
+                </ul>
+                <h2>Equipo</h2>
+                <p>Un equipo joven y creativo trabaja con pasión para ofrecer los mejores productos tecnológicos y una experiencia de compra sencilla en España.</p>
+            </div>
         </section>
     </main>
 
