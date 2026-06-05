@@ -24,6 +24,13 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <script src="https://analytics.ahrefs.com/analytics.js" data-key="vgjsV0Kb5bzhjglesAk7VQ" async></script>
 
+<script>
+(function(){
+  var c=document.querySelector('link[rel="canonical"]');
+  if(!c){c=document.createElement('link');c.rel='canonical';document.head.appendChild(c);}
+  c.href=location.origin+location.pathname+location.search;
+})();
+</script>
 <body>
     <header class="header">
         <div class="nav-container">
@@ -256,4 +263,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
