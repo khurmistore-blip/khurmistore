@@ -1,4 +1,11 @@
 RewriteEngine On
+
+# Regla para categorías amigables: /category/slug -> categoria.html?cat=slug
+RewriteRule ^category/([^/]+)/?$ categoria.html?cat=$1 [L,QSA]
+
+# Regla para productos amigables: /producto/slug -> product-details.html?slug=$1
+RewriteRule ^producto/([^/]+)/?$ product-details.html?slug=$1 [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.html -f
