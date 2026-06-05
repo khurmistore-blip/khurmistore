@@ -13,43 +13,43 @@
     
     <!-- Category Pages -->
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=electronica</loc>
+        <loc>https://khurmistore.es/category/electronica</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=relojes</loc>
+        <loc>https://khurmistore.es/category/relojes</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=belleza</loc>
+        <loc>https://khurmistore.es/category/belleza</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=informatica</loc>
+        <loc>https://khurmistore.es/category/informatica</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=deportes-y-aire-libre</loc>
+        <loc>https://khurmistore.es/category/deportes-y-aire-libre</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=coche-y-moto</loc>
+        <loc>https://khurmistore.es/category/coche-y-moto</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/categoria.html?cat=oficina-y-papeleria</loc>
+        <loc>https://khurmistore.es/category/oficina-y-papeleria</loc>
         <lastmod>2025-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -74,12 +74,7 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
-    <url>
-        <loc>https://khurmistore.es/blog-auriculares-bluetooth-no-conectan</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
+
     <url>
         <loc>https://khurmistore.es/blog-como-limpiar-auriculares-inalambricos</loc>
         <lastmod>2026-06-04</lastmod>

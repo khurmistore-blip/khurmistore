@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# 301: missing blog post → nearest existing equivalent
+RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/blog-como-conectar-auriculares-bluetooth [R=301,L]
+
 # Regla para categorías amigables: /category/slug -> categoria.html?cat=slug
 RewriteRule ^category/([^/]+)/?$ categoria.html?cat=$1 [L,QSA]
 

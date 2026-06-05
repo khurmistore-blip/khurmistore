@@ -33,9 +33,12 @@
 
 <script>
 (function(){
+  var slug=new URLSearchParams(location.search).get('cat');
+  if(!slug){var m=location.pathname.match(/\/category\/([^\/]+)/);if(m)slug=m[1];}
+  if(!slug)return;
   var c=document.querySelector('link[rel="canonical"]');
   if(!c){c=document.createElement('link');c.rel='canonical';document.head.appendChild(c);}
-  c.href=location.origin+location.pathname+location.search;
+  c.href='https://khurmistore.es/category/'+slug;
 })();
 </script>
 <body>
