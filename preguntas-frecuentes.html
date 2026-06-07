@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Preguntas Frecuentes | KhurmiStore</title>
+    <meta name="description" content="Resolvemos tus dudas sobre envíos, devoluciones, métodos de pago, garantía y contacto en KhurmiStore. Tienda online de accesorios tecnológicos en España.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://khurmistore.es/preguntas-frecuentes.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Preguntas Frecuentes | KhurmiStore">
+    <meta property="og:description" content="Resolvemos tus dudas sobre envíos, devoluciones, pago y garantía en KhurmiStore.">
+    <meta property="og:url" content="https://khurmistore.es/preguntas-frecuentes.html">
+    <meta property="og:locale" content="es_ES">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"¿A qué zonas realizáis envíos?","acceptedAnswer":{"@type":"Answer","text":"Enviamos a toda España Peninsular y Baleares. No realizamos envíos a Canarias, Ceuta ni Melilla."}},
+        {"@type":"Question","name":"¿Cuánto tarda en llegar mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Los pedidos se entregan en 3–7 días hábiles tras la confirmación del pago."}},
+        {"@type":"Question","name":"¿Cuánto cuesta el envío?","acceptedAnswer":{"@type":"Answer","text":"El envío es gratuito en pedidos superiores a 50 €. Para pedidos inferiores, el coste es de 3–5 €."}},
+        {"@type":"Question","name":"¿Cómo hago seguimiento de mi pedido?","acceptedAnswer":{"@type":"Answer","text":"Tras confirmar el pago te enviamos el número de seguimiento por correo electrónico o WhatsApp."}},
+        {"@type":"Question","name":"¿Puedo devolver un producto?","acceptedAnswer":{"@type":"Answer","text":"Sí. Tienes 14 días naturales desde la recepción para ejercer el derecho de desistimiento sin necesidad de justificación, conforme a la Directiva 2011/83/UE."}},
+        {"@type":"Question","name":"¿Qué métodos de pago aceptáis?","acceptedAnswer":{"@type":"Answer","text":"Aceptamos PayPal y tarjeta de crédito/débito (Visa, MasterCard) a través de la plataforma segura de PayPal."}},
+        {"@type":"Question","name":"¿Qué garantía tienen los productos?","acceptedAnswer":{"@type":"Answer","text":"Todos los productos cuentan con garantía legal de 3 años conforme al Real Decreto Legislativo 1/2007."}},
+        {"@type":"Question","name":"¿Cómo puedo contactar con vosotros?","acceptedAnswer":{"@type":"Answer","text":"Por WhatsApp al +34 662 24 18 60 o por email a info@khurmistore.es."}}
+      ]
+    }
+    </script>
+</head>
+<body>
+
+<!-- Barra de Anuncios -->
+<div class="announcement-bar" id="announcementBar">
+    <div class="announcement-content">
+        <i class="fas fa-bolt"></i>
+        <span class="scroll-text">
+             ⚠️ AVISO IMPORTANTE: khurmistore.es es nuestra ÚNICA web oficial. Desconfía de sitios falsos o imitaciones. Compra siempre solo en khurmistore.es
+        </span>
+        <button class="close-announcement" onclick="closeAnnouncement()"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+    <!-- ===== HEADER / NAVIGATION ===== -->
+    <header class="header">
+        <div class="nav-container">
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <!-- Logo -->
+            <div class="logo animated-logo">
+                <div class="logo-icon">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <i class="fas fa-wave-square"></i>
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                </div>
+                <h1 class="logo-text">Khurmi<span>Store</span></h1>
+            </div>
+
+            <!-- Desktop Navigation Menu -->
+            <nav class="nav-menu desktop-nav" id="desktopNav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
+                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
+                            <li><a href="categoria.html?cat=bebe">Bebé</a></li>
+                            <li><a href="categoria.html?cat=belleza">Belleza</a></li>
+                            <li><a href="categoria.html?cat=coche-y-moto">Coche y moto</a></li>
+                            <li><a href="categoria.html?cat=ropa">Ropa</a></li>
+                            <li><a href="categoria.html?cat=informatica">Informática</a></li>
+                            <li><a href="categoria.html?cat=bricolaje-y-herramientas">Bricolaje y herramientas</a></li>
+                            <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
+                            <li><a href="categoria.html?cat=alimentacion-y-bebidas">Alimentación y bebidas</a></li>
+                            <li><a href="categoria.html?cat=jardin">Jardín</a></li>
+                            <li><a href="categoria.html?cat=salud-y-cuidado-personal">Salud y cuidado personal</a></li>
+                            <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
+                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia">Industria empresas y ciencia</a></li>
+                            <li><a href="categoria.html?cat=joyeria">Joyería</a></li>
+                            <li><a href="categoria.html?cat=iluminacion">Iluminación</a></li>
+                            <li><a href="categoria.html?cat=equipaje">Equipaje</a></li>
+                            <li><a href="categoria.html?cat=oficina-y-papeleria">Oficina y papelería</a></li>
+                            <li><a href="categoria.html?cat=productos-para-mascotas">Productos para mascotas</a></li>
+                            <li><a href="categoria.html?cat=sexo-y-sensualidad">Sexo y sensualidad</a></li>
+                            <li><a href="categoria.html?cat=calzado-y-accesorios">Calzado y accesorios</a></li>
+                            <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
+                            <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
+                            <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+
+            <!-- Navigation Icons -->
+            <div class="nav-icons">
+                <i class="fas fa-search" onclick="openSearch()" style="cursor: pointer;"></i>
+                <i class="fas fa-heart"></i>
+                <div class="cart-icon" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Menú móvil">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-logo">Khurmi Store</span>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="categorias.html"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+            <li><a href="sobre-nosotros.html"><i class="fas fa-users"></i> Sobre Nosotros</a></li>
+            <li><a href="contacto.html"><i class="fas fa-envelope"></i> Contacto</a></li>
+        </ul>
+        <div class="mobile-nav-footer">
+            <a href="https://wa.me/34662241860" class="mobile-nav-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero de página -->
+    <div class="legal-page" style="padding-top: 120px; padding-bottom: 20px;">
+        <div style="max-width:860px; margin:0 auto; padding:0 20px; text-align:center;">
+            <p class="subtitle">SOPORTE</p>
+            <h1 class="section-title">Preguntas <span>Frecuentes</span></h1>
+            <p style="color:#bbb; margin-top:10px;">Encuentra respuesta a las dudas más comunes. Si no encuentras lo que buscas, contáctanos por <a href="https://wa.me/34662241860" style="color:#ff6b35;">WhatsApp</a>.</p>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <section class="faq-section">
+        <div class="faq-container">
+
+            <!-- ENVÍOS -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-truck"></i> &nbsp;Envíos</p>
+
+                <details class="faq-item">
+                    <summary>¿A qué zonas realizáis envíos?</summary>
+                    <div class="faq-answer">Enviamos a toda <strong>España Peninsular y Baleares</strong>. Los envíos a Baleares pueden tener un pequeño suplemento. Por el momento no enviamos a Canarias, Ceuta ni Melilla.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cuánto tarda en llegar mi pedido?</summary>
+                    <div class="faq-answer">El plazo de entrega habitual es de <strong>3 a 7 días hábiles</strong> desde la confirmación del pago. En periodos de alta demanda (Black Friday, Navidades) podría alargarse ligeramente.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cuánto cuesta el envío?</summary>
+                    <div class="faq-answer"><strong>Envío gratuito en pedidos superiores a 50 €.</strong> Para pedidos inferiores, se aplica una tarifa de envío estándar de 3 a 5 €, que se indica en el resumen de tu pedido antes de pagar.</div>
+                </details>
+            </div>
+
+            <!-- SEGUIMIENTO -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-map-marker-alt"></i> &nbsp;Seguimiento del pedido</p>
+
+                <details class="faq-item">
+                    <summary>¿Cómo puedo hacer seguimiento de mi pedido?</summary>
+                    <div class="faq-answer">Una vez procesado el envío, te enviaremos el <strong>número de seguimiento</strong> por correo electrónico o WhatsApp. Con ese número podrás consultar el estado en tiempo real en la web del transportista.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>He realizado un pedido, ¿cuándo recibiré confirmación?</summary>
+                    <div class="faq-answer">En cuanto tu pago sea procesado correctamente, recibirás una confirmación por <strong>email o WhatsApp</strong> con los detalles de tu pedido. Si no la recibes en 24 h, revisa tu carpeta de spam o contáctanos.</div>
+                </details>
+            </div>
+
+            <!-- DEVOLUCIONES -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-rotate-left"></i> &nbsp;Devoluciones y reembolsos</p>
+
+                <details class="faq-item">
+                    <summary>¿Puedo devolver un producto?</summary>
+                    <div class="faq-answer">Sí. Dispones de <strong>14 días naturales</strong> desde la fecha de recepción para ejercer tu derecho de desistimiento sin necesidad de justificación, conforme a la Directiva 2011/83/UE y el Art. 108 del RDL 1/2007. El producto debe estar en su estado original, sin usar y con el embalaje intacto.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cómo inicio una devolución?</summary>
+                    <div class="faq-answer">Contacta con nosotros por <a href="https://wa.me/34662241860">WhatsApp (+34 662 24 18 60)</a> o por email a <a href="mailto:info@khurmistore.es">info@khurmistore.es</a> indicando tu número de pedido y el motivo. Te indicaremos los pasos a seguir y la dirección de devolución.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cuándo recibiré el reembolso?</summary>
+                    <div class="faq-answer">Una vez recibido y verificado el artículo devuelto, tramitaremos el reembolso en un plazo máximo de <strong>14 días</strong> a través del mismo método de pago utilizado (PayPal o tarjeta).</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Hay productos que no puedo devolver?</summary>
+                    <div class="faq-answer">Por motivos de higiene, no se admiten devoluciones de artículos de higiene personal que hayan sido abiertos o usados, ni de productos personalizados a medida.</div>
+                </details>
+            </div>
+
+            <!-- PAGO -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-credit-card"></i> &nbsp;Métodos de pago</p>
+
+                <details class="faq-item">
+                    <summary>¿Qué métodos de pago aceptáis?</summary>
+                    <div class="faq-answer">Aceptamos <strong>PayPal</strong> y <strong>tarjeta de crédito/débito</strong> (Visa, MasterCard, AMEX) a través de la pasarela de pago segura de PayPal. No es necesario tener cuenta de PayPal para pagar con tarjeta.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Es seguro pagar en KhurmiStore?</summary>
+                    <div class="faq-answer">Sí. Todos los pagos se procesan a través de <strong>PayPal con cifrado SSL</strong>. KhurmiStore no almacena en ningún momento los datos de tu tarjeta bancaria. PayPal también ofrece protección al comprador.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿En qué moneda se realizan los pagos?</summary>
+                    <div class="faq-answer">Todos los precios y transacciones se realizan en <strong>euros (€)</strong>, IVA incluido.</div>
+                </details>
+            </div>
+
+            <!-- GARANTÍA -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-shield-halved"></i> &nbsp;Garantía</p>
+
+                <details class="faq-item">
+                    <summary>¿Qué garantía tienen los productos?</summary>
+                    <div class="faq-answer">Todos los productos cuentan con <strong>garantía legal de 3 años</strong> conforme al Real Decreto Legislativo 1/2007 (tras la reforma del 1 de enero de 2022). Esta garantía cubre defectos de fabricación o disconformidad con el contrato.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Qué hago si recibo un producto defectuoso o incorrecto?</summary>
+                    <div class="faq-answer">Contáctanos en un plazo de <strong>48 horas</strong> por <a href="https://wa.me/34662241860">WhatsApp</a> o email adjuntando fotografías del problema. Gestionaremos el cambio o reembolso completo sin ningún coste adicional para ti.</div>
+                </details>
+            </div>
+
+            <!-- CONTACTO -->
+            <div class="faq-category">
+                <p class="faq-category-title"><i class="fas fa-headset"></i> &nbsp;Contacto y soporte</p>
+
+                <details class="faq-item">
+                    <summary>¿Cómo puedo contactar con vosotros?</summary>
+                    <div class="faq-answer">Puedes contactarnos por:
+                        <ul style="margin-top:8px; padding-left:18px; color:#bbb;">
+                            <li><strong>WhatsApp:</strong> <a href="https://wa.me/34662241860">+34 662 24 18 60</a></li>
+                            <li><strong>Email:</strong> <a href="mailto:info@khurmistore.es">info@khurmistore.es</a></li>
+                            <li><strong>Formulario:</strong> <a href="contacto.html">Página de contacto</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cuál es vuestro horario de atención?</summary>
+                    <div class="faq-answer">Atendemos consultas de <strong>lunes a viernes de 9:00 a 18:00</strong> (hora peninsular española). Fuera de ese horario hacemos lo posible por responder lo antes posible.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Tenéis tienda física?</summary>
+                    <div class="faq-answer">KhurmiStore opera exclusivamente como tienda online. No disponemos de establecimiento físico. Nuestra única web oficial es <strong>khurmistore.es</strong>.</div>
+                </details>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="logo"><i class="fas fa-wave-square"></i><h1>Khurmi<span>Store</span></h1></div>
+                <p>Tu destino para accesorios tecnológicos premium en España.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="categorias.html">Tienda</a></li>
+                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Categorías</h3>
+                <ul>
+                    <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
+                    <li><a href="categoria.html?cat=informatica">Informática</a></li>
+                    <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
+                    <li><a href="categoria.html?cat=belleza">Belleza</a></li>
+                    <li><a href="categoria.html?cat=ropa">Ropa</a></li>
+                    <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
+                    <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                    <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
+                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contacto</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
+                <p><i class="fas fa-envelope"></i> info@khurmistore.es</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-legal-links">
+                <a href="aviso-legal.html">Aviso Legal</a> &middot;
+                <a href="politica-de-privacidad.html">Política de Privacidad</a> &middot;
+                <a href="politica-de-cookies.html">Política de Cookies</a> &middot;
+                <a href="terminos-y-condiciones.html">Términos y Condiciones</a> &middot;
+                <a href="politica-de-envios.html">Política de Envíos</a> &middot;
+                <a href="politica-de-devoluciones.html">Política de Devoluciones</a>
+            </p>
+            <p>&copy; 2025 Khurmi Store España. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta%20sobre%20un%20producto" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat de WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-tooltip">¿Necesitas ayuda?</span>
+    </a>
+
+    <!-- Aviso de Cookies RGPD -->
+    <div class="cookie-consent hidden" id="cookieConsent">
+        <div class="cookie-content">
+            <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
+            <div class="cookie-text">
+                <h4>Usamos Cookies</h4>
+                <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
+            </div>
+            <div class="cookie-buttons">
+                <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar</button>
+                <button class="btn-cookie-decline" onclick="declineCookies()">Rechazar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

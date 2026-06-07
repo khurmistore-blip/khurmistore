@@ -25,7 +25,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
-<script src="https://analytics.ahrefs.com/analytics.js" data-key="vgjsV0Kb5bzhjglesAk7VQ" async></script>
 
 <link rel="canonical" href="https://khurmistore.es/products.html">
 <body>
@@ -208,6 +207,7 @@
                     <li><a href="categorias.html">Tienda</a></li>
                     <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
                     <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -272,40 +272,17 @@
                     <button class="btn-primary full-btn" onclick="goToPayment()">Continuar al Pago <i class="fas fa-arrow-right"></i></button>
                 </div>
                 <div class="checkout-step" id="step2" style="display:none;">
-                    <h3>Selecciona el Método de Pago</h3>
-                    <div class="payment-methods">
-                        <label class="payment-option"><input type="radio" name="payment" value="card" checked>
-                            <div class="payment-card"><i class="fas fa-credit-card"></i><div><h4>Tarjeta de Crédito/Débito</h4><p>Visa, MasterCard, AMEX</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="paypal">
-                            <div class="payment-card"><i class="fab fa-paypal"></i><div><h4>PayPal</h4><p>Pago rápido y seguro</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="bizum">
-                            <div class="payment-card"><i class="fas fa-mobile-alt"></i><div><h4>Bizum</h4><p>Pago móvil instantáneo</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="transfer">
-                            <div class="payment-card"><i class="fas fa-university"></i><div><h4>Transferencia Bancaria</h4><p>Pago directo</p></div></div>
-                        </label>
-                        <label class="payment-option"><input type="radio" name="payment" value="contra">
-                            <div class="payment-card"><i class="fas fa-money-bill-wave"></i><div><h4>Contra Reembolso</h4><p>Paga al recibir (+3€)</p></div></div>
-                        </label>
-                    </div>
-                    <div id="cardDetails" style="display:none; margin-top:20px;">
-                        <div class="form-group"><label>Número de Tarjeta</label><input type="text" placeholder="1234 5678 9012 3456"></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div class="form-group"><label>Caducidad</label><input type="text" placeholder="MM/AA"></div>
-                            <div class="form-group"><label>CVV</label><input type="text" placeholder="123"></div>
-                        </div>
-                    </div>
+                    <h3>Pago</h3>
+                    <p style="color:#666;font-size:0.9rem;margin-bottom:15px;">Paga de forma segura con tu cuenta PayPal o con tarjeta de crédito/débito.</p>
+                    <div id="paypal-button-container"></div>
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
                         <div class="summary-row"><span>Envío:</span><span>€4,99</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-secondary" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
-                        <button class="btn-primary" style="flex:1;" onclick="placeOrder()">Realizar Pedido <i class="fas fa-check"></i></button>
+                    <div style="margin-top:10px;">
+                        <button class="btn-secondary full-btn" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
                     </div>
                 </div>
                 <div class="checkout-step" id="step3" style="display:none;">
@@ -313,7 +290,7 @@
                         <div class="success-icon"><i class="fas fa-check-circle"></i></div>
                         <h2>¡Pedido Realizado!</h2>
                         <p>ID de Pedido: <strong id="orderID">#KW0000</strong></p>
-                        <p>Confirmación enviada a tu correo electrónico.</p>
+                        <p>✅ Pago recibido con PayPal. Te contactaremos pronto para confirmar el envío.</p>
                         <button class="btn-primary" onclick="closeCheckout()">Seguir Comprando</button>
                     </div>
                 </div>
@@ -322,19 +299,20 @@
     </div>
 
     <!-- Aviso de Cookies -->
-    <div class="cookie-consent hidden" id="cookieConsent">
-        <div class="cookie-content">
-            <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
-            <div class="cookie-text">
-                <h4>Usamos Cookies 🍪</h4>
-                <p>Utilizamos cookies para mejorar tu experiencia y mostrarte contenido personalizado.</p>
-            </div>
-            <div class="cookie-buttons">
-                <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar Todo</button>
-                <button class="btn-cookie-decline" onclick="declineCookies()">Rechazar</button>
-            </div>
+    <!-- Aviso de Cookies RGPD -->
+<div class="cookie-consent hidden" id="cookieConsent">
+    <div class="cookie-content">
+        <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
+        <div class="cookie-text">
+            <h4>Usamos Cookies</h4>
+            <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
+        </div>
+        <div class="cookie-buttons">
+            <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar</button>
+            <button class="btn-cookie-decline" onclick="declineCookies()">Rechazar</button>
         </div>
     </div>
+</div>
 
     <!-- Chatbot Widget -->
     <div class="chat-widget">
@@ -361,6 +339,7 @@
             <a class="chat-whatsapp-link" href="https://wa.me/34662241860" target="_blank" rel="noopener noreferrer">Hablar por WhatsApp</a>
         </div>
     </div>
+    <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES"></script>
     <script src="script.js" defer></script>
 
     <a href="https://wa.me/34662241860?text=Hola,%20tengo%20una%20pregunta%20sobre%20un%20producto" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat de WhatsApp">

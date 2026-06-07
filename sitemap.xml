@@ -106,6 +106,14 @@
         <priority>0.8</priority>
     </url>
 
+    <!-- Support Pages -->
+    <url>
+        <loc>https://khurmistore.es/preguntas-frecuentes.html</loc>
+        <lastmod>2026-06-07</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
     <!-- Legal Pages -->
     <url>
         <loc>https://khurmistore.es/aviso-legal.html</loc>

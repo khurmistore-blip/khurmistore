@@ -899,13 +899,6 @@ function updateSummary() {
     if (totEl) totEl.textContent = formatPrice(total);
 }
 
-// Cambio de método de pago
-document.querySelectorAll('input[name="payment"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        const cd = document.getElementById('cardDetails');
-        if (cd) cd.style.display = e.target.value === 'card' ? 'block' : 'none';
-    });
-});
 
 async function placeOrder() {
     const orderID = '#KW' + Math.floor(1000 + Math.random() * 9000);
@@ -1201,25 +1194,49 @@ function closeFlashSale() {
 }
 
 // ===== AVISO DE COOKIES =====
+function loadAnalytics() {
+    const s = document.createElement('script');
+    s.src = 'https://analytics.ahrefs.com/analytics.js';
+    s.setAttribute('data-key', 'vgjsV0Kb5bzhjglesAk7VQ');
+    s.async = true;
+    document.head.appendChild(s);
+}
+
+function loadPixel() {
+    if (window._fbPixelLoaded) return;
+    window._fbPixelLoaded = true;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){
+        n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
+        s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s);
+    }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','27064969309833667');
+    fbq('track','PageView');
+}
+
 window.addEventListener('load', () => {
-    if (!localStorage.getItem('cookieAccepted')) {
+    const consent = localStorage.getItem('kw_cookie_consent');
+    if (consent === 'accepted') {
+        loadAnalytics();
+        loadPixel();
+    } else if (consent !== 'rejected') {
         setTimeout(() => {
             document.getElementById('cookieConsent')?.classList.remove('hidden');
-        }, 3000);
-    } else {
-        document.getElementById('cookieConsent')?.classList.add('hidden');
+        }, 1000);
     }
 });
 
 function acceptCookies() {
-    localStorage.setItem('cookieAccepted', 'true');
+    localStorage.setItem('kw_cookie_consent', 'accepted');
     document.getElementById('cookieConsent')?.classList.add('hidden');
-    showNotification('✅ ¡Cookies aceptadas!');
+    loadAnalytics();
+    loadPixel();
 }
 
 function declineCookies() {
+    localStorage.setItem('kw_cookie_consent', 'rejected');
     document.getElementById('cookieConsent')?.classList.add('hidden');
-    showNotification('Cookies rechazadas');
 }
 
 // ===== PÁGINA DE DETALLES DEL PRODUCTO =====
@@ -1838,3 +1855,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCategoryPage();
 });
+
+// PayPal Smart Buttons
+function initPayPalButtons() {
+    if (!window.paypal || !document.getElementById('paypal-button-container')) return;
+    paypal.Buttons({
+        style: { color: 'blue', shape: 'rect', label: 'pay', height: 45 },
+        createOrder: function(data, actions) {
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const total = (subtotal + 4.99).toFixed(2);
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: total, currency_code: 'EUR' },
+                    description: 'Pedido KhurmiStore'
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                const name    = document.getElementById('custName')?.value.trim() || '';
+                const phone   = document.getElementById('custPhone')?.value.trim() || '';
+                const address = document.getElementById('custAddress')?.value.trim() || '';
+                const city    = document.getElementById('custCity')?.value.trim() || '';
+                const postal  = document.getElementById('custPostal')?.value.trim() || '';
+                const notes   = document.getElementById('custNotes')?.value.trim() || 'Ninguna';
+                const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+                const items   = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
+                const msg = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: 4,99 €\nTOTAL COBRADO: ${formatPrice(subtotal + 4.99)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
+                window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
+                const orderID = '#KW' + Math.floor(1000 + Math.random() * 9000);
+                document.getElementById('orderID').textContent = orderID;
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+                document.querySelectorAll('.step')[1].classList.remove('active');
+                document.querySelectorAll('.step')[2].classList.add('active');
+                cart = [];
+                saveCart();
+                updateCart();
+            });
+        },
+        onError: function(err) {
+            console.error('PayPal error:', err);
+            showNotification('Error al procesar el pago. Por favor, inténtalo de nuevo o elige otro método.');
+        }
+    }).render('#paypal-button-container');
+}
+
+document.addEventListener('DOMContentLoaded', initPayPalButtons);
