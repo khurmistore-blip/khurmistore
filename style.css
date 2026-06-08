@@ -518,7 +518,7 @@ button, input, textarea { font-family: inherit; }
 /* Features */
 .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding: 60px 30px; max-width: 1400px; margin: 0 auto; }
 .feature-box { display: block; text-align: center; padding: 30px 20px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
-.feature-box.support-link { cursor: pointer; }
+.feature-box.support-link { cursor: pointer; color: #fff; text-decoration: none; }
 .feature-box.support-link:hover { transform: translateY(-8px); border-color: rgba(255,107,53,0.5); box-shadow: 0 18px 40px rgba(255,107,53,0.14); text-decoration: none; }
 .feature-box.benefit-card { cursor: pointer; }
 .feature-box.benefit-card:hover { transform: translateY(-8px); border-color: rgba(255,107,53,0.5); box-shadow: 0 18px 40px rgba(255,107,53,0.14); }
