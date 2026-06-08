@@ -771,10 +771,14 @@ function openCheckout() {
         showNotification('¡Tu carrito está vacío!');
         return;
     }
+    if (!document.getElementById('checkoutModal')) {
+        window.location.href = 'products.html?checkout=1';
+        return;
+    }
     closeCart();
     document.getElementById('checkoutForm')?.reset();
     updateSummary();
-    document.getElementById('checkoutModal')?.classList.add('active');
+    document.getElementById('checkoutModal').classList.add('active');
 }
 
 function closeCheckout() {
@@ -1111,6 +1115,11 @@ initChatWidget();
 loadCart();
 renderProducts();
 updateCart();
+
+// Auto-open checkout when redirected from a page without a checkout modal
+if (new URLSearchParams(window.location.search).get('checkout') === '1') {
+    setTimeout(openCheckout, 200);
+}
 
 // Estilo de animación
 const style = document.createElement('style');
