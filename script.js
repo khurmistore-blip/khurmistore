@@ -820,6 +820,7 @@ function goToPayment() {
     document.querySelectorAll('.step')[0].classList.remove('active');
     document.querySelectorAll('.step')[1].classList.add('active');
     updateSummary();
+    initPayPalButtons();
 }
 
 function backToDetails() {
@@ -1801,8 +1802,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // PayPal Smart Buttons
+let paypalButtonsRendered = false;
+
 function initPayPalButtons() {
+    if (paypalButtonsRendered) return;
     if (!window.paypal || !document.getElementById('paypal-button-container')) return;
+    paypalButtonsRendered = true;
     paypal.Buttons({
         style: { color: 'blue', shape: 'rect', label: 'pay', height: 45 },
         createOrder: function(data, actions) {
@@ -1845,4 +1850,3 @@ function initPayPalButtons() {
     }).render('#paypal-button-container');
 }
 
-document.addEventListener('DOMContentLoaded', initPayPalButtons);
