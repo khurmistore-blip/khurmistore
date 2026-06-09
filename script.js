@@ -380,116 +380,51 @@ function renderProducts(filter = 'all') {
 
 function getCategoryPageConfig(slug) {
     const config = {
-        'bebe': {
-            name: 'Bebé',
-            description: 'Productos seleccionados para recién nacidos y familias.',
-            categories: []
+        // === ACTIVE CATEGORIES ===
+        'auriculares': {
+            name: 'Auriculares y Audio',
+            description: 'Auriculares inalámbricos, earbuds y cascos con la mejor calidad de sonido. Escucha tu música sin cables y con total libertad.',
+            categories: ['headphones', 'earpods']
         },
-        'belleza': {
-            name: 'Belleza',
-            description: 'Cuidado personal y tecnología de estilo de vida.',
-            categories: ['earpods', 'headphones']
-        },
-        'coche-y-moto': {
-            name: 'Coche y moto',
-            description: 'Accesorios ideales para viajes y manos libres.',
-            categories: ['handsfree']
-        },
-        'ropa': {
-            name: 'Ropa',
-            description: 'Moda y accesorios para tu estilo diario.',
-            categories: []
-        },
-        'informatica': {
-            name: 'Informática',
-            description: 'Fundas y ratones para tu equipo de trabajo.',
-            categories: ['covers', 'mouse']
-        },
-        'bricolaje-y-herramientas': {
-            name: 'Bricolaje y herramientas',
-            description: 'Herramientas y accesorios prácticos para el hogar.',
-            categories: []
-        },
-        'electronica': {
-            name: 'Electrónica',
-            description: 'Los productos tecnológicos más populares de KhurmiStore.',
-            categories: ['headphones', 'smartwatch', 'earpods', 'covers', 'headgear', 'handsfree', 'mouse']
-        },
-        'alimentacion-y-bebidas': {
-            name: 'Alimentación y bebidas',
-            description: 'Productos para una vida más conveniente y saludable.',
-            categories: []
-        },
-        'jardin': {
-            name: 'Jardín',
-            description: 'Soluciones para tu espacio exterior y descanso.',
-            categories: []
-        },
-        'salud-y-cuidado-personal': {
-            name: 'Salud y cuidado personal',
-            description: 'Tecnología enfocada en bienestar y fitness.',
-            categories: ['smartwatch', 'earpods']
-        },
-        'hogar-y-cocina': {
-            name: 'Hogar y cocina',
-            description: 'Accesorios prácticos para el hogar conectado.',
-            categories: ['covers']
-        },
-        'industria-empresas-y-ciencia': {
-            name: 'Industria, empresas y ciencia',
-            description: 'Equipamiento y herramientas para profesionales.',
-            categories: ['handsfree', 'smartwatch']
-        },
-        'joyeria': {
-            name: 'Joyería',
-            description: 'Piezas de estilo con tecnología elegante.',
+        'smartwatches': {
+            name: 'Smartwatches',
+            description: 'Relojes inteligentes con seguimiento de actividad, GPS y notificaciones en tu muñeca. Tecnología wearable para un estilo de vida activo.',
             categories: ['smartwatch']
         },
-        'iluminacion': {
-            name: 'Iluminación',
-            description: 'Iluminación inteligente para tus espacios.',
-            categories: []
+        'accesorios-moviles': {
+            name: 'Accesorios para Móvil',
+            description: 'Fundas protectoras y dispositivos manos libres para tu smartphone. Protege y potencia tu móvil con accesorios de calidad.',
+            categories: ['covers', 'handsfree']
         },
-        'equipaje': {
-            name: 'Equipaje',
-            description: 'Accesorios para viajes y movilidad.',
-            categories: []
+        'gaming': {
+            name: 'Gaming',
+            description: 'Cascos gaming y ratones de alta precisión para llevar tu experiencia de juego al siguiente nivel. Equipamiento gaming profesional.',
+            categories: ['headgear', 'mouse']
         },
-        'oficina-y-papeleria': {
-            name: 'Oficina y papelería',
-            description: 'Productos para trabajar con estilo y comodidad.',
-            categories: ['mouse', 'covers']
-        },
-        'productos-para-mascotas': {
-            name: 'Productos para mascotas',
-            description: 'Artículos pensados para el cuidado de tu mascota.',
-            categories: []
-        },
-        'sexo-y-sensualidad': {
-            name: 'Sexo y sensualidad',
-            description: 'Selección discreta y moderna.',
-            categories: []
-        },
-        'calzado-y-accesorios': {
-            name: 'Calzado y accesorios',
-            description: 'Accesorios que complementan tu estilo.',
-            categories: []
-        },
-        'deportes-y-aire-libre': {
-            name: 'Deportes y aire libre',
-            description: 'Gadgets y tecnología para mantenerse activo.',
-            categories: ['smartwatch', 'headgear']
-        },
-        'juguetes-y-juegos': {
-            name: 'Juguetes y juegos',
-            description: 'Entretenimiento y gadgets para la familia.',
-            categories: ['headgear', 'earpods']
-        },
-        'relojes': {
-            name: 'Relojes',
-            description: 'Relojes inteligentes y wearables de última generación.',
-            categories: ['smartwatch']
-        }
+        // === COMING SOON (old BigBuy slugs + smart-home → empty, show Próximamente) ===
+        'bebe':                         { name: 'Bebé',                          description: 'Próximamente.', categories: [] },
+        'belleza':                      { name: 'Belleza',                       description: 'Próximamente.', categories: [] },
+        'coche-y-moto':                 { name: 'Coche y moto',                  description: 'Próximamente.', categories: [] },
+        'ropa':                         { name: 'Ropa',                          description: 'Próximamente.', categories: [] },
+        'informatica':                  { name: 'Informática',                   description: 'Próximamente.', categories: [] },
+        'bricolaje-y-herramientas':     { name: 'Bricolaje y herramientas',      description: 'Próximamente.', categories: [] },
+        'electronica':                  { name: 'Electrónica',                   description: 'Próximamente.', categories: [] },
+        'alimentacion-y-bebidas':       { name: 'Alimentación y bebidas',        description: 'Próximamente.', categories: [] },
+        'jardin':                       { name: 'Jardín',                        description: 'Próximamente.', categories: [] },
+        'salud-y-cuidado-personal':     { name: 'Salud y cuidado personal',      description: 'Próximamente.', categories: [] },
+        'hogar-y-cocina':               { name: 'Hogar y cocina',                description: 'Próximamente.', categories: [] },
+        'industria-empresas-y-ciencia': { name: 'Industria, empresas y ciencia', description: 'Próximamente.', categories: [] },
+        'joyeria':                      { name: 'Joyería',                       description: 'Próximamente.', categories: [] },
+        'iluminacion':                  { name: 'Iluminación',                   description: 'Próximamente.', categories: [] },
+        'equipaje':                     { name: 'Equipaje',                      description: 'Próximamente.', categories: [] },
+        'oficina-y-papeleria':          { name: 'Oficina y papelería',           description: 'Próximamente.', categories: [] },
+        'productos-para-mascotas':      { name: 'Productos para mascotas',       description: 'Próximamente.', categories: [] },
+        'sexo-y-sensualidad':           { name: 'Sexo y sensualidad',            description: 'Próximamente.', categories: [] },
+        'calzado-y-accesorios':         { name: 'Calzado y accesorios',          description: 'Próximamente.', categories: [] },
+        'deportes-y-aire-libre':        { name: 'Deportes y aire libre',         description: 'Próximamente.', categories: [] },
+        'juguetes-y-juegos':            { name: 'Juguetes y juegos',             description: 'Próximamente.', categories: [] },
+        'relojes':                      { name: 'Relojes',                       description: 'Próximamente.', categories: [] },
+        'smart-home':                   { name: 'Smart Home',                    description: 'Próximamente.', categories: [] }
     };
     return config[slug];
 }
