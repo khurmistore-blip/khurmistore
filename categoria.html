@@ -38,6 +38,12 @@
   var c=document.querySelector('link[rel="canonical"]');
   if(!c){c=document.createElement('link');c.rel='canonical';document.head.appendChild(c);}
   c.href='https://khurmistore.es/category/'+slug;
+  var active=['auriculares','smartwatches','accesorios-moviles','gaming'];
+  if(active.indexOf(slug)===-1){
+    var r=document.createElement('meta');
+    r.name='robots';r.content='noindex,follow';
+    document.head.appendChild(r);
+  }
 })();
 </script>
 <body>
@@ -64,28 +70,10 @@
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.html?cat=bebe">Bebé</a></li>
-                            <li><a href="categoria.html?cat=belleza">Belleza</a></li>
-                            <li><a href="categoria.html?cat=coche-y-moto">Coche y moto</a></li>
-                            <li><a href="categoria.html?cat=ropa">Ropa</a></li>
-                            <li><a href="categoria.html?cat=informatica">Informática</a></li>
-                            <li><a href="categoria.html?cat=bricolaje-y-herramientas">Bricolaje y herramientas</a></li>
-                            <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
-                            <li><a href="categoria.html?cat=alimentacion-y-bebidas">Alimentación y bebidas</a></li>
-                            <li><a href="categoria.html?cat=jardin">Jardín</a></li>
-                            <li><a href="categoria.html?cat=salud-y-cuidado-personal">Salud y cuidado personal</a></li>
-                            <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
-                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia">Industria empresas y ciencia</a></li>
-                            <li><a href="categoria.html?cat=joyeria">Joyería</a></li>
-                            <li><a href="categoria.html?cat=iluminacion">Iluminación</a></li>
-                            <li><a href="categoria.html?cat=equipaje">Equipaje</a></li>
-                            <li><a href="categoria.html?cat=oficina-y-papeleria">Oficina y papelería</a></li>
-                            <li><a href="categoria.html?cat=productos-para-mascotas">Productos para mascotas</a></li>
-                            <li><a href="categoria.html?cat=sexo-y-sensualidad">Sexo y sensualidad</a></li>
-                            <li><a href="categoria.html?cat=calzado-y-accesorios">Calzado y accesorios</a></li>
-                            <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
-                            <li><a href="categoria.html?cat=juguetes-y-juegos">Juguetes y juegos</a></li>
-                            <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                            <li><a href="categoria.html?cat=auriculares">Auriculares y Audio</a></li>
+                            <li><a href="categoria.html?cat=smartwatches">Smartwatches</a></li>
+                            <li><a href="categoria.html?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                            <li><a href="categoria.html?cat=gaming">Gaming</a></li>
                             <li><a href="categorias.html">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -114,28 +102,10 @@
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.html?cat=bebe" onclick="closeMobileMenu()">Bebé</a></li>
-                            <li><a href="categoria.html?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="categoria.html?cat=coche-y-moto" onclick="closeMobileMenu()">Coche y moto</a></li>
-                            <li><a href="categoria.html?cat=ropa" onclick="closeMobileMenu()">Ropa</a></li>
-                            <li><a href="categoria.html?cat=informatica" onclick="closeMobileMenu()">Informática</a></li>
-                            <li><a href="categoria.html?cat=bricolaje-y-herramientas" onclick="closeMobileMenu()">Bricolaje y herramientas</a></li>
-                            <li><a href="categoria.html?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="categoria.html?cat=alimentacion-y-bebidas" onclick="closeMobileMenu()">Alimentación y bebidas</a></li>
-                            <li><a href="categoria.html?cat=jardin" onclick="closeMobileMenu()">Jardín</a></li>
-                            <li><a href="categoria.html?cat=salud-y-cuidado-personal" onclick="closeMobileMenu()">Salud y cuidado personal</a></li>
-                            <li><a href="categoria.html?cat=hogar-y-cocina" onclick="closeMobileMenu()">Hogar y cocina</a></li>
-                            <li><a href="categoria.html?cat=industria-empresas-y-ciencia" onclick="closeMobileMenu()">Industria empresas y ciencia</a></li>
-                            <li><a href="categoria.html?cat=joyeria" onclick="closeMobileMenu()">Joyería</a></li>
-                            <li><a href="categoria.html?cat=iluminacion" onclick="closeMobileMenu()">Iluminación</a></li>
-                            <li><a href="categoria.html?cat=equipaje" onclick="closeMobileMenu()">Equipaje</a></li>
-                            <li><a href="categoria.html?cat=oficina-y-papeleria" onclick="closeMobileMenu()">Oficina y papelería</a></li>
-                            <li><a href="categoria.html?cat=productos-para-mascotas" onclick="closeMobileMenu()">Productos para mascotas</a></li>
-                            <li><a href="categoria.html?cat=sexo-y-sensualidad" onclick="closeMobileMenu()">Sexo y sensualidad</a></li>
-                            <li><a href="categoria.html?cat=calzado-y-accesorios" onclick="closeMobileMenu()">Calzado y accesorios</a></li>
-                            <li><a href="categoria.html?cat=deportes-y-aire-libre" onclick="closeMobileMenu()">Deportes y aire libre</a></li>
-                            <li><a href="categoria.html?cat=juguetes-y-juegos" onclick="closeMobileMenu()">Juguetes y juegos</a></li>
-                            <li><a href="categoria.html?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
+                            <li><a href="categoria.html?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
+                            <li><a href="categoria.html?cat=smartwatches" onclick="closeMobileMenu()">Smartwatches</a></li>
+                            <li><a href="categoria.html?cat=accesorios-moviles" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
+                            <li><a href="categoria.html?cat=gaming" onclick="closeMobileMenu()">Gaming</a></li>
                             <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -198,14 +168,12 @@
             <div class="footer-col">
                 <h3>Categorías</h3>
                 <ul>
-                    <li><a href="categoria.html?cat=electronica">Electrónica</a></li>
-                    <li><a href="categoria.html?cat=informatica">Informática</a></li>
-                    <li><a href="categoria.html?cat=hogar-y-cocina">Hogar y cocina</a></li>
-                    <li><a href="categoria.html?cat=belleza">Belleza</a></li>
-                    <li><a href="categoria.html?cat=ropa">Ropa</a></li>
-                    <li><a href="categoria.html?cat=deportes-y-aire-libre">Deportes y aire libre</a></li>
-                    <li><a href="categoria.html?cat=relojes">Relojes</a></li>
+                    <li><a href="categoria.html?cat=auriculares">Auriculares y Audio</a></li>
+                    <li><a href="categoria.html?cat=smartwatches">Smartwatches</a></li>
+                    <li><a href="categoria.html?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                    <li><a href="categoria.html?cat=gaming">Gaming</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
+                
                 </ul>
             </div>
             <div class="footer-col">

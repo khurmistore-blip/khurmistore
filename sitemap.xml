@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-    
+
     <!-- Homepage -->
     <url>
         <loc>https://khurmistore.es/</loc>
@@ -10,51 +10,33 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
-    
-    <!-- Category Pages -->
+
+    <!-- Active Category Pages -->
     <url>
-        <loc>https://khurmistore.es/category/electronica</loc>
-        <lastmod>2025-05-18</lastmod>
+        <loc>https://khurmistore.es/category/auriculares</loc>
+        <lastmod>2026-06-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/category/relojes</loc>
-        <lastmod>2025-05-18</lastmod>
+        <loc>https://khurmistore.es/category/smartwatches</loc>
+        <lastmod>2026-06-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/category/belleza</loc>
-        <lastmod>2025-05-18</lastmod>
+        <loc>https://khurmistore.es/category/accesorios-moviles</loc>
+        <lastmod>2026-06-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/category/informatica</loc>
-        <lastmod>2025-05-18</lastmod>
+        <loc>https://khurmistore.es/category/gaming</loc>
+        <lastmod>2026-06-09</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
-    <url>
-        <loc>https://khurmistore.es/category/deportes-y-aire-libre</loc>
-        <lastmod>2025-05-18</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/category/coche-y-moto</loc>
-        <lastmod>2025-05-18</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/category/oficina-y-papeleria</loc>
-        <lastmod>2025-05-18</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
+
     <!-- Information Pages -->
     <url>
         <loc>https://khurmistore.es/sobre-nosotros.html</loc>
@@ -63,61 +45,104 @@
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://khurmistore.es/blog-mejores-auriculares-inalambricos</loc>
-        <lastmod>2026-06-04</lastmod>
+        <loc>https://khurmistore.es/contacto.html</loc>
+        <lastmod>2025-05-18</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.6</priority>
     </url>
-    <url>
-        <loc>https://khurmistore.es/blog-como-conectar-auriculares-bluetooth</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <url>
-        <loc>https://khurmistore.es/blog-conectar-auriculares-bluetooth-tv</loc>
-        <lastmod>2026-06-08</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/blog-como-limpiar-auriculares-inalambricos</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/blog-mejores-auriculares-deporte</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/blog-alargar-bateria-smartwatch</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/blog-como-elegir-raton-inalambrico</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://khurmistore.es/blog-manos-libres-coche</loc>
-        <lastmod>2026-06-04</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <!-- Support Pages -->
     <url>
         <loc>https://khurmistore.es/preguntas-frecuentes.html</loc>
         <lastmod>2026-06-07</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
+    </url>
+
+    <!-- Blog -->
+    <url>
+        <loc>https://khurmistore.es/blog.html</loc>
+        <lastmod>2026-06-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Blog Posts -->
+    <url>
+        <loc>https://khurmistore.es/blog-mejores-auriculares-inalambricos.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-como-conectar-auriculares-bluetooth.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-conectar-auriculares-bluetooth-tv.html</loc>
+        <lastmod>2026-06-08</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-como-limpiar-auriculares-inalambricos.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-mejores-auriculares-deporte.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-alargar-bateria-smartwatch.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-smartwatch-barato-espana.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-como-elegir-reloj-inteligente.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-auriculares-vs-cascos-gaming.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-como-elegir-raton-inalambrico.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-como-elegir-funda-movil.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-manos-libres-coche.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://khurmistore.es/blog-khurram-shahzad-fundador-khurmistore.html</loc>
+        <lastmod>2026-06-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
     </url>
 
     <!-- Legal Pages -->
@@ -157,5 +182,5 @@
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
-</urlset>
 
+</urlset>
