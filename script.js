@@ -552,6 +552,7 @@ function addToCart(id, qty = 1) {
     saveCart();
     updateCart();
     showNotification(`¡${product.name} añadido al carrito!`);
+    fbq('track','AddToCart',{value: product.price, currency:'EUR'});
 }
 
 function removeFromCart(id) {
@@ -1829,6 +1830,7 @@ function initPayPalButtons() {
                 const postal  = document.getElementById('custPostal')?.value.trim() || '';
                 const notes   = document.getElementById('custNotes')?.value.trim() || 'Ninguna';
                 const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+                fbq('track','Purchase',{value: parseFloat((subtotal + 4.99).toFixed(2)), currency:'EUR'});
                 const items   = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
                 const msg = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: 4,99 €\nTOTAL COBRADO: ${formatPrice(subtotal + 4.99)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
                 window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
