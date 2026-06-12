@@ -62,17 +62,17 @@ button, input, textarea { font-family: inherit; }
     animation: pulse 2s infinite; 
 }
 
-.logo h1 { 
-    font-size: 26px; 
-    font-weight: 800; 
-    color: #fff; 
+.logo h1, .logo > div {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
 }
 
-.logo h1 span { 
-    background: var(--gradient2); 
+.logo h1 span, .logo > div span {
+    background: var(--gradient2);
     -webkit-background-clip: text;
-    background-clip: text; 
-    -webkit-text-fill-color: transparent; 
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* Desktop Navigation Menu - shown on desktop, hidden on mobile */
@@ -418,7 +418,7 @@ footer .wave-text { display: inline-flex; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 .hero-content { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
 .badge { display: inline-block; padding: 8px 20px; background: rgba(255,107,53,0.2); border: 1px solid var(--primary); border-radius: 30px; color: var(--primary); font-size: 13px; font-weight: 600; margin-bottom: 20px; letter-spacing: 2px; }
-.hero-text h1 { font-size: 60px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+.hero-text h1, .hero-text h2 { font-size: 60px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
 .highlight { background: var(--gradient2); -webkit-background-clip: text;
     background-clip: text; -webkit-text-fill-color: transparent; }
 .hero-text p { font-size: 18px; color: #b8b8b8; margin-bottom: 35px; max-width: 500px; }
@@ -725,7 +725,7 @@ footer .wave-text { display: inline-flex; }
 /* Responsive */
 @media (max-width: 1024px) {
     .categories-grid, .products-grid, .related-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero-text h1 { font-size: 42px; }
+    .hero-text h1, .hero-text h2 { font-size: 42px; }
     .nav-container { gap: 20px; padding: 0 20px; }
     .nav-menu.desktop-nav ul { gap: 20px; }
 }
@@ -779,7 +779,7 @@ footer .wave-text { display: inline-flex; }
         text-align: center; 
     }
     
-    .hero-text h1 { 
+    .hero-text h1, .hero-text h2 { 
         font-size: 32px; 
     }
     
@@ -904,7 +904,7 @@ footer .wave-text { display: inline-flex; }
         text-align: center; 
     }
     
-    .hero-text h1 { 
+    .hero-text h1, .hero-text h2 { 
         font-size: 30px; 
     }
     
