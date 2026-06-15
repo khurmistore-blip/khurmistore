@@ -1821,29 +1821,74 @@ function initPayPalButtons() {
                 }]
             });
         },
-        onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-                const name    = document.getElementById('custName')?.value.trim() || '';
-                const phone   = document.getElementById('custPhone')?.value.trim() || '';
-                const address = document.getElementById('custAddress')?.value.trim() || '';
-                const city    = document.getElementById('custCity')?.value.trim() || '';
-                const postal  = document.getElementById('custPostal')?.value.trim() || '';
-                const notes   = document.getElementById('custNotes')?.value.trim() || 'Ninguna';
-                const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-                fbq('track','Purchase',{value: parseFloat((subtotal + 4.99).toFixed(2)), currency:'EUR'});
-                const items   = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
-                const msg = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: 4,99 €\nTOTAL COBRADO: ${formatPrice(subtotal + 4.99)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
-                window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
-                const orderID = '#KW' + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('orderID').textContent = orderID;
-                document.getElementById('step2').style.display = 'none';
-                document.getElementById('step3').style.display = 'block';
-                document.querySelectorAll('.step')[1].classList.remove('active');
-                document.querySelectorAll('.step')[2].classList.add('active');
-                cart = [];
-                saveCart();
-                updateCart();
-            });
+        onApprove: async function(data, actions) {
+            const details  = await actions.order.capture();
+
+            // Datos del formulario
+            const name    = document.getElementById('custName')?.value.trim()    || '';
+            const email   = document.getElementById('custEmail')?.value.trim()   || '';
+            const phone   = document.getElementById('custPhone')?.value.trim()   || '';
+            const address = document.getElementById('custAddress')?.value.trim() || '';
+            const city    = document.getElementById('custCity')?.value.trim()    || '';
+            const postal  = document.getElementById('custPostal')?.value.trim()  || '';
+            const notes   = document.getElementById('custNotes')?.value.trim()   || '';
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const total    = parseFloat((subtotal + 4.99).toFixed(2));
+
+            // Datos confirmados por PayPal (más fiables que el formulario)
+            const payerName  = details.payer?.name
+                ? (details.payer.name.given_name + ' ' + details.payer.name.surname).trim()
+                : name;
+            const payerEmail = details.payer?.email_address || email;
+            const shipping   = details.purchase_units?.[0]?.shipping?.address;
+            const fullAddress = shipping
+                ? [
+                    shipping.address_line_1,
+                    shipping.address_line_2,
+                    shipping.admin_area_2,
+                    shipping.postal_code,
+                    shipping.country_code,
+                  ].filter(Boolean).join(', ')
+                : [address, city, postal].filter(Boolean).join(', ');
+
+            // 1. Guardar pedido en servidor — SIEMPRE, antes de WhatsApp y confirmación
+            try {
+                await fetch('save_order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        paypalId : details.id,
+                        name     : payerName,
+                        email    : payerEmail,
+                        phone,
+                        address  : fullAddress,
+                        total,
+                        products : cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                        notes,
+                    }),
+                });
+            } catch (e) {
+                console.error('save_order.php error:', e);
+            }
+
+            // 2. Facebook Pixel
+            fbq('track', 'Purchase', { value: total, currency: 'EUR' });
+
+            // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
+            const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
+            const msg   = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: 4,99 €\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
+            window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
+
+            // 4. Pantalla de confirmación
+            const orderID = '#KW' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('orderID').textContent = orderID;
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+            document.querySelectorAll('.step')[1].classList.remove('active');
+            document.querySelectorAll('.step')[2].classList.add('active');
+            cart = [];
+            saveCart();
+            updateCart();
         },
         onError: function(err) {
             console.error('PayPal error:', err);
