@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/config.php';
+
 // ── Configuración ─────────────────────────────────────────────────────────────
 const OWNER_EMAIL   = 'qamarshahzad320@gmail.com';
 const OWNER_PHONE   = '+34662241860';
@@ -163,6 +165,12 @@ if ($waBody === false || $waStatus < 200 || $waStatus >= 300) {
 
 // ── Respuesta JSON ────────────────────────────────────────────────────────────
 $orderId = 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paypalId . $datetime), 0, 6));
+
+// ── 4. Enviar WhatsApp de confirmación al cliente (WhatsApp Cloud API) ────────
+$waPhone = preg_replace('/[^0-9]/', '', $phone);
+if (substr($waPhone, 0, 2) === '00') { $waPhone = substr($waPhone, 2); }
+if (strlen($waPhone) === 9) { $waPhone = '34' . $waPhone; }
+send_whatsapp_order_confirmation($waPhone, $name, $orderId, $total);
 
 echo json_encode([
     'success'  => true,          // true incluso si email/WhatsApp fallan; el CSV es lo que cuenta
