@@ -1072,13 +1072,28 @@ function closeAnnouncement() {
 }
 
 // ===== POPUP DE BIENVENIDA =====
+function openWelcomePopup() {
+    if (sessionStorage.getItem('popupShown')) return;
+    sessionStorage.setItem('popupShown', 'true');
+    // Lazy-load image only when popup is actually shown
+    const img = document.querySelector('#welcomePopup .popup-image img[data-src]');
+    if (img) img.src = img.dataset.src;
+    document.getElementById('welcomePopup')?.classList.add('active');
+}
+
 window.addEventListener('load', () => {
-    if (!sessionStorage.getItem('popupShown')) {
-        setTimeout(() => {
-            document.getElementById('welcomePopup')?.classList.add('active');
-            sessionStorage.setItem('popupShown', 'true');
-        }, 2000);
+    if (sessionStorage.getItem('popupShown')) return;
+
+    const timer = setTimeout(openWelcomePopup, 5000);
+
+    function onExitIntent(e) {
+        if (e.clientY <= 0) {
+            clearTimeout(timer);
+            document.removeEventListener('mouseleave', onExitIntent);
+            openWelcomePopup();
+        }
     }
+    document.addEventListener('mouseleave', onExitIntent);
 });
 
 function closeWelcomePopup() {
