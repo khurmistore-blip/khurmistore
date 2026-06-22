@@ -266,3 +266,44 @@ body.announcement-active .product-details-page{padding-top:172px}
 .faq-section{padding:60px 20px 80px}.faq-container{max-width:860px;margin:0 auto}.faq-category{margin-bottom:40px}.faq-category-title{font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px}details.faq-item{border:1px solid rgba(255,107,53,0.15);border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,0.03);overflow:hidden;transition:border-color 0.2s}details.faq-item[open]{border-color:rgba(255,107,53,0.45)}details.faq-item summary{padding:18px 22px;cursor:pointer;font-weight:600;color:#fff;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}details.faq-item summary::-webkit-details-marker{display:none}details.faq-item summary::after{content:'+';color:var(--primary);font-size:22px;font-weight:300;flex-shrink:0;transition:transform 0.25s}details.faq-item[open] summary::after{transform:rotate(45deg)}.faq-answer{padding:0 22px 18px;color:#bbb;line-height:1.8;font-size:0.95rem}details.faq-item[open] .faq-answer{display:block}.faq-answer a{color:var(--primary);text-decoration:none}.faq-answer a:hover{text-decoration:underline}
 .trust-section{padding:70px 20px;background:#0d1228}.trust-container{max-width:1100px;margin:0 auto;text-align:center}.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px}.trust-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,107,53,0.2);border-radius:16px;padding:32px 20px;transition:transform 0.3s,border-color 0.3s}.trust-card:hover{transform:translateY(-4px);border-color:var(--primary)}.trust-icon{font-size:36px;margin-bottom:14px}.trust-card h3{color:#fff;font-size:1rem;font-weight:700;margin-bottom:8px}.trust-card p{color:#aaa;font-size:0.88rem;line-height:1.5}@media (max-width:768px){.trust-grid{grid-template-columns:1fr 1fr}}@media (max-width:480px){.trust-grid{grid-template-columns:1fr}}
 .answer-intro{background:rgba(255,107,53,0.08);border-left:4px solid var(--primary);border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin:0 0 1.5rem;color:#d2d5dc;font-size:1.05rem;line-height:1.75;font-style:italic}
+
+/* ===== CLS PREVENTION =====
+   These rules eliminate the three main sources of Cumulative Layout Shift. */
+
+/* 1. Hero-image grid column: fix to 700 px so the column is the same height
+      before and after images load. Without this, the grid row jumps from
+      ~300 px (text only) to ~756 px when slide-1's portrait photo
+      (800x1209 at 500 px wide = 756 px tall) arrives, shifting the h1
+      heading ~228 px downward - the single biggest CLS contributor. */
+.hero-image {
+  height: 700px;
+}
+/* Cap the hero image so it fits within the locked column height */
+.floating-3d img {
+  max-height: 700px;
+}
+
+/* 2. Mobile: single-column layout stacks image below text so image height
+      no longer pushes text around. Release the fixed height. */
+@media (max-width: 768px) {
+  .hero-image {
+    height: auto;
+  }
+  .floating-3d img {
+    max-height: none;
+  }
+}
+
+/* 3. Announcement bar: reserve its full painted height from the first frame
+      so FA icon-load or Poppins font-swap cannot resize it and push content. */
+.announcement-bar {
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+/* 4. Products grid: reserve 2 card-rows (~760 px) while the div is empty.
+      script.js fills it at runtime; :empty stops matching once children are
+      injected, so the real card height takes over with no visible jump. */
+#productsGrid:empty {
+  min-height: 760px;
+}
