@@ -153,7 +153,7 @@
                     <span class="cart-count">0</span>
                 </div>
             </div>
-            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()" aria-label="Abrir menú">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
@@ -568,7 +568,7 @@
         <div class="search-modal">
             <div class="search-header">
                 <h2>Buscar Productos</h2>
-                <button class="search-close-btn" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+                <button class="search-close-btn" onclick="closeSearch()" aria-label="Cerrar búsqueda"><i class="fas fa-times"></i></button>
             </div>
             <div class="search-input-wrapper">
                 <i class="fas fa-search search-icon"></i>
@@ -582,7 +582,7 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <h2><i class="fas fa-shopping-cart"></i> Tu Carrito</h2>
-            <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+            <button class="close-btn" onclick="closeCart()" aria-label="Cerrar carrito"><i class="fas fa-times"></i></button>
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer">

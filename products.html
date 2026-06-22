@@ -104,7 +104,7 @@
             </div>
 
             <!-- Mobile Hamburger Button (hidden on desktop, shown only on mobile below 768px) -->
-            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()">
+            <button class="nav-toggle mobile-nav-toggle" id="navToggle" type="button" aria-controls="mobileNavMenu" aria-expanded="false" onclick="toggleMobileMenu()" aria-label="Abrir menú">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -244,7 +244,7 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <h2><i class="fas fa-shopping-cart"></i> Tu Carrito</h2>
-            <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+            <button class="close-btn" onclick="closeCart()" aria-label="Cerrar carrito"><i class="fas fa-times"></i></button>
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer">
@@ -258,7 +258,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2><i class="fas fa-credit-card"></i> Finalizar Compra</h2>
-                <button class="close-btn" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+                <button class="close-btn" onclick="closeCheckout()" aria-label="Cerrar pago"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="checkout-steps">
