@@ -1,0 +1,55 @@
+# KhurmiStore
+
+> Tienda online de accesorios tecnológicos premium para España. Vendemos auriculares inalámbricos, smartwatches, accesorios para móvil, periféricos gaming y domótica. Envío rápido a toda España. Atención al cliente en español vía WhatsApp.
+
+## Tienda y categorías
+
+- [Tienda — todos los productos](https://khurmistore.es/products.html)
+- [Auriculares y Audio](https://khurmistore.es/categoria.html?cat=auriculares): auriculares Bluetooth, earbuds, manos libres, cascos gaming
+- [Smartwatches](https://khurmistore.es/categoria.html?cat=smartwatches): relojes inteligentes, pulseras de actividad, wearables
+- [Accesorios para Móvil](https://khurmistore.es/categoria.html?cat=accesorios-moviles): fundas, protectores de pantalla, cargadores, cables
+- [Gaming](https://khurmistore.es/categoria.html?cat=gaming): cascos gaming, ratones, periféricos
+- [Ver todas las categorías](https://khurmistore.es/categorias.html)
+
+## Páginas principales
+
+- [Inicio](https://khurmistore.es/)
+- [Blog de tecnología](https://khurmistore.es/blog.html)
+- [Sobre Nosotros](https://khurmistore.es/sobre-nosotros.html)
+- [Preguntas Frecuentes](https://khurmistore.es/preguntas-frecuentes.html)
+- [Contacto](https://khurmistore.es/contacto.html)
+
+## Guías y blog (selección)
+
+- [Mejores auriculares inalámbricos 2026](https://khurmistore.es/blog-mejores-auriculares-inalambricos.html)
+- [Cómo elegir auriculares Bluetooth](https://khurmistore.es/blog-elegir-auriculares-bluetooth.html)
+- [Auriculares vs cascos gaming](https://khurmistore.es/blog-auriculares-vs-cascos-gaming.html)
+- [Cómo elegir reloj inteligente](https://khurmistore.es/blog-como-elegir-reloj-inteligente.html)
+- [Smartwatch barato en España](https://khurmistore.es/blog-smartwatch-barato-espana.html)
+- [Cómo elegir funda para móvil](https://khurmistore.es/blog-como-elegir-funda-movil.html)
+- [Cómo elegir ratón inalámbrico](https://khurmistore.es/blog-como-elegir-raton-inalambrico.html)
+
+## Información de empresa
+
+- **Nombre comercial:** KhurmiStore
+- **Sitio web:** https://khurmistore.es
+- **Mercado:** España
+- **Idioma:** Español
+- **Email:** info@khurmistore.es
+- **Teléfono / WhatsApp:** +34 662 24 18 60
+- **WhatsApp directo:** https://wa.me/34662241860
+- **Ubicación:** Madrid, España
+
+## Redes sociales
+
+- [Facebook](https://www.facebook.com/profile.php?id=61590018628529)
+- [Instagram](https://www.instagram.com/khurmistore.es/)
+
+## Legal
+
+- [Aviso Legal](https://khurmistore.es/aviso-legal.html)
+- [Política de Privacidad](https://khurmistore.es/politica-de-privacidad.html)
+- [Política de Cookies](https://khurmistore.es/politica-de-cookies.html)
+- [Política de Envíos](https://khurmistore.es/politica-de-envios.html)
+- [Política de Devoluciones](https://khurmistore.es/politica-de-devoluciones.html)
+- [Términos y Condiciones](https://khurmistore.es/terminos-y-condiciones.html)
