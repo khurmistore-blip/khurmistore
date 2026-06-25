@@ -94,3 +94,7 @@ ExpiresByType application/javascript "access plus 1 month"
 ExpiresByType font/woff2 "access plus 1 year"
 ExpiresDefault "access plus 2 days"
 </IfModule>
+
+# UTF-8 charset for text files
+AddDefaultCharset UTF-8
+AddType "text/plain; charset=utf-8" .txt
