@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KhurmiStore — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --orange:#FF6B35;
+    --amber:#F88E20;
+    --navy:#0A0E27;
+    --navy2:#121736;
+    --navy3:#1A2050;
+    --text:#E8EAF2;
+    --muted:#8B92B5;
+    --green:#3DDC84;
+    --yellow:#F8C920;
+    --blue:#4D9FFF;
+    --red:#FF5C5C;
+    --border:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--navy);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+  }
+  /* ---------- LOGIN ---------- */
+  #loginScreen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 30% 20%, rgba(255,107,53,0.12), transparent 50%),
+               radial-gradient(circle at 80% 80%, rgba(248,142,32,0.10), transparent 50%),
+               var(--navy);
+    padding:20px;
+  }
+  .loginBox{
+    background:var(--navy2);border:1px solid var(--border);
+    border-radius:16px;padding:40px 32px;width:100%;max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .logo{
+    font-size:24px;font-weight:800;text-align:center;margin-bottom:4px;
+    background:linear-gradient(135deg,var(--orange),var(--amber));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .loginSub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .field input{
+    width:100%;padding:12px 14px;background:var(--navy3);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);font-size:14px;outline:none;
+    transition:border-color .2s;
+  }
+  .field input:focus{border-color:var(--orange);}
+  .btnPrimary{
+    width:100%;padding:13px;border:none;border-radius:10px;cursor:pointer;
+    background:linear-gradient(135deg,var(--orange),var(--amber));
+    color:#fff;font-weight:700;font-size:14px;margin-top:8px;
+    transition:opacity .2s;
+  }
+  .btnPrimary:hover{opacity:0.9;}
+  .btnPrimary:disabled{opacity:0.5;cursor:not-allowed;}
+  .loginError{color:var(--red);font-size:13px;text-align:center;margin-top:14px;min-height:16px;}
+
+  /* ---------- DASHBOARD ---------- */
+  #dashboard{display:none;}
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 24px;border-bottom:1px solid var(--border);
+    background:var(--navy2);position:sticky;top:0;z-index:10;
+  }
+  header .logo{font-size:18px;margin:0;}
+  .headerRight{display:flex;align-items:center;gap:14px;}
+  .headerRight span{color:var(--muted);font-size:13px;}
+  .btnGhost{
+    padding:8px 16px;border:1px solid var(--border);border-radius:8px;
+    background:transparent;color:var(--text);cursor:pointer;font-size:13px;
+  }
+  .btnGhost:hover{border-color:var(--orange);}
+  main{padding:24px;max-width:1300px;margin:0 auto;}
+
+  .statsGrid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:14px;margin-bottom:24px;
+  }
+  .statCard{
+    background:var(--navy2);border:1px solid var(--border);border-radius:14px;
+    padding:18px;
+  }
+  .statCard .label{color:var(--muted);font-size:12px;margin-bottom:8px;}
+  .statCard .value{font-size:24px;font-weight:800;}
+  .statCard .value.orange{color:var(--orange);}
+  .statCard .value.green{color:var(--green);}
+  .statCard .value.yellow{color:var(--yellow);}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;
+  }
+  .toolbar input, .toolbar select{
+    padding:10px 12px;background:var(--navy2);border:1px solid var(--border);
+    border-radius:8px;color:var(--text);font-size:13px;outline:none;
+  }
+  .toolbar input{flex:1;min-width:180px;}
+  .spacer{flex:1;}
+  .btnAdd{
+    padding:10px 18px;border:none;border-radius:8px;cursor:pointer;
+    background:linear-gradient(135deg,var(--orange),var(--amber));
+    color:#fff;font-weight:700;font-size:13px;white-space:nowrap;
+  }
+
+  .tableWrap{
+    background:var(--navy2);border:1px solid var(--border);border-radius:14px;
+    overflow-x:auto;
+  }
+  table{width:100%;border-collapse:collapse;min-width:800px;}
+  thead th{
+    text-align:left;padding:14px 16px;font-size:11px;text-transform:uppercase;
+    letter-spacing:0.5px;color:var(--muted);border-bottom:1px solid var(--border);
+  }
+  tbody td{
+    padding:14px 16px;font-size:13px;border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(255,255,255,0.02);}
+  .productsCell{max-width:220px;color:var(--muted);font-size:12px;}
+  .totalCell{font-weight:700;color:var(--orange);}
+  .sourceTag{
+    font-size:11px;padding:3px 8px;border-radius:6px;background:var(--navy3);color:var(--muted);
+  }
+  select.statusSelect{
+    padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;
+  }
+  .st-pending{background:rgba(248,201,32,0.15);color:var(--yellow);}
+  .st-processing{background:rgba(77,159,255,0.15);color:var(--blue);}
+  .st-shipped{background:rgba(255,107,53,0.15);color:var(--orange);}
+  .st-delivered{background:rgba(61,220,132,0.15);color:var(--green);}
+  .st-cancelled{background:rgba(255,92,92,0.15);color:var(--red);}
+  .delBtn{
+    background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;
+  }
+  .delBtn:hover{color:var(--red);}
+  .emptyState{padding:50px 20px;text-align:center;color:var(--muted);}
+
+  /* ---------- MODAL ---------- */
+  .modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    align-items:center;justify-content:center;z-index:100;padding:16px;
+  }
+  .modalOverlay.show{display:flex;}
+  .modal{
+    background:var(--navy2);border:1px solid var(--border);border-radius:16px;
+    padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;
+  }
+  .modal h3{margin-bottom:20px;font-size:18px;}
+  .modal .field{margin-bottom:14px;}
+  .modalActions{display:flex;gap:10px;margin-top:20px;}
+  .btnCancel{
+    flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);
+    background:transparent;color:var(--text);cursor:pointer;
+  }
+  .btnSave{
+    flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;
+    background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;font-weight:700;
+  }
+  .productRow{display:flex;gap:8px;margin-bottom:8px;}
+  .productRow input{flex:1;}
+  .addProductLink{color:var(--orange);font-size:12px;cursor:pointer;display:inline-block;margin-bottom:14px;}
+
+  @media(max-width:600px){
+    main{padding:14px;}
+    header{padding:14px;}
+    .modal{padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="loginBox">
+    <div class="logo">KhurmiStore</div>
+    <div class="loginSub">Admin Dashboard</div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="admin@khurmistore.es">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••">
+    </div>
+    <button class="btnPrimary" id="loginBtn" onclick="doLogin()">Login</button>
+    <div class="loginError" id="loginError"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="logo">KhurmiStore Admin</div>
+    <div class="headerRight">
+      <span id="userEmail"></span>
+      <button class="btnGhost" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="statsGrid">
+      <div class="statCard"><div class="label">Today's Sales</div><div class="value orange" id="statToday">€0.00</div></div>
+      <div class="statCard"><div class="label">This Week</div><div class="value orange" id="statWeek">€0.00</div></div>
+      <div class="statCard"><div class="label">This Month</div><div class="value orange" id="statMonth">€0.00</div></div>
+      <div class="statCard"><div class="label">Total Orders</div><div class="value green" id="statTotalOrders">0</div></div>
+      <div class="statCard"><div class="label">Pending</div><div class="value yellow" id="statPending">0</div></div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="searchBox" placeholder="Search by name, order#, phone..." oninput="renderOrders()">
+      <select id="statusFilter" onchange="renderOrders()">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <select id="sourceFilter" onchange="renderOrders()">
+        <option value="">All Sources</option>
+        <option value="website">Website</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="manual">Manual</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btnAdd" onclick="openAddModal()">+ Add Order</button>
+    </div>
+
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Products</th>
+            <th>Total</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody">
+          <tr><td colspan="8" class="emptyState">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- ADD ORDER MODAL -->
+<div class="modalOverlay" id="addModal">
+  <div class="modal">
+    <h3>Add Order Manually</h3>
+    <div class="field">
+      <label>Customer Name *</label>
+      <input type="text" id="m_name" placeholder="Juan Pérez">
+    </div>
+    <div class="field">
+      <label>Phone</label>
+      <input type="text" id="m_phone" placeholder="+34 6XX XXX XXX">
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="m_email" placeholder="cliente@email.com">
+    </div>
+    <div class="field">
+      <label>Products</label>
+      <div id="productRows">
+        <div class="productRow">
+          <input type="text" placeholder="Product name" class="prodName">
+          <input type="number" placeholder="Qty" class="prodQty" style="max-width:70px" value="1">
+        </div>
+      </div>
+      <span class="addProductLink" onclick="addProductRow()">+ Add another product</span>
+    </div>
+    <div class="field">
+      <label>Total Amount (€) *</label>
+      <input type="number" step="0.01" id="m_total" placeholder="29.99">
+    </div>
+    <div class="field">
+      <label>Source</label>
+      <select id="m_source">
+        <option value="whatsapp">WhatsApp</option>
+        <option value="manual">Manual</option>
+        <option value="website">Website</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="m_status">
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+      </select>
+    </div>
+    <div class="modalActions">
+      <button class="btnCancel" onclick="closeAddModal()">Cancel</button>
+      <button class="btnSave" onclick="saveManualOrder()">Save Order</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ====== CONFIG: Fill these in from your Supabase project settings ======
+  const SUPABASE_URL = "https://fwqxenybcijdrlchurmb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cXhlbnliY2lqZHJsY2h1cm1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNzQ0MDAsImV4cCI6MjA5NTg1MDQwMH0.VjDjhclsaSzsoan0pZVgwofbxxfvI2HrLQk2_llXZ5s";
+  // ==========================================================================
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let allOrders = [];
+
+  // ---------- AUTH ----------
+  async function doLogin(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errEl.textContent = "";
+    if(!email || !password){ errEl.textContent = "Email aur password dono dalein"; return; }
+    btn.disabled = true; btn.textContent = "Logging in...";
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    btn.disabled = false; btn.textContent = "Login";
+    if(error){ errEl.textContent = "Galat email ya password"; return; }
+    showDashboard(data.user);
+  }
+
+  async function doLogout(){
+    await sb.auth.signOut();
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+
+  async function checkSession(){
+    const { data } = await sb.auth.getSession();
+    if(data.session){ showDashboard(data.session.user); }
+  }
+
+  function showDashboard(user){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('userEmail').textContent = user.email;
+    loadOrders();
+  }
+
+  // ---------- LOAD ORDERS ----------
+  async function loadOrders(){
+    const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+    if(error){ console.error(error); return; }
+    allOrders = data || [];
+    updateStats();
+    renderOrders();
+  }
+
+  function updateStats(){
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(todayStart); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let today=0, week=0, month=0, pending=0;
+    allOrders.forEach(o=>{
+      const d = new Date(o.created_at);
+      const amt = parseFloat(o.total_amount) || 0;
+      if(d >= todayStart) today += amt;
+      if(d >= weekStart) week += amt;
+      if(d >= monthStart) month += amt;
+      if(o.status === 'pending') pending++;
+    });
+
+    document.getElementById('statToday').textContent = '€' + today.toFixed(2);
+    document.getElementById('statWeek').textContent = '€' + week.toFixed(2);
+    document.getElementById('statMonth').textContent = '€' + month.toFixed(2);
+    document.getElementById('statTotalOrders').textContent = allOrders.length;
+    document.getElementById('statPending').textContent = pending;
+  }
+
+  function renderOrders(){
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    const statusF = document.getElementById('statusFilter').value;
+    const sourceF = document.getElementById('sourceFilter').value;
+
+    let filtered = allOrders.filter(o=>{
+      const matchSearch = !search ||
+        (o.customer_name||'').toLowerCase().includes(search) ||
+        (o.order_number||'').toLowerCase().includes(search) ||
+        (o.phone||'').toLowerCase().includes(search);
+      const matchStatus = !statusF || o.status === statusF;
+      const matchSource = !sourceF || o.source === sourceF;
+      return matchSearch && matchStatus && matchSource;
+    });
+
+    const tbody = document.getElementById('ordersBody');
+    if(filtered.length === 0){
+      tbody.innerHTML = '<tr><td colspan="8" class="emptyState">Koi order nahi mila</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(o=>{
+      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name} x${p.qty||1}`).join(', ') : '';
+      const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
+      return `
+        <tr>
+          <td>${o.order_number}</td>
+          <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.phone||''}</span></td>
+          <td class="productsCell">${products}</td>
+          <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}</td>
+          <td><span class="sourceTag">${o.source}</span></td>
+          <td>
+            <select class="statusSelect st-${o.status}" onchange="updateStatus('${o.id}', this.value)">
+              <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+              <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+              <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+              <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+              <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+            </select>
+          </td>
+          <td>${date}</td>
+          <td><button class="delBtn" onclick="deleteOrder('${o.id}')">🗑</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function updateStatus(id, newStatus){
+    const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
+    if(error){ alert('Update fail hua: ' + error.message); return; }
+    const o = allOrders.find(x=>x.id===id);
+    if(o) o.status = newStatus;
+    updateStats();
+    renderOrders();
+  }
+
+  async function deleteOrder(id){
+    if(!confirm('Yeh order delete karna hai?')) return;
+    const { error } = await sb.from('orders').delete().eq('id', id);
+    if(error){ alert('Delete fail hua: ' + error.message); return; }
+    allOrders = allOrders.filter(o=>o.id!==id);
+    updateStats();
+    renderOrders();
+  }
+
+  // ---------- ADD ORDER MODAL ----------
+  function openAddModal(){ document.getElementById('addModal').classList.add('show'); }
+  function closeAddModal(){
+    document.getElementById('addModal').classList.remove('show');
+    document.getElementById('m_name').value='';
+    document.getElementById('m_phone').value='';
+    document.getElementById('m_email').value='';
+    document.getElementById('m_total').value='';
+    document.getElementById('productRows').innerHTML = `
+      <div class="productRow">
+        <input type="text" placeholder="Product name" class="prodName">
+        <input type="number" placeholder="Qty" class="prodQty" style="max-width:70px" value="1">
+      </div>`;
+  }
+
+  function addProductRow(){
+    const div = document.createElement('div');
+    div.className = 'productRow';
+    div.innerHTML = `<input type="text" placeholder="Product name" class="prodName">
+      <input type="number" placeholder="Qty" class="prodQty" style="max-width:70px" value="1">`;
+    document.getElementById('productRows').appendChild(div);
+  }
+
+  async function saveManualOrder(){
+    const name = document.getElementById('m_name').value.trim();
+    const total = parseFloat(document.getElementById('m_total').value);
+    if(!name || !total){ alert('Naam aur total amount zaroori hai'); return; }
+
+    const products = Array.from(document.querySelectorAll('.productRow')).map(row=>({
+      name: row.querySelector('.prodName').value.trim(),
+      qty: parseInt(row.querySelector('.prodQty').value) || 1
+    })).filter(p=>p.name);
+
+    const order = {
+      order_number: 'KS-' + Date.now().toString().slice(-8),
+      customer_name: name,
+      phone: document.getElementById('m_phone').value.trim(),
+      email: document.getElementById('m_email').value.trim(),
+      products: products,
+      total_amount: total,
+      source: document.getElementById('m_source').value,
+      payment_method: 'cod',
+      status: document.getElementById('m_status').value
+    };
+
+    const { error } = await sb.from('orders').insert(order);
+    if(error){ alert('Save fail hua: ' + error.message); return; }
+    closeAddModal();
+    loadOrders();
+  }
+
+  // init
+  checkSession();
+</script>
+</body>
+</html>

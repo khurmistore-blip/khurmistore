@@ -9,6 +9,10 @@ const OWNER_PHONE   = '+34662241860';
 const CALLMEBOT_KEY = 'TU_APIKEY';          // ← Obtén tu clave en callmebot.com
 const CSV_DIR       = __DIR__ . '/orders';
 const CSV_FILE      = CSV_DIR . '/orders.csv';
+
+// ── Supabase (Admin Dashboard) ───────────────────────────────────────────────
+const SUPABASE_URL          = 'https://fwqxenybcijdrlchurmb.supabase.co';
+const SUPABASE_SERVICE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cXhlbnliY2lqZHJsY2h1cm1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDI3NDQwMCwiZXhwIjoyMDk1ODUwNDAwfQ.yjrqFG23L0nZ6PpYA1c31O48wp5_0DfyyITLIpc_-Hs';
 // ─────────────────────────────────────────────────────────────────────────────
 
 header('Content-Type: application/json; charset=utf-8');
@@ -50,15 +54,20 @@ $datetime = date('Y-m-d H:i:s');
 
 // ── Construir resumen de productos ────────────────────────────────────────────
 $productLines = [];
+$productsJson = [];
 foreach ($products as $p) {
     $pName    = trim((string)($p['name']  ?? '?'));
     $pQty     = max(1, (int)($p['qty']    ?? 1));
     $pPrice   = (float)($p['price']       ?? 0.0);
     $lineTotal = number_format($pPrice * $pQty, 2, ',', '.') . ' €';
     $productLines[] = "{$pName} x{$pQty} – {$lineTotal}";
+    $productsJson[] = ['name' => $pName, 'qty' => $pQty, 'price' => $pPrice];
 }
 $productsSummary = implode(' | ', $productLines);
 $productsText    = implode("\n", array_map(static fn($l) => "  • {$l}", $productLines));
+
+// ── ID de pedido (se usa en CSV-response y Supabase) ──────────────────────────
+$orderId = 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paypalId . $datetime), 0, 6));
 
 // ── 1. Guardar en CSV (siempre, es lo más importante) ────────────────────────
 $csvErrors = [];
@@ -97,6 +106,44 @@ if (empty($csvErrors)) {
 
 // Si el CSV falla es un error grave — lo devolvemos pero seguimos intentando notificar
 $sideErrors = $csvErrors;
+
+// ── 1b. Guardar en Supabase (Admin Dashboard) ────────────────────────────────
+$supabaseOrder = [
+    'order_number'   => $orderId,
+    'customer_name'  => $name !== '' ? $name : 'Sin nombre',
+    'phone'          => $phone,
+    'email'          => $email,
+    'address'        => $address,
+    'products'       => $productsJson,
+    'total_amount'   => $total,
+    'payment_method' => 'paypal',
+    'source'         => 'website',
+    'status'         => 'pending',
+    'notes'          => $notes,
+];
+
+$sbCh = curl_init(SUPABASE_URL . '/rest/v1/orders');
+curl_setopt_array($sbCh, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_HTTPHEADER     => [
+        'apikey: ' . SUPABASE_SERVICE_KEY,
+        'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+        'Content-Type: application/json',
+        'Prefer: return=minimal',
+    ],
+    CURLOPT_POSTFIELDS     => json_encode($supabaseOrder, JSON_UNESCAPED_UNICODE),
+]);
+$sbBody   = curl_exec($sbCh);
+$sbStatus = (int)curl_getinfo($sbCh, CURLINFO_HTTP_CODE);
+$sbErr    = curl_error($sbCh);
+curl_close($sbCh);
+
+if ($sbStatus < 200 || $sbStatus >= 300) {
+    $sideErrors[] = "Supabase no guardado (HTTP {$sbStatus}" . ($sbErr ? ": {$sbErr}" : '') . ')';
+}
 
 // ── 2. Enviar email al dueño ──────────────────────────────────────────────────
 $emailSubject  = '=?UTF-8?B?' . base64_encode('Nuevo pedido KhurmiStore') . '?=';
@@ -163,15 +210,13 @@ if ($waBody === false || $waStatus < 200 || $waStatus >= 300) {
     $sideErrors[] = "WhatsApp no enviado (HTTP {$waStatus}" . ($curlErr ? ": {$curlErr}" : '') . ')';
 }
 
-// ── Respuesta JSON ────────────────────────────────────────────────────────────
-$orderId = 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paypalId . $datetime), 0, 6));
-
 // ── 4. Enviar WhatsApp de confirmación al cliente (WhatsApp Cloud API) ────────
 $waPhone = preg_replace('/[^0-9]/', '', $phone);
 if (substr($waPhone, 0, 2) === '00') { $waPhone = substr($waPhone, 2); }
 if (strlen($waPhone) === 9) { $waPhone = '34' . $waPhone; }
 send_whatsapp_order_confirmation($waPhone, $name, $orderId, $total);
 
+// ── Respuesta JSON ────────────────────────────────────────────────────────────
 echo json_encode([
     'success'  => true,          // true incluso si email/WhatsApp fallan; el CSV es lo que cuenta
     'orderId'  => $orderId,
