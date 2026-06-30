@@ -262,7 +262,37 @@
     background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;
   }
   .delBtn:hover{color:var(--red);}
+  .iconBtn{
+    background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;opacity:0.8;
+  }
+  .iconBtn:hover{opacity:1;}
+  .orderLink{
+    color:var(--orange);cursor:pointer;font-weight:600;text-decoration:none;
+  }
+  .orderLink:hover{text-decoration:underline;}
   .emptyState{padding:50px 20px;text-align:center;color:var(--muted);}
+
+  /* detail modal extras */
+  .detailHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .detailHead h3{margin:0;}
+  .statusBadge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;text-transform:capitalize;}
+  .detailRow{display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;gap:10px;}
+  .detailRow:last-child{border-bottom:none;}
+  .detailRow .dKey{color:var(--muted);min-width:110px;flex-shrink:0;}
+  .detailRow .dVal{color:var(--text);word-break:break-word;}
+  .detailProducts{margin:4px 0;}
+  .detailProducts div{padding:3px 0;font-size:13px;}
+  .btnWa{
+    flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;
+    background:#25D366;color:#063d1c;font-weight:800;
+  }
+  .btnWa:hover{opacity:0.9;}
+  .btnWa.disabled{background:var(--navy3);color:var(--muted);cursor:not-allowed;}
+  .btnEdit{
+    flex:1;padding:12px;border-radius:10px;border:1px solid var(--orange);cursor:pointer;
+    background:transparent;color:var(--orange);font-weight:700;
+  }
+  .btnEdit:hover{background:rgba(255,107,53,0.1);}
 
   /* ---------- MODAL ---------- */
   .modalOverlay{
@@ -431,7 +461,7 @@
 <!-- ADD ORDER MODAL -->
 <div class="modalOverlay" id="addModal">
   <div class="modal">
-    <h3>Add Order Manually</h3>
+    <h3 id="addModalTitle">Add Order Manually</h3>
     <div class="field">
       <label>Customer Name *</label>
       <input type="text" id="m_name" placeholder="Juan Pérez">
@@ -443,6 +473,10 @@
     <div class="field">
       <label>Email</label>
       <input type="email" id="m_email" placeholder="cliente@email.com">
+    </div>
+    <div class="field">
+      <label>Address (calle, ciudad, código postal)</label>
+      <input type="text" id="m_address" placeholder="Calle Mayor 1, Madrid, 28013">
     </div>
     <div class="field">
       <label>Products</label>
@@ -477,7 +511,23 @@
     </div>
     <div class="modalActions">
       <button class="btnCancel" onclick="closeAddModal()">Cancel</button>
-      <button class="btnSave" onclick="saveManualOrder()">Save Order</button>
+      <button class="btnSave" id="saveOrderBtn" onclick="saveManualOrder()">Save Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modalOverlay" id="detailModal">
+  <div class="modal">
+    <div class="detailHead">
+      <h3 id="d_orderNumber">Order</h3>
+      <span class="statusBadge" id="d_statusBadge">pending</span>
+    </div>
+    <div id="detailBody"></div>
+    <div class="modalActions" style="flex-wrap:wrap;gap:8px;">
+      <button class="btnWa" id="d_waBtn" onclick="waCustomer()">💬 WhatsApp</button>
+      <button class="btnEdit" onclick="editCurrentOrder()">✎ Edit</button>
+      <button class="btnCancel" onclick="closeDetail()">Close</button>
     </div>
   </div>
 </div>
@@ -612,7 +662,7 @@
       const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
       return `
         <tr>
-          <td>${o.order_number}</td>
+          <td><a class="orderLink" onclick="openDetail('${o.id}')">${o.order_number}</a></td>
           <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.phone||''}</span></td>
           <td class="productsCell">${products}</td>
           <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}</td>
@@ -627,7 +677,10 @@
             </select>
           </td>
           <td>${date}</td>
-          <td><button class="delBtn" onclick="deleteOrder('${o.id}')">🗑</button></td>
+          <td style="white-space:nowrap">
+            <button class="iconBtn" title="View details" onclick="openDetail('${o.id}')">👁</button>
+            <button class="iconBtn delBtn" title="Delete" onclick="deleteOrder('${o.id}')">🗑</button>
+          </td>
         </tr>
       `;
     }).join('');
@@ -767,14 +820,25 @@
     renderOrders();
   }
 
-  // ---------- ADD ORDER MODAL ----------
-  function openAddModal(){ document.getElementById('addModal').classList.add('show'); }
+  // ---------- ADD / EDIT ORDER MODAL ----------
+  let editingId = null;
+
+  function openAddModal(){
+    editingId = null;
+    document.getElementById('addModalTitle').textContent = 'Add Order Manually';
+    document.getElementById('saveOrderBtn').textContent = 'Save Order';
+    document.getElementById('addModal').classList.add('show');
+  }
   function closeAddModal(){
+    editingId = null;
     document.getElementById('addModal').classList.remove('show');
     document.getElementById('m_name').value='';
     document.getElementById('m_phone').value='';
     document.getElementById('m_email').value='';
+    document.getElementById('m_address').value='';
     document.getElementById('m_total').value='';
+    document.getElementById('m_source').value='whatsapp';
+    document.getElementById('m_status').value='pending';
     document.getElementById('productRows').innerHTML = `
       <div class="productRow">
         <input type="text" placeholder="Product name" class="prodName">
@@ -782,11 +846,11 @@
       </div>`;
   }
 
-  function addProductRow(){
+  function addProductRow(name, qty){
     const div = document.createElement('div');
     div.className = 'productRow';
-    div.innerHTML = `<input type="text" placeholder="Product name" class="prodName">
-      <input type="number" placeholder="Qty" class="prodQty" style="max-width:70px" value="1">`;
+    div.innerHTML = `<input type="text" placeholder="Product name" class="prodName" value="${name?escAttr(name):''}">
+      <input type="number" placeholder="Qty" class="prodQty" style="max-width:70px" value="${qty||1}">`;
     document.getElementById('productRows').appendChild(div);
   }
 
@@ -800,23 +864,124 @@
       qty: parseInt(row.querySelector('.prodQty').value) || 1
     })).filter(p=>p.name);
 
-    const order = {
-      order_number: 'KS-' + Date.now().toString().slice(-8),
+    const fields = {
       customer_name: name,
       phone: document.getElementById('m_phone').value.trim(),
       email: document.getElementById('m_email').value.trim(),
+      address: document.getElementById('m_address').value.trim(),
       products: products,
       total_amount: total,
       source: document.getElementById('m_source').value,
-      payment_method: 'cod',
       status: document.getElementById('m_status').value
     };
 
-    const { error } = await sb.from('orders').insert(order);
-    if(error){ alert('Save fail hua: ' + error.message); return; }
+    if(editingId){
+      // EDIT existing
+      const { error } = await sb.from('orders').update(fields).eq('id', editingId);
+      if(error){ alert('Update fail hua: ' + error.message); return; }
+    } else {
+      // NEW
+      fields.order_number = 'KS-' + Date.now().toString().slice(-8);
+      fields.payment_method = 'cod';
+      const { error } = await sb.from('orders').insert(fields);
+      if(error){ alert('Save fail hua: ' + error.message); return; }
+    }
     closeAddModal();
     loadOrders();
   }
+
+  // ---------- ORDER DETAIL MODAL ----------
+  let currentDetailId = null;
+
+  function openDetail(id){
+    const o = allOrders.find(x=>x.id===id);
+    if(!o) return;
+    currentDetailId = id;
+
+    document.getElementById('d_orderNumber').textContent = o.order_number;
+    const badge = document.getElementById('d_statusBadge');
+    badge.textContent = o.status;
+    badge.className = 'statusBadge st-' + o.status;
+
+    const products = Array.isArray(o.products) ? o.products : [];
+    const prodHtml = products.length
+      ? products.map(p=>`<div>• ${escHtml(p.name)} × ${p.qty||1}${p.price?` — €${parseFloat(p.price).toFixed(2)}`:''}</div>`).join('')
+      : '<div style="color:var(--muted)">—</div>';
+
+    const created = new Date(o.created_at).toLocaleString('es-ES');
+    const updated = o.updated_at ? new Date(o.updated_at).toLocaleString('es-ES') : '—';
+
+    const row = (k,v)=> v ? `<div class="detailRow"><div class="dKey">${k}</div><div class="dVal">${v}</div></div>` : '';
+
+    document.getElementById('detailBody').innerHTML =
+      row('Customer', escHtml(o.customer_name)) +
+      row('Phone', escHtml(o.phone)) +
+      row('Email', escHtml(o.email)) +
+      row('Address', escHtml(o.address)) +
+      `<div class="detailRow"><div class="dKey">Products</div><div class="dVal detailProducts">${prodHtml}</div></div>` +
+      row('Total', `<b style="color:var(--orange)">€${parseFloat(o.total_amount).toFixed(2)}</b>`) +
+      row('Payment', escHtml(o.payment_method)) +
+      row('Source', escHtml(o.source)) +
+      row('Notes', escHtml(o.notes)) +
+      row('Created', created) +
+      row('Updated', updated);
+
+    // WhatsApp button enable/disable based on phone
+    const waBtn = document.getElementById('d_waBtn');
+    if(o.phone && o.phone.replace(/[^0-9]/g,'').length >= 9){
+      waBtn.classList.remove('disabled');
+    } else {
+      waBtn.classList.add('disabled');
+    }
+
+    document.getElementById('detailModal').classList.add('show');
+  }
+
+  function closeDetail(){
+    document.getElementById('detailModal').classList.remove('show');
+    currentDetailId = null;
+  }
+
+  function waCustomer(){
+    const o = allOrders.find(x=>x.id===currentDetailId);
+    if(!o || !o.phone) return;
+    let p = o.phone.replace(/[^0-9]/g,'');
+    if(p.startsWith('00')) p = p.slice(2);
+    if(p.length === 9) p = '34' + p; // Spain default
+    const msg = encodeURIComponent(`Hola ${o.customer_name||''}, tu pedido ${o.order_number} en KhurmiStore`);
+    window.open(`https://wa.me/${p}?text=${msg}`, '_blank');
+  }
+
+  function editCurrentOrder(){
+    const o = allOrders.find(x=>x.id===currentDetailId);
+    if(!o) return;
+    closeDetail();
+
+    editingId = o.id;
+    document.getElementById('addModalTitle').textContent = 'Edit Order — ' + o.order_number;
+    document.getElementById('saveOrderBtn').textContent = 'Update Order';
+    document.getElementById('m_name').value = o.customer_name || '';
+    document.getElementById('m_phone').value = o.phone || '';
+    document.getElementById('m_email').value = o.email || '';
+    document.getElementById('m_address').value = o.address || '';
+    document.getElementById('m_total').value = o.total_amount || '';
+    document.getElementById('m_source').value = o.source || 'manual';
+    document.getElementById('m_status').value = o.status || 'pending';
+
+    const rows = document.getElementById('productRows');
+    rows.innerHTML = '';
+    const prods = Array.isArray(o.products) && o.products.length ? o.products : [{name:'',qty:1}];
+    prods.forEach(p=>addProductRow(p.name, p.qty));
+
+    document.getElementById('addModal').classList.add('show');
+  }
+
+  // small HTML-escape helpers (safety for customer-entered text)
+  function escHtml(s){
+    if(s===null||s===undefined) return '';
+    return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function escAttr(s){ return escHtml(s); }
 
   // init
   checkSession();
