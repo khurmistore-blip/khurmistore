@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   :root{
     --orange:#FF6B35;
@@ -195,6 +196,30 @@
   .statCard .value.orange{color:var(--orange);}
   .statCard .value.green{color:var(--green);}
   .statCard .value.yellow{color:var(--yellow);}
+
+  /* insights: chart + top products */
+  .insightsGrid{
+    display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:24px;
+  }
+  .panel{
+    background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:18px;
+  }
+  .panelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .panelTitle{font-size:14px;font-weight:700;}
+  .panelSub{font-size:12px;color:var(--muted);}
+  .chartEmpty{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;}
+  .topProducts .tp{
+    display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
+  }
+  .topProducts .tp:last-child{border-bottom:none;}
+  .tpRank{
+    width:24px;height:24px;border-radius:7px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;
+    background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;
+  }
+  .tpName{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tpQty{font-size:12px;color:var(--muted);white-space:nowrap;}
+  @media(max-width:760px){ .insightsGrid{grid-template-columns:1fr;} }
 
   .toolbar{
     display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;
@@ -397,6 +422,25 @@
       <div class="statCard"><div class="label">Pending</div><div class="value yellow" id="statPending">0</div></div>
     </div>
 
+    <div class="insightsGrid">
+      <div class="panel">
+        <div class="panelHead">
+          <span class="panelTitle">📈 Sales — last 30 days</span>
+          <span class="panelSub" id="chartTotal"></span>
+        </div>
+        <canvas id="salesChart" height="120"></canvas>
+        <div class="chartEmpty" id="chartEmpty">No sales data yet</div>
+      </div>
+      <div class="panel">
+        <div class="panelHead">
+          <span class="panelTitle">🏆 Top Products</span>
+        </div>
+        <div id="topProducts" class="topProducts">
+          <div class="chartEmpty">No products sold yet</div>
+        </div>
+      </div>
+    </div>
+
     <div class="toolbar">
       <input type="text" id="searchBox" placeholder="Search by name, order#, phone..." oninput="renderOrders()">
       <select id="statusFilter" onchange="renderOrders()">
@@ -509,6 +553,10 @@
         <option value="delivered">Delivered</option>
       </select>
     </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <input type="text" id="m_notes" placeholder="Cualquier nota sobre el pedido…">
+    </div>
     <div class="modalActions">
       <button class="btnCancel" onclick="closeAddModal()">Cancel</button>
       <button class="btnSave" id="saveOrderBtn" onclick="saveManualOrder()">Save Order</button>
@@ -619,6 +667,88 @@
     document.getElementById('statRevenue').textContent = '€' + revenue.toFixed(2);
     document.getElementById('statTotalOrders').textContent = allOrders.length;
     document.getElementById('statPending').textContent = pending;
+    buildInsights();
+  }
+
+  // ---------- CHART + TOP PRODUCTS ----------
+  let salesChartObj = null;
+  function buildInsights(){
+    // ---- Sales last 30 days ----
+    const days = 30;
+    const labels = [];
+    const totals = [];
+    const map = {};
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for(let i=days-1; i>=0; i--){
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0,10);
+      map[key] = 0;
+      labels.push(d.toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit'}));
+    }
+
+    let grand = 0;
+    allOrders.forEach(o=>{
+      const key = new Date(o.created_at).toISOString().slice(0,10);
+      if(key in map){ map[key] += parseFloat(o.total_amount)||0; }
+    });
+    Object.keys(map).forEach(k=>{ totals.push(map[k]); grand += map[k]; });
+
+    const hasData = grand > 0;
+    document.getElementById('chartEmpty').style.display = hasData ? 'none' : 'block';
+    document.getElementById('salesChart').style.display = hasData ? 'block' : 'none';
+    document.getElementById('chartTotal').textContent = hasData ? ('€' + grand.toFixed(2) + ' total') : '';
+
+    if(hasData && typeof Chart !== 'undefined'){
+      const ctx = document.getElementById('salesChart');
+      if(salesChartObj) salesChartObj.destroy();
+      salesChartObj = new Chart(ctx, {
+        type:'line',
+        data:{
+          labels:labels,
+          datasets:[{
+            data:totals,
+            borderColor:'#FF6B35',
+            backgroundColor:'rgba(255,107,53,0.12)',
+            fill:true, tension:0.35, pointRadius:2, borderWidth:2
+          }]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false} },
+          scales:{
+            x:{ ticks:{color:'#8B92B5',maxTicksLimit:8,font:{size:10}}, grid:{display:false} },
+            y:{ ticks:{color:'#8B92B5',font:{size:10},callback:v=>'€'+v}, grid:{color:'rgba(255,255,255,0.05)'} }
+          }
+        }
+      });
+    }
+
+    // ---- Top products ----
+    const prodMap = {};
+    allOrders.forEach(o=>{
+      if(Array.isArray(o.products)){
+        o.products.forEach(p=>{
+          const name = (p.name||'').trim();
+          if(!name) return;
+          prodMap[name] = (prodMap[name]||0) + (parseInt(p.qty)||1);
+        });
+      }
+    });
+    const top = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const tpEl = document.getElementById('topProducts');
+    if(top.length === 0){
+      tpEl.innerHTML = '<div class="chartEmpty">No products sold yet</div>';
+    } else {
+      tpEl.innerHTML = top.map((p,i)=>`
+        <div class="tp">
+          <div class="tpRank">${i+1}</div>
+          <div class="tpName">${escHtml(p[0])}</div>
+          <div class="tpQty">${p[1]} sold</div>
+        </div>`).join('');
+    }
   }
 
   // Shared filter — used by table render AND export
@@ -837,6 +967,7 @@
     document.getElementById('m_email').value='';
     document.getElementById('m_address').value='';
     document.getElementById('m_total').value='';
+    document.getElementById('m_notes').value='';
     document.getElementById('m_source').value='whatsapp';
     document.getElementById('m_status').value='pending';
     document.getElementById('productRows').innerHTML = `
@@ -872,7 +1003,8 @@
       products: products,
       total_amount: total,
       source: document.getElementById('m_source').value,
-      status: document.getElementById('m_status').value
+      status: document.getElementById('m_status').value,
+      notes: document.getElementById('m_notes').value.trim()
     };
 
     if(editingId){
@@ -967,6 +1099,7 @@
     document.getElementById('m_total').value = o.total_amount || '';
     document.getElementById('m_source').value = o.source || 'manual';
     document.getElementById('m_status').value = o.status || 'pending';
+    document.getElementById('m_notes').value = o.notes || '';
 
     const rows = document.getElementById('productRows');
     rows.innerHTML = '';
