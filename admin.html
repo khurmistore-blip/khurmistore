@@ -208,6 +208,7 @@
   .panelTitle{font-size:14px;font-weight:700;}
   .panelSub{font-size:12px;color:var(--muted);}
   .chartEmpty{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;}
+  .chartBox{position:relative;height:200px;width:100%;}
   .topProducts .tp{
     display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
   }
@@ -272,6 +273,13 @@
   tbody tr:hover{background:rgba(255,255,255,0.02);}
   .productsCell{max-width:220px;color:var(--muted);font-size:12px;}
   .totalCell{font-weight:700;color:var(--orange);}
+  .payPill{
+    display:inline-block;margin-top:4px;font-size:10px;font-weight:700;
+    padding:2px 7px;border-radius:6px;cursor:pointer;white-space:nowrap;
+  }
+  .payPill.paid{background:rgba(61,220,132,0.15);color:var(--green);}
+  .payPill.unpaid{background:rgba(248,201,32,0.15);color:var(--yellow);}
+  .payPill:hover{opacity:0.8;}
   .sourceTag{
     font-size:11px;padding:3px 8px;border-radius:6px;background:var(--navy3);color:var(--muted);
   }
@@ -318,6 +326,18 @@
     background:transparent;color:var(--orange);font-weight:700;
   }
   .btnEdit:hover{background:rgba(255,107,53,0.1);}
+  .btnShip{
+    flex:1;padding:12px;border-radius:10px;border:1px solid var(--blue);cursor:pointer;
+    background:transparent;color:var(--blue);font-weight:700;white-space:nowrap;
+  }
+  .btnShip:hover{background:rgba(77,159,255,0.1);}
+  /* login history */
+  .historyList{max-height:60vh;overflow-y:auto;}
+  .historyRow{padding:11px 0;border-bottom:1px solid var(--border);}
+  .historyRow:last-child{border-bottom:none;}
+  .hWhen{font-size:13px;font-weight:600;color:var(--text);}
+  .hMeta{font-size:12px;color:var(--muted);margin-top:3px;}
+  .hEmail{opacity:0.8;}
 
   /* ---------- MODAL ---------- */
   .modalOverlay{
@@ -407,6 +427,7 @@
     <div class="headerRight">
       <span id="lastUpdated" class="lastUpdated"></span>
       <button class="btnGhost" onclick="loadOrders(true)" id="refreshBtn">↻ Refresh</button>
+      <button class="btnGhost" onclick="openLoginHistory()" title="Admin login history">🔐 Logins</button>
       <span id="userEmail"></span>
       <button class="btnGhost" onclick="doLogout()">Logout</button>
     </div>
@@ -428,7 +449,7 @@
           <span class="panelTitle">📈 Sales — last 30 days</span>
           <span class="panelSub" id="chartTotal"></span>
         </div>
-        <canvas id="salesChart" height="120"></canvas>
+        <div class="chartBox"><canvas id="salesChart"></canvas></div>
         <div class="chartEmpty" id="chartEmpty">No sales data yet</div>
       </div>
       <div class="panel">
@@ -557,6 +578,13 @@
       <label>Notes (optional)</label>
       <input type="text" id="m_notes" placeholder="Cualquier nota sobre el pedido…">
     </div>
+    <div class="field">
+      <label>Payment</label>
+      <select id="m_paystatus">
+        <option value="unpaid">Unpaid</option>
+        <option value="paid">Paid</option>
+      </select>
+    </div>
     <div class="modalActions">
       <button class="btnCancel" onclick="closeAddModal()">Cancel</button>
       <button class="btnSave" id="saveOrderBtn" onclick="saveManualOrder()">Save Order</button>
@@ -574,8 +602,22 @@
     <div id="detailBody"></div>
     <div class="modalActions" style="flex-wrap:wrap;gap:8px;">
       <button class="btnWa" id="d_waBtn" onclick="waCustomer()">💬 WhatsApp</button>
+      <button class="btnShip" onclick="notifyShippedFromDetail()">📦 Notify Shipped</button>
       <button class="btnEdit" onclick="editCurrentOrder()">✎ Edit</button>
       <button class="btnCancel" onclick="closeDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN HISTORY MODAL -->
+<div class="modalOverlay" id="historyModal">
+  <div class="modal">
+    <div class="detailHead">
+      <h3>🔐 Admin Login History</h3>
+    </div>
+    <div id="historyBody" class="historyList"></div>
+    <div class="modalActions">
+      <button class="btnCancel" onclick="closeLoginHistory()">Close</button>
     </div>
   </div>
 </div>
@@ -587,6 +629,17 @@
   // ==========================================================================
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ====== LOGIN NOTIFICATION (CallMeBot WhatsApp) ======
+  // Get your free key: send "I allow callmebot to send me messages" to
+  // +34 644 51 95 23 on WhatsApp, you'll receive an apikey.
+  const CALLMEBOT_PHONE = "+34662241860";   // owner WhatsApp number
+  const CALLMEBOT_KEY   = "TU_APIKEY";       // <-- replace with your real CallMeBot apikey
+
+  // Shipping notification endpoint (notify_shipped.php in same folder)
+  const NOTIFY_SHIPPED_URL = "notify_shipped.php";
+  // ======================================================
+
   let allOrders = [];
 
   // ---------- AUTH ----------
@@ -601,19 +654,100 @@
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     btn.disabled = false; btn.textContent = "Login";
     if(error){ errEl.textContent = "Galat email ya password"; return; }
+    logLogin(email);   // record + notify (non-blocking)
     showDashboard(data.user);
   }
 
-  async function doLogout(){
+  // ---------- LOGIN HISTORY + NOTIFICATION ----------
+  async function logLogin(email){
+    let geo = {};
+    try{
+      const r = await fetch('https://ipwho.is/');
+      geo = await r.json();
+    }catch(e){ /* ignore geo failure */ }
+
+    const rec = {
+      email: email,
+      ip: geo.ip || '',
+      city: geo.city || '',
+      region: geo.region || '',
+      country: geo.country || '',
+      user_agent: navigator.userAgent || ''
+    };
+
+    // 1. Save to Supabase login_history
+    try{ await sb.from('login_history').insert(rec); }catch(e){ console.warn('login_history insert failed', e); }
+
+    // 2. Send WhatsApp via CallMeBot (fire-and-forget)
+    if(CALLMEBOT_KEY && CALLMEBOT_KEY !== 'TU_APIKEY'){
+      const loc = [rec.city, rec.region, rec.country].filter(Boolean).join(', ') || 'Unknown location';
+      const when = new Date().toLocaleString('es-ES');
+      const text =
+        `🔐 KhurmiStore Admin login\n` +
+        `📧 ${email}\n` +
+        `📍 ${loc}\n` +
+        `🌐 IP: ${rec.ip || '—'}\n` +
+        `🕒 ${when}`;
+      const url = 'https://api.callmebot.com/whatsapp.php'
+        + '?phone=' + encodeURIComponent(CALLMEBOT_PHONE)
+        + '&text='  + encodeURIComponent(text)
+        + '&apikey=' + encodeURIComponent(CALLMEBOT_KEY);
+      try{ fetch(url, {mode:'no-cors'}); }catch(e){ /* ignore */ }
+    }
+  }
+
+  async function openLoginHistory(){
+    document.getElementById('historyModal').classList.add('show');
+    const body = document.getElementById('historyBody');
+    body.innerHTML = '<div class="chartEmpty">Loading…</div>';
+    const { data, error } = await sb.from('login_history')
+      .select('*').order('created_at', {ascending:false}).limit(30);
+    if(error){ body.innerHTML = '<div class="chartEmpty">Error loading history</div>'; return; }
+    if(!data || data.length === 0){ body.innerHTML = '<div class="chartEmpty">No logins recorded yet</div>'; return; }
+    body.innerHTML = data.map(h=>{
+      const loc = [h.city, h.region, h.country].filter(Boolean).join(', ') || '—';
+      const when = new Date(h.created_at).toLocaleString('es-ES');
+      return `<div class="historyRow">
+        <div class="hWhen">🕒 ${when}</div>
+        <div class="hMeta">📍 ${escHtml(loc)} &nbsp;•&nbsp; 🌐 ${escHtml(h.ip||'—')}</div>
+        <div class="hMeta hEmail">📧 ${escHtml(h.email||'—')}</div>
+      </div>`;
+    }).join('');
+  }
+  function closeLoginHistory(){ document.getElementById('historyModal').classList.remove('show'); }
+
+  async function doLogout(reason){
     if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+    stopIdleTimer();
     await sb.auth.signOut();
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
+    if(reason === 'idle'){
+      const e = document.getElementById('loginError');
+      if(e) e.textContent = 'Session expired (30 min inactivity). Please login again.';
+    }
   }
 
   async function checkSession(){
     const { data } = await sb.auth.getSession();
     if(data.session){ showDashboard(data.session.user); }
+  }
+
+  // ---------- SESSION TIMEOUT (30 min inactivity) ----------
+  const IDLE_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+  let idleTimer = null;
+  function resetIdleTimer(){
+    if(idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(()=>doLogout('idle'), IDLE_LIMIT_MS);
+  }
+  const idleEvents = ['mousemove','mousedown','keydown','scroll','touchstart','click'];
+  function startIdleTimer(){
+    resetIdleTimer();
+    idleEvents.forEach(ev=>document.addEventListener(ev, resetIdleTimer, {passive:true}));
+  }
+  function stopIdleTimer(){
+    if(idleTimer){ clearTimeout(idleTimer); idleTimer = null; }
+    idleEvents.forEach(ev=>document.removeEventListener(ev, resetIdleTimer));
   }
 
   let autoRefreshTimer = null;
@@ -625,6 +759,8 @@
     // auto-refresh every 60s so new orders appear without reloading
     if(autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(()=>loadOrders(false), 60000);
+    // start 30-min inactivity auto-logout
+    startIdleTimer();
   }
 
   // ---------- LOAD ORDERS ----------
@@ -698,7 +834,7 @@
 
     const hasData = grand > 0;
     document.getElementById('chartEmpty').style.display = hasData ? 'none' : 'block';
-    document.getElementById('salesChart').style.display = hasData ? 'block' : 'none';
+    document.querySelector('.chartBox').style.display = hasData ? 'block' : 'none';
     document.getElementById('chartTotal').textContent = hasData ? ('€' + grand.toFixed(2) + ' total') : '';
 
     if(hasData && typeof Chart !== 'undefined'){
@@ -795,7 +931,11 @@
           <td><a class="orderLink" onclick="openDetail('${o.id}')">${o.order_number}</a></td>
           <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.phone||''}</span></td>
           <td class="productsCell">${products}</td>
-          <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}</td>
+          <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}<br>
+            <span class="payPill ${o.payment_status==='paid'?'paid':'unpaid'}" onclick="togglePaid('${o.id}')" title="Click to toggle">
+              ${o.payment_status==='paid'?'✓ Paid':'• Unpaid'}
+            </span>
+          </td>
           <td><span class="sourceTag">${o.source}</span></td>
           <td>
             <select class="statusSelect st-${o.status}" onchange="updateStatus('${o.id}', this.value)">
@@ -882,7 +1022,7 @@
     const rows = getFilteredOrders();
     if(rows.length === 0){ alert('Is range mein koi order nahi hai'); return; }
 
-    const headers = ['Order #','Date','Customer','Phone','Email','Address','Products','Total (EUR)','Payment','Source','Status','Notes'];
+    const headers = ['Order #','Date','Customer','Phone','Email','Address','Products','Total (EUR)','Payment','Paid?','Source','Status','Notes'];
     const csvLines = [headers.join(',')];
 
     const esc = (v)=>{
@@ -906,6 +1046,7 @@
         esc(products),
         esc(parseFloat(o.total_amount).toFixed(2)),
         esc(o.payment_method),
+        esc(o.payment_status==='paid'?'Paid':'Unpaid'),
         esc(o.source),
         esc(o.status),
         esc(o.notes)
@@ -915,7 +1056,7 @@
     // total row
     const grand = rows.reduce((s,o)=> s + (parseFloat(o.total_amount)||0), 0);
     csvLines.push('');
-    csvLines.push(['','','','','','','TOTAL', grand.toFixed(2),'','','',''].map(esc).join(','));
+    csvLines.push(['','','','','','','TOTAL', grand.toFixed(2),'','','','',''].map(esc).join(','));
 
     const csv = '\uFEFF' + csvLines.join('\n'); // BOM for Excel UTF-8
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
@@ -938,6 +1079,42 @@
     const o = allOrders.find(x=>x.id===id);
     if(o) o.status = newStatus;
     updateStats();
+    renderOrders();
+
+    // Offer to notify customer on WhatsApp when shipped
+    if(newStatus === 'shipped' && o && o.phone){
+      if(confirm(`Notify ${o.customer_name} on WhatsApp that order is shipped?`)){
+        notifyShipped(id);
+      }
+    }
+  }
+
+  async function notifyShipped(id){
+    try{
+      const r = await fetch(NOTIFY_SHIPPED_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ order_id: id })
+      });
+      const res = await r.json();
+      if(res.success){
+        alert('✅ WhatsApp shipping notification sent to customer');
+      }else{
+        alert('⚠️ Notification not sent: ' + (res.error || 'unknown') +
+              (res.httpCode ? ' (HTTP ' + res.httpCode + ')' : ''));
+      }
+    }catch(e){
+      alert('⚠️ Could not reach notify_shipped.php — make sure it is uploaded');
+    }
+  }
+
+  async function togglePaid(id){
+    const o = allOrders.find(x=>x.id===id);
+    if(!o) return;
+    const newPay = (o.payment_status === 'paid') ? 'unpaid' : 'paid';
+    const { error } = await sb.from('orders').update({ payment_status: newPay }).eq('id', id);
+    if(error){ alert('Update fail hua: ' + error.message); return; }
+    o.payment_status = newPay;
     renderOrders();
   }
 
@@ -968,6 +1145,7 @@
     document.getElementById('m_address').value='';
     document.getElementById('m_total').value='';
     document.getElementById('m_notes').value='';
+    document.getElementById('m_paystatus').value='unpaid';
     document.getElementById('m_source').value='whatsapp';
     document.getElementById('m_status').value='pending';
     document.getElementById('productRows').innerHTML = `
@@ -1004,7 +1182,8 @@
       total_amount: total,
       source: document.getElementById('m_source').value,
       status: document.getElementById('m_status').value,
-      notes: document.getElementById('m_notes').value.trim()
+      notes: document.getElementById('m_notes').value.trim(),
+      payment_status: document.getElementById('m_paystatus').value
     };
 
     if(editingId){
@@ -1052,7 +1231,7 @@
       row('Address', escHtml(o.address)) +
       `<div class="detailRow"><div class="dKey">Products</div><div class="dVal detailProducts">${prodHtml}</div></div>` +
       row('Total', `<b style="color:var(--orange)">€${parseFloat(o.total_amount).toFixed(2)}</b>`) +
-      row('Payment', escHtml(o.payment_method)) +
+      row('Payment', escHtml(o.payment_method) + (o.payment_status==='paid' ? ' — <b style="color:var(--green)">✓ Paid</b>' : ' — <b style="color:var(--yellow)">Unpaid</b>')) +
       row('Source', escHtml(o.source)) +
       row('Notes', escHtml(o.notes)) +
       row('Created', created) +
@@ -1072,6 +1251,16 @@
   function closeDetail(){
     document.getElementById('detailModal').classList.remove('show');
     currentDetailId = null;
+  }
+
+  function notifyShippedFromDetail(){
+    if(!currentDetailId) return;
+    const o = allOrders.find(x=>x.id===currentDetailId);
+    if(!o){ return; }
+    if(!o.phone){ alert('Is order mein phone number nahi hai'); return; }
+    if(confirm(`Notify ${o.customer_name} on WhatsApp that order is shipped?`)){
+      notifyShipped(currentDetailId);
+    }
   }
 
   function waCustomer(){
@@ -1100,6 +1289,7 @@
     document.getElementById('m_source').value = o.source || 'manual';
     document.getElementById('m_status').value = o.status || 'pending';
     document.getElementById('m_notes').value = o.notes || '';
+    document.getElementById('m_paystatus').value = o.payment_status || 'unpaid';
 
     const rows = document.getElementById('productRows');
     rows.innerHTML = '';
