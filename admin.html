@@ -297,12 +297,15 @@
   .delBtn:hover{color:var(--red);}
   .iconBtn{
     background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;opacity:0.8;
+    position:relative;z-index:5;pointer-events:auto;
   }
   .iconBtn:hover{opacity:1;}
   .orderLink{
     color:var(--orange);cursor:pointer;font-weight:600;text-decoration:none;
+    position:relative;z-index:5;pointer-events:auto;
   }
   .orderLink:hover{text-decoration:underline;}
+  .orderRow:hover{background:rgba(255,107,53,0.06);}
   .emptyState{padding:50px 20px;text-align:center;color:var(--muted);}
 
   /* detail modal extras */
@@ -820,14 +823,14 @@
     for(let i=days-1; i>=0; i--){
       const d = new Date(today);
       d.setDate(d.getDate() - i);
-      const key = d.toISOString().slice(0,10);
+      const key = fmtDate(d); // local date (fixes timezone shift)
       map[key] = 0;
       labels.push(d.toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit'}));
     }
 
     let grand = 0;
     allOrders.forEach(o=>{
-      const key = new Date(o.created_at).toISOString().slice(0,10);
+      const key = fmtDate(new Date(o.created_at)); // local date
       if(key in map){ map[key] += parseFloat(o.total_amount)||0; }
     });
     Object.keys(map).forEach(k=>{ totals.push(map[k]); grand += map[k]; });
@@ -927,18 +930,18 @@
       const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name} x${p.qty||1}`).join(', ') : '';
       const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
       return `
-        <tr>
-          <td><a class="orderLink" onclick="openDetail('${o.id}')">${o.order_number}</a></td>
+        <tr class="orderRow" data-oid="${o.id}" style="cursor:pointer">
+          <td><a class="orderLink">${o.order_number}</a></td>
           <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.phone||''}</span></td>
           <td class="productsCell">${products}</td>
           <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}<br>
-            <span class="payPill ${o.payment_status==='paid'?'paid':'unpaid'}" onclick="togglePaid('${o.id}')" title="Click to toggle">
+            <span class="payPill ${o.payment_status==='paid'?'paid':'unpaid'}" onclick="event.stopPropagation(); togglePaid('${o.id}')" title="Click to toggle">
               ${o.payment_status==='paid'?'✓ Paid':'• Unpaid'}
             </span>
           </td>
           <td><span class="sourceTag">${o.source}</span></td>
           <td>
-            <select class="statusSelect st-${o.status}" onchange="updateStatus('${o.id}', this.value)">
+            <select class="statusSelect st-${o.status}" onclick="event.stopPropagation()" onchange="event.stopPropagation(); updateStatus('${o.id}', this.value)">
               <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
               <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
               <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
@@ -948,8 +951,8 @@
           </td>
           <td>${date}</td>
           <td style="white-space:nowrap">
-            <button class="iconBtn" title="View details" onclick="openDetail('${o.id}')">👁</button>
-            <button class="iconBtn delBtn" title="Delete" onclick="deleteOrder('${o.id}')">🗑</button>
+            <button class="iconBtn" title="View details" onclick="event.stopPropagation(); openDetail('${o.id}')">👁</button>
+            <button class="iconBtn delBtn" title="Delete" onclick="event.stopPropagation(); deleteOrder('${o.id}')">🗑</button>
           </td>
         </tr>
       `;
@@ -1305,6 +1308,19 @@
     return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
   function escAttr(s){ return escHtml(s); }
+
+  // ---------- ROW CLICK (event delegation — most robust) ----------
+  document.getElementById('ordersBody').addEventListener('click', function(e){
+    // ignore clicks on interactive controls inside the row
+    if(e.target.closest('select') || e.target.closest('.payPill') || e.target.closest('.delBtn')) return;
+    const row = e.target.closest('tr.orderRow');
+    if(row && row.dataset.oid){
+      // eye button also lands here — fine, same action
+      openDetail(row.dataset.oid);
+    }
+  });
+
+  console.log('KhurmiStore Admin v2.2 loaded');
 
   // init
   checkSession();
