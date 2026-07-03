@@ -21,16 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ---- Config ----
-const SUPABASE_URL         = 'https://fwqxenybcijdrlchurmb.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cXhlbnliY2lqZHJsY2h1cm1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDI3NDQwMCwiZXhwIjoyMDk1ODUwNDAwfQ.yjrqFG23L0nZ6PpYA1c31O48wp5_0DfyyITLIpc_-Hs';
-
-const WA_PHONE_NUMBER_ID = '1199415803251225';
-const WA_ACCESS_TOKEN    = 'EAAL7innhQUMBRyzbsv2Sc4QOU68qgabeRbJ9IAhrBkvilVnI2CxTMCuxbdFCFEIhSNOxFUmHahVJjUZCulIS1z4FDE0zZB2iXPIvZCva95f7zL1xZC8T928zhM7AeQl41cEHTpF40hogGCPyeu8Aioq6tMGrScsEQZA5FDfYDgZCO999B3Aaa7rxdIw4ewbwZDZD';
-const WA_API_VERSION     = 'v25.0';
+require_once __DIR__ . '/config.php';
+// SUPABASE_URL, SUPABASE_SERVICE_KEY, WA_PHONE_NUMBER_ID, WA_ACCESS_TOKEN,
+// WA_API_VERSION, WA_TEMPLATE_LANG are all defined in config.php from .env
 
 // The template you create & get approved in Meta (see setup guide)
 const WA_TEMPLATE_NAME   = 'order_shipped';
-const WA_TEMPLATE_LANG   = 'es';
 // ----------------
 
 $raw  = file_get_contents('php://input');

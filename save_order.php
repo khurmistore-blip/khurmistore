@@ -4,15 +4,13 @@ declare(strict_types=1);
 require_once __DIR__ . '/config.php';
 
 // ── Configuración ─────────────────────────────────────────────────────────────
-const OWNER_EMAIL   = 'qamarshahzad320@gmail.com';
-const OWNER_PHONE   = '+34662241860';
-const CALLMEBOT_KEY = 'TU_APIKEY';          // ← Obtén tu clave en callmebot.com
+define('OWNER_EMAIL', env('OWNER_EMAIL', ''));
+define('OWNER_PHONE', env('OWNER_PHONE', ''));
+define('CALLMEBOT_KEY', env('CALLMEBOT_KEY', ''));
 const CSV_DIR       = __DIR__ . '/orders';
 const CSV_FILE      = CSV_DIR . '/orders.csv';
 
-// ── Supabase (Admin Dashboard) ───────────────────────────────────────────────
-const SUPABASE_URL          = 'https://fwqxenybcijdrlchurmb.supabase.co';
-const SUPABASE_SERVICE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cXhlbnliY2lqZHJsY2h1cm1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDI3NDQwMCwiZXhwIjoyMDk1ODUwNDAwfQ.yjrqFG23L0nZ6PpYA1c31O48wp5_0DfyyITLIpc_-Hs';
+// SUPABASE_URL / SUPABASE_SERVICE_KEY are defined in config.php from .env
 // ─────────────────────────────────────────────────────────────────────────────
 
 header('Content-Type: application/json; charset=utf-8');
