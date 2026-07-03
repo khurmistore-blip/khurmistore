@@ -1,20 +1,24 @@
 <?php
-declare(strict_types=1);
+/**
+ * config.php — Reads all secrets from .env (via env.php). No secrets hardcoded here.
+ * -------------------------------------------------------------------------------
+ * .env holds the real values (gitignored). This file is safe to commit.
+ */
 
 require_once __DIR__ . '/env.php';
 
-// ── WhatsApp Cloud API ────────────────────────────────────────────────────────
+// ---- WhatsApp Cloud API ----
 define('WA_PHONE_NUMBER_ID', env('WA_PHONE_NUMBER_ID', ''));
 define('WA_ACCESS_TOKEN',    env('WA_ACCESS_TOKEN', ''));
 define('WA_API_VERSION',     env('WA_API_VERSION', 'v25.0'));
 define('WA_TEMPLATE_LANG',   env('WA_TEMPLATE_LANG', 'es'));
 
-// ── Supabase ──────────────────────────────────────────────────────────────────
-define('SUPABASE_URL',          env('SUPABASE_URL', ''));
-define('SUPABASE_ANON_KEY',     env('SUPABASE_ANON_KEY', ''));
-define('SUPABASE_SERVICE_KEY',  env('SUPABASE_SERVICE_KEY', ''));
-// ─────────────────────────────────────────────────────────────────────────────
+// ---- Supabase ----
+define('SUPABASE_URL',         env('SUPABASE_URL', ''));
+define('SUPABASE_ANON_KEY',    env('SUPABASE_ANON_KEY', ''));
+define('SUPABASE_SERVICE_KEY', env('SUPABASE_SERVICE_KEY', ''));
 
+// ---- WhatsApp order confirmation (used by save_order.php) ----
 function send_whatsapp_order_confirmation($customerPhone, $name, $orderNumber, $total) {
     $customerPhone = preg_replace('/[^0-9]/', '', $customerPhone);
     if ($customerPhone === '') return false;
@@ -51,7 +55,7 @@ function send_whatsapp_order_confirmation($customerPhone, $name, $orderNumber, $
     return $code === 200;
 }
 
-// ── Site-wide display config (used by producto.php, categoria.php, ...) ───────
+// ---- Config array (used by sync, browse, categoria, producto) ----
 return [
     // Store / frontend
     'store_name'           => env('STORE_NAME', 'KhurmiStore'),
@@ -63,11 +67,11 @@ return [
     'supabase_anon_key'    => SUPABASE_ANON_KEY,
     'supabase_service_key' => SUPABASE_SERVICE_KEY,
 
-    // BigBuy (needed by sync_products.php)
+    // BigBuy
     'bigbuy_api_key'       => env('BIGBUY_API_KEY', ''),
-    'bigbuy_sandbox'       => filter_var(env('BIGBUY_SANDBOX', 'true'), FILTER_VALIDATE_BOOLEAN),
+    'bigbuy_sandbox'       => filter_var(env('BIGBUY_SANDBOX', 'false'), FILTER_VALIDATE_BOOLEAN),
 
-    // Pricing rule (BigBuy cost x3, .99 ending)
-    'price_multiplier'     => 3.0,
+    // Pricing rule (cost x multiplier, .99 ending)
+    'price_multiplier'     => 2.5,
     'price_ending'         => 0.99,
 ];
