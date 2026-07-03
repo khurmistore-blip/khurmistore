@@ -14,7 +14,7 @@ header('Content-Type: text/plain; charset=utf-8');
 set_time_limit(120);
 
 $cfg  = require __DIR__ . '/config.php';
-$base = ($cfg['bigbuy_sandbox'] ?? true) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
+$base = ($cfg['bigbuy_sandbox'] ?? false) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
 $key  = $cfg['bigbuy_api_key'] ?? '';
 $MULT = 2.5; // <-- pricing multiplier
 
@@ -37,7 +37,7 @@ $max   = (float)($_GET['max'] ?? 20);
 echo "==========================================\n";
 echo " BigBuy Browser  (x$MULT pricing)\n";
 echo " Cost filter: EUR $min - EUR $max\n";
-echo " Sandbox: " . (($cfg['bigbuy_sandbox'] ?? true) ? 'TRUE' : 'FALSE') . "\n";
+echo " Sandbox: " . (($cfg['bigbuy_sandbox'] ?? false) ? 'TRUE' : 'FALSE') . "\n";
 echo "==========================================\n\n";
 
 if ($tax === '') {
