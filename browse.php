@@ -14,6 +14,8 @@ header('Content-Type: text/plain; charset=utf-8');
 set_time_limit(120);
 
 $cfg  = require __DIR__ . '/config.php';
+// Debug line: confirms which config.php ran and what sandbox value it resolved to.
+echo "DEBUG: config path=" . __DIR__ . "/config.php | sandbox=" . var_export($cfg['bigbuy_sandbox'] ?? 'KEY_MISSING', true) . " | base=" . (($cfg['bigbuy_sandbox'] ?? false) ? 'SANDBOX' : 'PROD') . "\n";
 $base = ($cfg['bigbuy_sandbox'] ?? false) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
 $key  = $cfg['bigbuy_api_key'] ?? '';
 $MULT = 2.5; // <-- pricing multiplier
