@@ -143,6 +143,7 @@ function bb_product_to_js(array $p): array
                             <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                            <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                             <li><a href="categorias.html">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -193,6 +194,7 @@ function bb_product_to_js(array $p): array
                             <li><a href="categoria.php?cat=smartwatches" onclick="closeMobileMenu()">Smartwatches</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming" onclick="closeMobileMenu()">Gaming</a></li>
+                            <li><a href="categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
                             <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
@@ -255,6 +257,7 @@ function bb_product_to_js(array $p): array
                     <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                    <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                     <li><a href="products.html">Todos los productos</a></li>
                     <li><a href="product-details.html">Ficha de Producto</a></li>

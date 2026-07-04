@@ -162,6 +162,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                             <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                            <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                         </ul>
                     </li>
                     
@@ -510,6 +511,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                     <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                    <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                     <li><a href="products.html">Todos los productos</a></li>
                     <li><a href="product-details.html">Ficha de Producto</a></li>
