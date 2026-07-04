@@ -74,6 +74,23 @@ foreach ($SKUS as $sku) {
         echo "FAIL (no id in response)\n"; $fail++; sleep(3); continue;
     }
 
+    // ---- TEMPORARY DEBUG: only for the first SKU, to find which field/endpoint
+    // holds the category name before we wire up real mapping. Remove once confirmed. ----
+    if ($sku === $SKUS[0]) {
+        echo "\n\n===== DEBUG (SKU $sku, BigBuy id $bbId) =====\n";
+        echo "--- raw getProductInfoBySku() response ---\n";
+        echo json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+
+        sleep(2); // rate-limit spacing before the extra debug call
+
+        echo "--- raw GET /rest/catalog/productscategories/$bbId.json?isoCode=es ---\n";
+        $catDebug = bb_raw_get($cfg, "/rest/catalog/productscategories/$bbId.json?isoCode=es");
+        echo "HTTP " . $catDebug['status'] . "\n";
+        echo json_encode($catDebug['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+        echo "===== END DEBUG =====\n\n";
+    }
+    // ---- END TEMPORARY DEBUG ----
+
     sleep(2); // rate-limit spacing
 
     // 2) Price via getProduct (catalog object). May be [0]-wrapped too.
@@ -146,6 +163,25 @@ foreach ($SKUS as $sku) {
 echo "\nDone. $ok synced, $fail failed.\n";
 echo "Check Supabase > products, and categoria.php on the site.\n";
 
+
+// Raw BigBuy GET call for endpoints not yet wrapped by the BigBuy class (debug only).
+function bb_raw_get(array $cfg, string $endpoint): array
+{
+    $base = $cfg['bigbuy_sandbox'] ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
+    $ch = curl_init($base . $endpoint);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $cfg['bigbuy_api_key'],
+            'Content-Type: application/json',
+        ],
+        CURLOPT_TIMEOUT => 30,
+    ]);
+    $body   = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return ['status' => $status, 'data' => json_decode($body, true)];
+}
 
 function supabaseUpsert(array $cfg, string $table, array $row, string $conflictCol): bool
 {

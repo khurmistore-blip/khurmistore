@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿<?php
+// Fetch featured products for the "Destacados" homepage grid (real Supabase data).
+require_once __DIR__ . '/supabase.php';
+$cfg = require __DIR__ . '/config.php';
+$featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=8');
+?>
+<!DOCTYPE html>
 <html lang="es-ES">
 <head>
     <!-- Core Meta Tags -->
@@ -152,10 +158,10 @@
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.html?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="categoria.html?cat=smartwatches">Smartwatches</a></li>
-                            <li><a href="categoria.html?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.html?cat=gaming">Gaming</a></li>
+                            <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                            <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                            <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                            <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                         </ul>
                     </li>
                     
@@ -373,19 +379,19 @@
             <h2>Comprar por <span>Categoría</span></h2>
         </div>
         <div class="categories-grid">
-            <a href="categoria.html?cat=auriculares" class="category-card" data-category="auriculares">
+            <a href="categoria.php?cat=auriculares" class="category-card" data-category="auriculares">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80" alt="Auriculares y Audio" width="500" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
                 <h3>Auriculares y Audio</h3><p>Audio Premium</p>
             </a>
-            <a href="categoria.html?cat=smartwatches" class="category-card" data-category="smartwatches">
+            <a href="categoria.php?cat=smartwatches" class="category-card" data-category="smartwatches">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80" alt="Smartwatches" width="500" height="363" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
                 <h3>Smartwatches</h3><p>Wearables</p>
             </a>
-            <a href="categoria.html?cat=accesorios-moviles" class="category-card" data-category="accesorios-moviles">
+            <a href="categoria.php?cat=accesorios-moviles" class="category-card" data-category="accesorios-moviles">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80" alt="Accesorios para Móvil" width="500" height="333" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
                 <h3>Accesorios para Móvil</h3><p>Tu móvil</p>
             </a>
-            <a href="categoria.html?cat=gaming" class="category-card" data-category="gaming">
+            <a href="categoria.php?cat=gaming" class="category-card" data-category="gaming">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80" alt="Gaming" width="500" height="334" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
                 <h3>Gaming</h3><p>Juega al máximo</p>
             </a>
@@ -474,10 +480,10 @@
             <div class="footer-col">
                 <h3>Categorías</h3>
                 <ul>
-                    <li><a href="categoria.html?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="categoria.html?cat=smartwatches">Smartwatches</a></li>
-                    <li><a href="categoria.html?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                    <li><a href="categoria.html?cat=gaming">Gaming</a></li>
+                    <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                    <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                    <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                    <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                     <li><a href="products.html">Todos los productos</a></li>
                     <li><a href="product-details.html">Ficha de Producto</a></li>
@@ -732,6 +738,36 @@
     </div>
     <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES" defer></script>
     <script src="script.js" defer></script>
+    <script>
+    // Swap the "Destacados" grid's demo data for real Supabase products, once
+    // script.js's own deferred renderProducts() has already run (DOMContentLoaded
+    // always fires after deferred scripts, so this is guaranteed to run after it).
+    document.addEventListener('DOMContentLoaded', function () {
+        var realProducts = <?= json_encode(array_map(function ($p) {
+            return [
+                'id'       => (int)$p['id'],
+                'name'     => $p['name'],
+                'category' => $p['category'] ?? '',
+                'price'    => (float)$p['price'],
+                'image'    => $p['image_url'] ?? '',
+                'tag'      => '',
+                'rating'   => 5,
+            ];
+        }, $featured), JSON_UNESCAPED_UNICODE) ?>;
+
+        if (realProducts.length > 0) {
+            // products is declared with const in script.js; mutate in place instead of reassigning.
+            products.length = 0;
+            Array.prototype.push.apply(products, realProducts);
+            renderProducts('all');
+
+            // Send real product clicks to producto.php (live page) instead of the old demo page.
+            window.goToProduct = function (id) {
+                window.location.href = 'producto.php?id=' + id;
+            };
+        }
+    });
+    </script>
 </body>
 </html>
 
