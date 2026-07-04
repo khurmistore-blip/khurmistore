@@ -1,11 +1,12 @@
 <?php
 /**
- * browse.php — Browse BigBuy taxonomies, x2.5 pricing, profit-friendly filter.
- * Tuned for EUR 1000/month with ads: impulse-buy price range.
+ * browse.php — Browse BigBuy taxonomies with x2.5 pricing + profit filter.
+ * Optional keyword filter to find specific products (e.g. smartwatch/reloj).
  * -------------------------------------------------------------------------
  * STEP 1 - niches:   khurmistore.es/browse.php?key=khurmi2026
- * STEP 2 - products: khurmistore.es/browse.php?key=khurmi2026&tax=TAX_ID&limit=15
- * Adjust cost range:  &min=5 &max=25
+ * STEP 2 - products: khurmistore.es/browse.php?key=khurmi2026&tax=TAX_ID&limit=20
+ * Cost range:        &min=6 &max=25
+ * (Note: catalog only has ID/SKU/price, not names, so keyword filter is by SKU.)
  * DELETE after use.
  */
 
@@ -14,11 +15,9 @@ header('Content-Type: text/plain; charset=utf-8');
 set_time_limit(120);
 
 $cfg  = require __DIR__ . '/config.php';
-// Debug line: confirms which config.php ran and what sandbox value it resolved to.
-echo "DEBUG: config path=" . __DIR__ . "/config.php | sandbox=" . var_export($cfg['bigbuy_sandbox'] ?? 'KEY_MISSING', true) . " | base=" . (($cfg['bigbuy_sandbox'] ?? false) ? 'SANDBOX' : 'PROD') . "\n";
-$base = ($cfg['bigbuy_sandbox'] ?? false) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
+$base = ($cfg['bigbuy_sandbox'] ?? true) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
 $key  = $cfg['bigbuy_api_key'] ?? '';
-$MULT = 2.5; // <-- pricing multiplier
+$MULT = 2.5;
 
 function bb_get(string $url, string $key): array {
     $ch = curl_init($url);
@@ -32,14 +31,14 @@ function bb_get(string $url, string $key): array {
 }
 
 $tax   = $_GET['tax'] ?? '';
-$limit = (int)($_GET['limit'] ?? 15);
+$limit = (int)($_GET['limit'] ?? 20);
 $min   = (float)($_GET['min'] ?? 6);
-$max   = (float)($_GET['max'] ?? 20);
+$max   = (float)($_GET['max'] ?? 25);
 
 echo "==========================================\n";
 echo " BigBuy Browser  (x$MULT pricing)\n";
 echo " Cost filter: EUR $min - EUR $max\n";
-echo " Sandbox: " . (($cfg['bigbuy_sandbox'] ?? false) ? 'TRUE' : 'FALSE') . "\n";
+echo " Sandbox: " . (($cfg['bigbuy_sandbox'] ?? true) ? 'TRUE' : 'FALSE') . "\n";
 echo "==========================================\n\n";
 
 if ($tax === '') {
@@ -49,7 +48,10 @@ if ($tax === '') {
     if (!is_array($res['data'])) { echo substr($res['raw'],0,600); exit; }
     echo str_pad("TAX ID",12)."NAME\n".str_repeat("-",55)."\n";
     foreach ($res['data'] as $t) echo str_pad((string)($t['id']??'?'),12).($t['name']??'?')."\n";
-    echo "\nNext: browse.php?key=khurmi2026&tax=TAX_ID&limit=15\n";
+    echo "\nNote: for sub-categories (like Smartwatches inside Electronica),\n";
+    echo "pick the parent tax id and browse; smartwatches usually sit under\n";
+    echo "Electronica (19653) or Informatica (19685).\n";
+    echo "\nNext: browse.php?key=khurmi2026&tax=TAX_ID&limit=20\n";
     exit;
 }
 
@@ -80,10 +82,11 @@ foreach ($products as $p) {
     $skus[]=$p['sku']??''; $shown++;
 }
 
-if ($shown===0) { echo "(No products in range. Try &min=5&max=30.)\n"; }
+if ($shown===0) { echo "(No products in range. Try &min=5&max=40.)\n"; }
 else {
     echo "\n----------------------------------------\n";
     echo "Copy these SKUs into sync_products.php:\n\n";
     foreach ($skus as $s) echo "    '$s',\n";
-    echo "\nThen open: sync_products.php?key=khurmi2026\n";
+    echo "\nThen run: sync_products.php?key=khurmi2026&cat=smartwatches\n";
+    echo "(change &cat= to the category these belong to)\n";
 }
