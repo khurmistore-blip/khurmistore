@@ -161,7 +161,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                             <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                             <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                            <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                         </ul>
                     </li>
@@ -394,7 +394,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             </a>
             <a href="categoria.php?cat=gaming" class="category-card" data-category="gaming">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80" alt="Gaming" width="500" height="334" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Gaming</h3><p>Juega al máximo</p>
+                <h3>Videojuegos</h3><p>Juega al máximo</p>
             </a>
             <a href="categorias.html" class="category-card" data-category="all">
                 <div class="cat-img view-all"><i class="fas fa-th-large"></i></div>
@@ -510,7 +510,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                     <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                     <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                    <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                    <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                     <li><a href="products.html">Todos los productos</a></li>

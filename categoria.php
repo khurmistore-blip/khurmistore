@@ -27,7 +27,7 @@ $categoryLabels = [
     'auriculares'         => 'Auriculares y Audio',
     'relojes'             => 'Relojes',
     'accesorios-moviles'  => 'Accesorios para Móvil',
-    'gaming'              => 'Gaming',
+    'gaming'              => 'Videojuegos',
 ];
 $catLabel  = $cat ? ($categoryLabels[$cat] ?? $cat) : 'Todos los Productos';
 $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
@@ -113,7 +113,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                             <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                             <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                            <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                             <li><a href="categorias.html">Ver Todo</a></li>
                         </ul>
@@ -164,7 +164,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                             <li><a href="categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
                             <li><a href="categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=gaming" onclick="closeMobileMenu()">Gaming</a></li>
+                            <li><a href="categoria.php?cat=gaming" onclick="closeMobileMenu()">Videojuegos</a></li>
                             <li><a href="categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
                             <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
@@ -269,7 +269,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                     <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                     <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
-                    <li><a href="categoria.php?cat=gaming">Gaming</a></li>
+                    <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
                     <li><a href="products.html">Todos los productos</a></li>
