@@ -159,7 +159,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
                             <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                            <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
@@ -384,9 +384,9 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80" alt="Auriculares y Audio" width="500" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
                 <h3>Auriculares y Audio</h3><p>Audio Premium</p>
             </a>
-            <a href="categoria.php?cat=smartwatches" class="category-card" data-category="smartwatches">
+            <a href="categoria.php?cat=relojes" class="category-card" data-category="relojes">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80" alt="Smartwatches" width="500" height="363" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Smartwatches</h3><p>Wearables</p>
+                <h3>Relojes</h3><p>Wearables</p>
             </a>
             <a href="categoria.php?cat=accesorios-moviles" class="category-card" data-category="accesorios-moviles">
                 <div class="cat-img"><img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80" alt="Accesorios para Móvil" width="500" height="333" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
@@ -508,7 +508,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
                 <h3>Categorías</h3>
                 <ul>
                     <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                    <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>

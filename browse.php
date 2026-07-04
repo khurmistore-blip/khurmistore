@@ -87,6 +87,6 @@ else {
     echo "\n----------------------------------------\n";
     echo "Copy these SKUs into sync_products.php:\n\n";
     foreach ($skus as $s) echo "    '$s',\n";
-    echo "\nThen run: sync_products.php?key=khurmi2026&cat=smartwatches\n";
+    echo "\nThen run: sync_products.php?key=khurmi2026&cat=relojes\n";
     echo "(change &cat= to the category these belong to)\n";
 }

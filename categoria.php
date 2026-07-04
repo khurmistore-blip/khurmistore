@@ -25,7 +25,7 @@ $products = sb_get($cfg, $query);
 
 $categoryLabels = [
     'auriculares'         => 'Auriculares y Audio',
-    'smartwatches'        => 'Smartwatches',
+    'relojes'             => 'Relojes',
     'accesorios-moviles'  => 'Accesorios para Móvil',
     'gaming'              => 'Gaming',
 ];
@@ -111,7 +111,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
                             <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                            <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
@@ -162,7 +162,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                         </button>
                         <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
                             <li><a href="categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=smartwatches" onclick="closeMobileMenu()">Smartwatches</a></li>
+                            <li><a href="categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
                             <li><a href="categoria.php?cat=accesorios-moviles" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=gaming" onclick="closeMobileMenu()">Gaming</a></li>
                             <li><a href="categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
@@ -267,7 +267,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 <h3>Categorías</h3>
                 <ul>
                     <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="categoria.php?cat=smartwatches">Smartwatches</a></li>
+                    <li><a href="categoria.php?cat=relojes">Relojes</a></li>
                     <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Gaming</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
