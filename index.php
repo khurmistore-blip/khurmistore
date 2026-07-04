@@ -432,7 +432,33 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             <button class="filter-btn" data-filter="handsfree">Manos Libres</button>
             <button class="filter-btn" data-filter="mouse">Ratones</button>
         </div>
-        <div class="products-grid" id="productsGrid"></div>
+        <?php if (!empty($featured)): ?>
+            <!-- Real Supabase products, server-rendered (same .product-card markup script.js's dummy grid uses). -->
+            <div class="products-grid" id="featuredProductsGrid">
+                <?php foreach ($featured as $p): ?>
+                    <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
+                        <div class="product-img">
+                            <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+                            <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
+                        </div>
+                        <div class="product-info">
+                            <h3><?= htmlspecialchars($p['name']) ?></h3>
+                            <?php if (!empty($p['category'])): ?><p class="product-cat"><?= htmlspecialchars($p['category']) ?></p><?php endif; ?>
+                            <div class="product-rating">★★★★★</div>
+                            <div class="product-price">
+                                <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
+                                <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">
+                                    <i class="fas fa-cart-plus"></i> Añadir al carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <!-- No active products in Supabase yet: fall back to script.js's demo grid so this section never looks empty. -->
+            <div class="products-grid" id="productsGrid"></div>
+        <?php endif; ?>
     </section>
 
     <!-- Características -->
@@ -739,9 +765,10 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
     <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES" defer></script>
     <script src="script.js" defer></script>
     <script>
-    // Swap the "Destacados" grid's demo data for real Supabase products, once
-    // script.js's own deferred renderProducts() has already run (DOMContentLoaded
-    // always fires after deferred scripts, so this is guaranteed to run after it).
+    // The "Destacados" grid above is now server-rendered by PHP when real Supabase
+    // products exist (see #featuredProductsGrid). We still seed script.js's global
+    // `products` array with the same real data so "Añadir al carrito" on those
+    // server-rendered cards can find them by real id.
     document.addEventListener('DOMContentLoaded', function () {
         var realProducts = <?= json_encode(array_map(function ($p) {
             return [
@@ -759,12 +786,6 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             // products is declared with const in script.js; mutate in place instead of reassigning.
             products.length = 0;
             Array.prototype.push.apply(products, realProducts);
-            renderProducts('all');
-
-            // Send real product clicks to producto.php (live page) instead of the old demo page.
-            window.goToProduct = function (id) {
-                window.location.href = 'producto.php?id=' + id;
-            };
         }
     });
     </script>
