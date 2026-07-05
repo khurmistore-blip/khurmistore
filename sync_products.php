@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0);
 /**
  * sync_products.php — Sync selected BigBuy products into Supabase `products`.
  * Assigns a CATEGORY to the whole batch (so products land in the right category).
@@ -61,6 +62,14 @@ $SKUS = [
     'S0586380','S0565277','V0103963','S0900155','V0104115',
 ];
 
+/* ------------------------------------------------------------------ *
+ *  Batch/pagination support (avoids hitting the server's max execution
+ *  time when syncing large SKU lists with sleep() rate-limit delays).
+ * ------------------------------------------------------------------ */
+$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
+$count = isset($_GET['count']) ? (int)$_GET['count'] : 20;
+$batch = array_slice($SKUS, $start, $count);
+
 echo "==========================================\n";
 echo " BigBuy -> Supabase SYNC\n";
 echo " Category for this run: $CATEGORY\n";
@@ -69,7 +78,7 @@ echo "==========================================\n\n";
 
 $ok = 0; $fail = 0;
 
-foreach ($SKUS as $sku) {
+foreach ($batch as $sku) {
     echo "-> SKU $sku ... ";
 
     $infoRes = $bb->getProductInfoBySku($sku, 'es');
@@ -147,6 +156,7 @@ foreach ($SKUS as $sku) {
 }
 
 echo "\nDone. $ok synced into '$CATEGORY', $fail failed.\n";
+echo "Batch done. Processed SKUs $start to " . ($start + count($batch)) . " of " . count($SKUS) . " total.\n";
 
 
 function supabaseUpsert(array $cfg, string $table, array $row, string $conflictCol): bool
