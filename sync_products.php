@@ -87,11 +87,11 @@ foreach ($batch as $sku) {
         $httpCode = $infoRes['status'] ?? null;
         if ($httpCode == 429) {
             $attempts++;
-            echo "   429 rate-limited, waiting 15s (retry $attempts/3)...\n";
+            echo "   429 rate-limited, waiting 20s (retry $attempts/5)...\n";
             @ob_flush(); @flush();
-            sleep(15);
+            sleep(20);
         }
-    } while ($httpCode == 429 && $attempts < 3);
+    } while ($httpCode == 429 && $attempts < 5);
 
     if (!($infoRes['success'] ?? false)) {
         echo "FAIL info (HTTP " . ($infoRes['status'] ?? '?') . ")\n"; $fail++; sleep(3); continue;
