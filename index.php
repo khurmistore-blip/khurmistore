@@ -106,13 +106,6 @@ function render_category_slider_card(array $p, array $cfg): string
          Reuses existing design tokens (--primary, --gradient2, .product-card, .slider-btn)
          so it stays visually consistent with the rest of the site. -->
     <style>
-        /* Slim free-shipping offer strip (replaces the old large promo banner) */
-        .free-shipping-bar{background:var(--gradient2);color:#fff;text-align:center;padding:12px 20px;min-height:40px;display:flex;align-items:center;justify-content:center}
-        .free-shipping-bar p{margin:0;font-weight:600;font-size:15px;letter-spacing:0.2px}
-        @media (max-width: 768px) {
-            .free-shipping-bar{padding:9px 14px;min-height:36px}
-            .free-shipping-bar p{font-size:12.5px;line-height:1.3}
-        }
         .category-slider-section{padding:60px 30px 0;max-width:1400px;margin:0 auto}
         .category-slider-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;text-align:left;margin-bottom:30px}
         .category-slider-header .subtitle{display:block}
@@ -370,11 +363,6 @@ function render_category_slider_card(array $p, array $cfg): string
             </div>
         </div>
     </section>
-
-    <!-- Barra de Envío Gratis (slim, reemplaza el antiguo banner promocional grande) -->
-    <div class="free-shipping-bar">
-        <p>🚚 Envío GRATIS en todos los pedidos superiores a 50€</p>
-    </div>
 
     <!-- Productos -->
     <section class="products" id="products">
