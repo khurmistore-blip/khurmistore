@@ -112,9 +112,9 @@ function render_category_slider_card(array $p, array $cfg): string
         .category-slider-viewall{color:var(--primary);font-weight:600;text-decoration:none;white-space:nowrap;transition:0.3s}
         .category-slider-viewall:hover{opacity:0.8}
         .category-slider-wrap{position:relative}
-        .category-slider-track{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
+        .category-slider-track{display:flex;flex-wrap:nowrap;gap:24px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
         .category-slider-track::-webkit-scrollbar{display:none}
-        .category-slider-row{display:flex;gap:24px;width:max-content}
+        .category-slider-row{display:flex;flex-wrap:nowrap;flex:0 0 auto;gap:24px;width:max-content}
         .category-slider-card{flex:0 0 260px;width:260px}
         .category-slider-wrap .slider-btn{position:absolute;top:40%}
         .category-slider-wrap .slider-btn.prev{left:-6px}
