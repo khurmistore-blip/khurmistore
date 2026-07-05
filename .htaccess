@@ -1,3 +1,9 @@
+# Serve index.php as the homepage; index.html is legacy only
+DirectoryIndex index.php index.html
+
+# index.html must never be served directly — send visitors to the real homepage
+Redirect 301 /index.html /
+
 RewriteEngine On
 
 # 301: missing blog post → nearest existing equivalent

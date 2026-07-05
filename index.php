@@ -149,7 +149,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
                     <!-- Inicio (Home) Link -->
-                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="index.php">Inicio</a></li>
                     <li><a href="products.html">Tienda</a></li>
                     
                     <!-- Categorías Dropdown - Contains product categories (stays intact) -->
@@ -438,12 +438,12 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             <div class="products-grid" id="featuredProductsGrid">
                 <?php foreach ($featured as $p): ?>
                     <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
-                        <div class="product-img">
+                        <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
                             <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
                             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
-                        </div>
+                        </a>
                         <div class="product-info">
-                            <h3><?= htmlspecialchars($p['name']) ?></h3>
+                            <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
                             <?php if (!empty($p['category'])): ?><p class="product-cat"><?= htmlspecialchars($p['category']) ?></p><?php endif; ?>
                             <div class="product-rating">★★★★★</div>
                             <div class="product-price">
@@ -497,7 +497,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             <div class="footer-col">
                 <h3>Información</h3>
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="index.php">Inicio</a></li>
                     <li><a href="categorias.html">Tienda</a></li>
                     <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
                     <li><a href="contacto.html">Contacto</a></li>
