@@ -1,10 +1,10 @@
 # Serve index.php as the homepage; index.html is legacy only
 DirectoryIndex index.php index.html
 
-# index.html must never be served directly — send visitors to the real homepage
-Redirect 301 /index.html /
-
 RewriteEngine On
+
+# Redirect legacy index.html to real homepage (index.php)
+RewriteRule ^index\.html$ / [R=301,L]
 
 # 301: missing blog post → nearest existing equivalent
 RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/blog-como-conectar-auriculares-bluetooth [R=301,L]
