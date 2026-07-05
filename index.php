@@ -673,7 +673,7 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
         <div class="popup-right">
             <div class="popup-image">
-                <img data-src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80" alt="Oferta" width="500" height="333">
+                <img data-src="img/gift-box.jpg" alt="Oferta" width="500" height="333">
                 <div class="discount-circle">
                     <span>GRATIS</span>
                 </div>
