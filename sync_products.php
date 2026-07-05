@@ -116,17 +116,40 @@ foreach ($batch as $sku) {
     }
     sleep(2);
 
-    // image
+    // image — fetch ALL images (up to 7), comma-separated, preferring the
+    // largest/full-size URL variant per image over a thumbnail field.
+    // On failure (429 exhausted, 404, empty list) $mainImage simply stays
+    // null, same graceful behavior as the old single-image code — never a crash.
     $mainImage = null;
-    $imgRes = $bb->getProductImages((int)$bbId);
+    $attempts = 0;
+    do {
+        $imgRes   = $bb->getProductImages((int)$bbId);
+        $httpCode = $imgRes['status'] ?? null;
+        if ($httpCode == 429) {
+            $attempts++;
+            echo "   429 rate-limited (images), waiting 20s (retry $attempts/5)...\n";
+            @ob_flush(); @flush();
+            sleep(20);
+        }
+    } while ($httpCode == 429 && $attempts < 5);
+
     if ($imgRes['success'] ?? false) {
         $imgData = $imgRes['data'];
         $imgRec  = (is_array($imgData) && isset($imgData[0]) && is_array($imgData[0])) ? $imgData[0] : $imgData;
         $imgList = $imgRec['images'] ?? $imgRec;
         if (is_array($imgList)) {
+            $urls = [];
             foreach ($imgList as $img) {
-                $url = is_array($img) ? ($img['url'] ?? $img['image'] ?? null) : $img;
-                if ($url) { $mainImage = $url; break; }
+                $url = is_array($img)
+                    ? ($img['urlMkt'] ?? $img['largeUrl'] ?? $img['url'] ?? $img['image'] ?? null)
+                    : $img;
+                if ($url) {
+                    $urls[] = $url;
+                    if (count($urls) >= 7) break;
+                }
+            }
+            if (!empty($urls)) {
+                $mainImage = implode(',', $urls);
             }
         }
     }
