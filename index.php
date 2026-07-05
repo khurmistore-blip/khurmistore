@@ -3,6 +3,50 @@
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
 $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=8');
+
+// Per-category homepage sliders — one row per header "Categorías" dropdown entry.
+// Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
+$categorySliderDefs = [
+    ['slug' => 'auriculares',        'label' => 'Auriculares y Audio'],
+    ['slug' => 'relojes',            'label' => 'Relojes'],
+    ['slug' => 'accesorios-moviles', 'label' => 'Accesorios para Móvil'],
+    ['slug' => 'belleza',            'label' => 'Belleza'],
+    ['slug' => 'electronica',        'label' => 'Electrónica'],
+];
+$categorySliders = [];
+foreach ($categorySliderDefs as $def) {
+    $catProducts = sb_get($cfg, 'products?status=eq.active&stock=gt.0&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
+    if (!empty($catProducts)) {
+        $categorySliders[] = ['slug' => $def['slug'], 'label' => $def['label'], 'products' => $catProducts];
+    }
+}
+
+// Renders one .product-card — same markup as the "Destacados" grid cards — for the
+// category sliders below. Kept as a helper since each slider repeats its card set
+// twice (real row + duplicate row) to create a seamless infinite-scroll loop.
+function render_category_slider_card(array $p, array $cfg): string
+{
+    ob_start();
+    ?>
+    <div class="product-card category-slider-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
+        <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
+            <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+            <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
+        </a>
+        <div class="product-info">
+            <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
+            <div class="product-rating">★★★★★</div>
+            <div class="product-price">
+                <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
+                <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">
+                    <i class="fas fa-cart-plus"></i> Añadir al carrito
+                </button>
+            </div>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es-ES">
@@ -58,6 +102,31 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
     
     <!-- CSS and Fonts -->
     <link rel="stylesheet" href="style.min.css">
+    <!-- Inline CSS for the homepage's per-category product sliders (Change 3).
+         Reuses existing design tokens (--primary, --gradient2, .product-card, .slider-btn)
+         so it stays visually consistent with the rest of the site. -->
+    <style>
+        .category-slider-section{padding:60px 30px 0;max-width:1400px;margin:0 auto}
+        .category-slider-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;text-align:left;margin-bottom:30px}
+        .category-slider-header .subtitle{display:block}
+        .category-slider-viewall{color:var(--primary);font-weight:600;text-decoration:none;white-space:nowrap;transition:0.3s}
+        .category-slider-viewall:hover{opacity:0.8}
+        .category-slider-wrap{position:relative}
+        .category-slider-track{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
+        .category-slider-track::-webkit-scrollbar{display:none}
+        .category-slider-row{display:flex;gap:24px;width:max-content}
+        .category-slider-card{flex:0 0 260px;width:260px}
+        .category-slider-wrap .slider-btn{position:absolute;top:40%}
+        .category-slider-wrap .slider-btn.prev{left:-6px}
+        .category-slider-wrap .slider-btn.next{right:-6px}
+        @media (max-width: 768px) {
+            .category-slider-section{padding:40px 16px 0}
+            .category-slider-card{flex-basis:200px;width:200px}
+            .category-slider-wrap .slider-btn{width:38px;height:38px;font-size:14px}
+            .category-slider-wrap .slider-btn.prev{left:2px}
+            .category-slider-wrap .slider-btn.next{right:2px}
+        }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=optional">
@@ -295,84 +364,6 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
         </div>
     </section>
 
-    <!-- Auto-scrolling Coming-Soon Category Slider -->
-    <section class="category-marquee-section">
-        <div class="section-header">
-            <span class="subtitle">PRÓXIMAMENTE</span>
-            <h2>Próximamente en <span>KhurmiStore</span></h2>
-        </div>
-        <div class="category-marquee-container">
-            <div class="category-marquee">
-                <!-- First set of categories for seamless looping -->
-                <div class="category-marquee-wrapper">
-                    <span class="category-pill">Bebé</span>
-                    <span class="category-pill">Belleza</span>
-                    <span class="category-pill">Coche y moto</span>
-                    <span class="category-pill">Ropa</span>
-                    <span class="category-pill">Informática</span>
-                    <span class="category-pill">Bricolaje y herramientas</span>
-                    <span class="category-pill">Electrónica</span>
-                    <span class="category-pill">Alimentación y bebidas</span>
-                    <span class="category-pill">Jardín</span>
-                    <span class="category-pill">Salud y cuidado personal</span>
-                    <span class="category-pill">Hogar y cocina</span>
-                    <span class="category-pill">Joyería</span>
-                    <span class="category-pill">Iluminación</span>
-                    <span class="category-pill">Equipaje</span>
-                    <span class="category-pill">Oficina y papelería</span>
-                    <span class="category-pill">Productos para mascotas</span>
-                    <span class="category-pill">Calzado y accesorios</span>
-                    <span class="category-pill">Deportes y aire libre</span>
-                    <span class="category-pill">Juguetes y juegos</span>
-                    <span class="category-pill">Relojes</span>
-                    <span class="category-pill">Smart Home</span>
-                </div>
-                <!-- Duplicated set of categories for seamless looping -->
-                <div class="category-marquee-wrapper">
-                    <span class="category-pill">Bebé</span>
-                    <span class="category-pill">Belleza</span>
-                    <span class="category-pill">Coche y moto</span>
-                    <span class="category-pill">Ropa</span>
-                    <span class="category-pill">Informática</span>
-                    <span class="category-pill">Bricolaje y herramientas</span>
-                    <span class="category-pill">Electrónica</span>
-                    <span class="category-pill">Alimentación y bebidas</span>
-                    <span class="category-pill">Jardín</span>
-                    <span class="category-pill">Salud y cuidado personal</span>
-                    <span class="category-pill">Hogar y cocina</span>
-                    <span class="category-pill">Joyería</span>
-                    <span class="category-pill">Iluminación</span>
-                    <span class="category-pill">Equipaje</span>
-                    <span class="category-pill">Oficina y papelería</span>
-                    <span class="category-pill">Productos para mascotas</span>
-                    <span class="category-pill">Calzado y accesorios</span>
-                    <span class="category-pill">Deportes y aire libre</span>
-                    <span class="category-pill">Juguetes y juegos</span>
-                    <span class="category-pill">Relojes</span>
-                    <span class="category-pill">Smart Home</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Payment Method Banner Section -->
-    <section class="payment-banner-section">
-        <div class="payment-banner-container">
-            <div class="payment-banner-content">
-                <!-- Heading for payment banner -->
-                <h2>Paga de Forma Fácil y Segura</h2>
-                <!-- Subtitle for payment banner -->
-                <h3>Aceptamos pagos con PayPal</h3>
-                <!-- Description for payment banner -->
-                <p>Paga con tu cuenta PayPal o tarjeta a través de PayPal — 100% seguro y protegido.</p>
-            </div>
-            <div class="payment-banner-icon">
-                <!-- PayPal Icon (Font Awesome) -->
-                <i class="fa-brands fa-paypal"></i>
-            </div>
-        </div>
-    </section>
-
     <!-- Categorías -->
     <section class="categories" id="categories">
         <div class="section-header">
@@ -461,6 +452,36 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             <div class="products-grid" id="productsGrid"></div>
         <?php endif; ?>
     </section>
+
+    <!-- Sliders de Categoría (uno por cada categoría del menú, datos reales de Supabase) -->
+    <?php foreach ($categorySliders as $slider): ?>
+        <section class="category-slider-section" aria-label="<?= htmlspecialchars($slider['label']) ?>">
+            <div class="section-header category-slider-header">
+                <div>
+                    <span class="subtitle">CATEGORÍA</span>
+                    <h2><?= htmlspecialchars($slider['label']) ?></h2>
+                </div>
+                <a href="categoria.php?cat=<?= htmlspecialchars($slider['slug']) ?>" class="category-slider-viewall">Ver Todo <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="category-slider-wrap">
+                <button type="button" class="slider-btn category-slider-arrow prev" aria-label="Desplazar a la izquierda"><i class="fas fa-chevron-left"></i></button>
+                <div class="category-slider-track" data-autoscroll>
+                    <div class="category-slider-row">
+                        <?php foreach ($slider['products'] as $p): ?>
+                            <?= render_category_slider_card($p, $cfg) ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <!-- Duplicated set of the same cards so the auto-scroll can loop seamlessly -->
+                    <div class="category-slider-row" aria-hidden="true">
+                        <?php foreach ($slider['products'] as $p): ?>
+                            <?= render_category_slider_card($p, $cfg) ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <button type="button" class="slider-btn category-slider-arrow next" aria-label="Desplazar a la derecha"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+    <?php endforeach; ?>
 
     <!-- Características -->
     <section class="features">
@@ -789,6 +810,59 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
             products.length = 0;
             Array.prototype.push.apply(products, realProducts);
         }
+    });
+    </script>
+    <script>
+    // Per-category homepage sliders (Change 3): continuous right-to-left auto-scroll,
+    // paused on hover/touch, plus manual prev/next arrows. Pure vanilla JS, no libraries.
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.category-slider-track').forEach(function (track) {
+            var firstRow = track.querySelector('.category-slider-row');
+            var loopWidth = 0;
+
+            function measure() {
+                // Width of one full (non-duplicated) set of cards, used to reset the
+                // scroll position seamlessly once the auto-scroll passes it.
+                loopWidth = firstRow ? firstRow.scrollWidth + 24 : track.scrollWidth / 2;
+            }
+            measure();
+            window.addEventListener('resize', measure);
+
+            var paused = false;
+            var speed = 0.6; // px per animation frame
+
+            function autoScrollStep() {
+                if (!paused && loopWidth > 0) {
+                    track.scrollLeft += speed;
+                    if (track.scrollLeft >= loopWidth) {
+                        track.scrollLeft -= loopWidth;
+                    }
+                }
+                requestAnimationFrame(autoScrollStep);
+            }
+            requestAnimationFrame(autoScrollStep);
+
+            // Pause on hover (desktop) and while the user is touching/dragging (mobile).
+            track.addEventListener('mouseenter', function () { paused = true; });
+            track.addEventListener('mouseleave', function () { paused = false; });
+            track.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+            track.addEventListener('touchend', function () { paused = false; });
+
+            // Manual left/right arrows for this slider.
+            var wrap = track.closest('.category-slider-wrap');
+            var prevBtn = wrap ? wrap.querySelector('.category-slider-arrow.prev') : null;
+            var nextBtn = wrap ? wrap.querySelector('.category-slider-arrow.next') : null;
+            var resumeTimer = null;
+
+            function manualScroll(direction) {
+                paused = true;
+                track.scrollBy({ left: direction * 300, behavior: 'smooth' });
+                clearTimeout(resumeTimer);
+                resumeTimer = setTimeout(function () { paused = false; }, 1500);
+            }
+            if (prevBtn) prevBtn.addEventListener('click', function () { manualScroll(-1); });
+            if (nextBtn) nextBtn.addEventListener('click', function () { manualScroll(1); });
+        });
     });
     </script>
 </body>
