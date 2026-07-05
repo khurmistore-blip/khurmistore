@@ -81,7 +81,18 @@ $ok = 0; $fail = 0;
 foreach ($batch as $sku) {
     echo "-> SKU $sku ... ";
 
-    $infoRes = $bb->getProductInfoBySku($sku, 'es');
+    $attempts = 0;
+    do {
+        $infoRes  = $bb->getProductInfoBySku($sku, 'es');
+        $httpCode = $infoRes['status'] ?? null;
+        if ($httpCode == 429) {
+            $attempts++;
+            echo "   429 rate-limited, waiting 15s (retry $attempts/3)...\n";
+            @ob_flush(); @flush();
+            sleep(15);
+        }
+    } while ($httpCode == 429 && $attempts < 3);
+
     if (!($infoRes['success'] ?? false)) {
         echo "FAIL info (HTTP " . ($infoRes['status'] ?? '?') . ")\n"; $fail++; sleep(3); continue;
     }
@@ -152,7 +163,7 @@ foreach ($batch as $sku) {
     } else {
         echo "FAIL (Supabase upsert)\n"; $fail++;
     }
-    sleep(2);
+    sleep(5);
 }
 
 echo "\nDone. $ok synced into '$CATEGORY', $fail failed.\n";
