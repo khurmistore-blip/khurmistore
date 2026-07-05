@@ -366,6 +366,8 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                     <h3>Pago</h3>
                     <p style="color:#666;font-size:0.9rem;margin-bottom:15px;">Paga de forma segura con tu cuenta PayPal o con tarjeta de crédito/débito.</p>
                     <div id="paypal-button-container"></div>
+                    <div style="text-align:center;color:#888;margin:14px 0;font-size:0.85rem;">— o —</div>
+                    <button type="button" class="btn-primary full-btn" id="stripeCheckoutBtn"><i class="fab fa-cc-stripe"></i> Pagar con tarjeta</button>
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>

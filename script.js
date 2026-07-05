@@ -822,6 +822,7 @@ function goToPayment() {
     document.querySelectorAll('.step')[1].classList.add('active');
     updateSummary();
     initPayPalButtons();
+    initStripeButton();
 }
 
 function backToDetails() {
@@ -1911,4 +1912,86 @@ function initPayPalButtons() {
         }
     }).render('#paypal-button-container');
 }
+
+// Stripe Checkout (hosted redirect) — alternative to PayPal, same cart/customer
+// data. Creates a Checkout Session server-side, then redirects the browser to
+// Stripe's hosted payment page; PayPal keeps working exactly as before.
+let stripeButtonWired = false;
+
+function initStripeButton() {
+    if (stripeButtonWired) return;
+    const btn = document.getElementById('stripeCheckoutBtn');
+    if (!btn) return;
+    stripeButtonWired = true;
+
+    btn.addEventListener('click', async function () {
+        if (cart.length === 0) {
+            showNotification('¡Tu carrito está vacío!');
+            return;
+        }
+
+        // Datos del formulario (mismos campos que recoge el flujo de PayPal)
+        const name    = document.getElementById('custName')?.value.trim()    || '';
+        const email   = document.getElementById('custEmail')?.value.trim()   || '';
+        const phone   = document.getElementById('custPhone')?.value.trim()   || '';
+        const address = document.getElementById('custAddress')?.value.trim() || '';
+        const city    = document.getElementById('custCity')?.value.trim()    || '';
+        const notes   = document.getElementById('custNotes')?.value.trim()   || '';
+
+        const originalLabel = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirigiendo a Stripe...';
+
+        try {
+            const res = await fetch('stripe_checkout.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name, email, phone, address, city, notes,
+                    products: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                }),
+            });
+            const result = await res.json();
+
+            if (result.url) {
+                window.location = result.url;
+                return; // leaving the page — no need to restore the button
+            }
+            showNotification(result.error || 'No se pudo iniciar el pago con tarjeta.');
+        } catch (e) {
+            console.error('stripe_checkout.php error:', e);
+            showNotification('Error al conectar con Stripe. Por favor, inténtalo de nuevo.');
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = originalLabel;
+    });
+}
+
+// Stripe redirect landing (?pago=exitoso|cancelado|fallido on the homepage,
+// set by stripe_checkout.php's cancel_url and stripe_return.php's redirects).
+// Mirrors what PayPal's onApprove already does on success: clear the cart
+// and show the same confirmation banner.
+(function handleStripeRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const pago = params.get('pago');
+    if (!pago) return;
+
+    if (pago === 'exitoso') {
+        cart = [];
+        saveCart();
+        updateCart();
+        showOrderConfirmation('¡Gracias! Tu pago con tarjeta se ha completado. Te contactaremos pronto para confirmar el envío.');
+    } else if (pago === 'cancelado') {
+        showNotification('Pago cancelado. Tu carrito sigue guardado.');
+    } else if (pago === 'fallido') {
+        showNotification('No se pudo verificar el pago. Si el cargo se realizó, contáctanos.');
+    }
+
+    // Clean the URL so refreshing the page doesn't re-trigger this.
+    params.delete('pago');
+    const query  = params.toString();
+    const newUrl = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
+    window.history.replaceState({}, '', newUrl);
+})();
 

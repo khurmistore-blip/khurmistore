@@ -18,6 +18,10 @@ define('SUPABASE_URL',         env('SUPABASE_URL', ''));
 define('SUPABASE_ANON_KEY',    env('SUPABASE_ANON_KEY', ''));
 define('SUPABASE_SERVICE_KEY', env('SUPABASE_SERVICE_KEY', ''));
 
+// ---- Stripe ----
+define('STRIPE_SECRET_KEY',      env('STRIPE_SECRET_KEY', ''));
+define('STRIPE_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY', ''));
+
 // ---- WhatsApp order confirmation (used by save_order.php) ----
 function send_whatsapp_order_confirmation($customerPhone, $name, $orderNumber, $total) {
     $customerPhone = preg_replace('/[^0-9]/', '', $customerPhone);
