@@ -364,36 +364,6 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
     </section>
 
-    <!-- Categorías -->
-    <section class="categories" id="categories">
-        <div class="section-header">
-            <span class="subtitle">EXPLORAR POR</span>
-            <h2>Comprar por <span>Categoría</span></h2>
-        </div>
-        <div class="categories-grid">
-            <a href="categoria.php?cat=auriculares" class="category-card" data-category="auriculares">
-                <div class="cat-img"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80" alt="Auriculares y Audio" width="500" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Auriculares y Audio</h3><p>Audio Premium</p>
-            </a>
-            <a href="categoria.php?cat=relojes" class="category-card" data-category="relojes">
-                <div class="cat-img"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80" alt="Smartwatches" width="500" height="363" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Relojes</h3><p>Wearables</p>
-            </a>
-            <a href="categoria.php?cat=accesorios-moviles" class="category-card" data-category="accesorios-moviles">
-                <div class="cat-img"><img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80" alt="Accesorios para Móvil" width="500" height="333" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Accesorios para Móvil</h3><p>Tu móvil</p>
-            </a>
-            <a href="categoria.php?cat=gaming" class="category-card" data-category="gaming">
-                <div class="cat-img"><img src="https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80" alt="Gaming" width="500" height="334" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22 preserveAspectRatio=%22xMidYMid slice%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/></svg>'"></div>
-                <h3>Videojuegos</h3><p>Juega al máximo</p>
-            </a>
-            <a href="categorias.html" class="category-card" data-category="all">
-                <div class="cat-img view-all"><i class="fas fa-th-large"></i></div>
-                <h3>Ver Todo</h3><p>Todo el catálogo</p>
-            </a>
-        </div>
-    </section>
-
     <!-- Banner Promocional -->
     <section class="featured-banner">
         <div class="banner-content">
