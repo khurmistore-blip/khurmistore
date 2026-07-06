@@ -68,7 +68,30 @@ if (strlen($phone) === 9) { $phone = '34' . $phone; }
 $name        = (string)($o['customer_name'] ?? 'Cliente');
 $orderNumber = (string)($o['order_number'] ?? '');
 
-// 3. Send WhatsApp template message
+// 3. Send a customer-facing "order shipped" email with a Trustpilot review
+//    request. WhatsApp order_shipped is a Meta-approved template (fixed body,
+//    only 2 placeholder params) so a review link can't be appended to it in
+//    code — this email is the review-request channel instead. Independent of
+//    the WhatsApp send below: a failure here never affects it or its response.
+$customerEmail = trim((string)($o['email'] ?? ''));
+$emailSent = false;
+if ($customerEmail !== '') {
+    $emailSubject = '=?UTF-8?B?' . base64_encode("Tu pedido {$orderNumber} ha sido enviado") . '?=';
+    $emailBody  = "Hola {$name},\n\n";
+    $emailBody .= "¡Buenas noticias! Tu pedido ya está de camino. 🚚\n\n";
+    $emailBody .= "Número de pedido: {$orderNumber}\n\n";
+    $emailBody .= "Si tienes cualquier duda sobre la entrega, responde a este correo y te ayudaremos encantados.\n\n";
+    $emailBody .= "⭐ Cuando recibas tu pedido, ¿nos dejarías tu opinión? Nos ayuda muchísimo: ";
+    $emailBody .= "https://es.trustpilot.com/evaluate/khurmistore.es ¡Gracias! 💛\n";
+
+    $emailHeaders  = "From: pedidos@khurmistore.es\r\n";
+    $emailHeaders .= "MIME-Version: 1.0\r\n";
+    $emailHeaders .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    $emailSent = @mail($customerEmail, $emailSubject, $emailBody, $emailHeaders);
+}
+
+// 4. Send WhatsApp template message
 $url = 'https://graph.facebook.com/' . WA_API_VERSION . '/' . WA_PHONE_NUMBER_ID . '/messages';
 $payload = [
     'messaging_product' => 'whatsapp',
@@ -103,12 +126,13 @@ $code     = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($code === 200) {
-    echo json_encode(['success' => true, 'to' => $phone]);
+    echo json_encode(['success' => true, 'to' => $phone, 'emailSent' => $emailSent]);
 } else {
     echo json_encode([
-        'success'  => false,
-        'error'    => 'WhatsApp API error',
-        'httpCode' => $code,
-        'response' => json_decode($response, true),
+        'success'   => false,
+        'error'     => 'WhatsApp API error',
+        'httpCode'  => $code,
+        'response'  => json_decode($response, true),
+        'emailSent' => $emailSent,
     ]);
 }
