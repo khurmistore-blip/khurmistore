@@ -35,7 +35,7 @@ function render_category_slider_card(array $p, array $cfg): string
         </a>
         <div class="product-info">
             <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
-            <div class="product-rating">★★★★★</div>
+            <span class="badge-nuevo">Nuevo</span>
             <div class="product-price">
                 <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
                 <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">
@@ -392,7 +392,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <div class="product-info">
                             <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
                             <?php if (!empty($p['category'])): ?><p class="product-cat"><?= htmlspecialchars($p['category']) ?></p><?php endif; ?>
-                            <div class="product-rating">★★★★★</div>
+                            <span class="badge-nuevo">Nuevo</span>
                             <div class="product-price">
                                 <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
                                 <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">

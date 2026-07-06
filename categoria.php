@@ -216,7 +216,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                         <div class="product-info">
                             <h3><?= htmlspecialchars($p['name']) ?></h3>
                             <?php if (!empty($p['category'])): ?><p class="product-cat"><?= htmlspecialchars($categoryLabels[$p['category']] ?? $p['category']) ?></p><?php endif; ?>
-                            <div class="product-rating">★★★★★</div>
+                            <span class="badge-nuevo">Nuevo</span>
                             <div class="product-price">
                                 <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
                                 <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">

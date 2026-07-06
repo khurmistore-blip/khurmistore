@@ -366,7 +366,7 @@ function renderProducts(filter = 'all') {
             <div class="product-info">
                 <h3>${p.name}</h3>
                 <p class="product-cat">${getCategoryName(p.category)}</p>
-                <div class="product-rating">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
+                <span class="badge-nuevo">Nuevo</span>
                 <div class="product-price">
                     <span class="price">${formatPrice(p.price)}${p.oldPrice ? ` <small style="color:#888;text-decoration:line-through;font-size:13px;">${formatPrice(p.oldPrice)}</small>` : ''}</span>
                     <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Añadir ${p.name} al carrito">
@@ -478,7 +478,7 @@ function renderCategoryPage() {
             <div class="product-info">
                 <h3>${p.name}</h3>
                 <p class="product-cat">${getCategoryName(p.category)}</p>
-                <div class="product-rating">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
+                <span class="badge-nuevo">Nuevo</span>
                 <div class="product-price">
                     <span class="price">${formatPrice(p.price)}${p.oldPrice ? ` <small style="color:#888;text-decoration:line-through;font-size:13px;">${formatPrice(p.oldPrice)}</small>` : ''}</span>
                     <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Añadir ${p.name} al carrito">
@@ -1284,8 +1284,7 @@ function renderProductDetails() {
                 <span class="detail-brand">${p.brand}</span>
                 <h1>${p.name}</h1>
                 <div class="detail-rating">
-                    <span class="stars">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</span>
-                    <span class="rating-count">(${Math.floor(Math.random() * 200) + 50} reseñas)</span>
+                    <span class="badge-nuevo">Nuevo</span>
                     <span class="stock-badge ${p.stock > 5 ? 'in-stock' : 'low-stock'}">
                         <i class="fas fa-${p.stock > 5 ? 'check-circle' : 'exclamation-circle'}"></i>
                         ${p.stock > 5 ? `${p.stock} en stock` : `¡Solo ${p.stock} disponibles!`}
@@ -1431,7 +1430,7 @@ function renderProductDetails() {
                         <div class="product-info">
                             <h3>${rp.name}</h3>
                             <p class="product-cat">${getCategoryName(rp.category)}</p>
-                            <div class="product-rating">${'★'.repeat(rp.rating)}${'☆'.repeat(5-rp.rating)}</div>
+                            <span class="badge-nuevo">Nuevo</span>
                             <div class="product-price">
                                 <span class="price">${formatPrice(rp.price)}</span>
                                 <button class="add-cart" onclick="event.stopPropagation(); addToCart(${rp.id})"><i class="fas fa-cart-plus"></i></button>
