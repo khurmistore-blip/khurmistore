@@ -6,6 +6,9 @@ RewriteEngine On
 # Redirect legacy index.html to real homepage (index.php)
 RewriteRule ^index\.html$ / [R=301,L]
 
+# Redirect legacy sitemap.xml to the dynamic sitemap.php (single source of truth)
+RewriteRule ^sitemap\.xml$ /sitemap.php [R=301,L]
+
 # 301: missing blog post → nearest existing equivalent
 RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/blog-como-conectar-auriculares-bluetooth [R=301,L]
 
