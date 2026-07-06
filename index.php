@@ -9,7 +9,7 @@ $featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=
 $categorySliderDefs = [
     ['slug' => 'auriculares',        'label' => 'Auriculares y Audio'],
     ['slug' => 'relojes',            'label' => 'Relojes'],
-    ['slug' => 'accesorios-moviles', 'label' => 'Accesorios para Móvil'],
+    ['slug' => 'accesorios-movil', 'label' => 'Accesorios para Móvil'],
     ['slug' => 'belleza',            'label' => 'Belleza'],
     ['slug' => 'electronica',        'label' => 'Electrónica'],
 ];
@@ -229,7 +229,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
                             <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                             <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                            <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=belleza">Belleza</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                         </ul>
@@ -486,7 +486,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 <ul>
                     <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
                     <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                    <li><a href="categoria.php?cat=accesorios-moviles">Accesorios para Móvil</a></li>
+                    <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
                     <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
