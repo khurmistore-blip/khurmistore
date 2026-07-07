@@ -24,7 +24,8 @@ if (!$p) {
 }
 
 // A few more active products (excluding this one) so the "Productos Relacionados" grid has real data too.
-$related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&limit=5") : [];
+// Excludes refurbished/"Reacondicionado" listings — see categoria.php/index.php for the same filter.
+$related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&name=not.ilike.*Reacondicionado*&limit=5") : [];
 
 $pageTitle = $p ? ($p['seo_title'] ?: $p['name']) : 'Producto no encontrado';
 $pageDesc  = $p
@@ -35,7 +36,13 @@ $canonicalUrl = $p ? "https://khurmistore.es/producto.php?id={$p['id']}" : 'http
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
 function bb_product_to_js(array $p): array
 {
-    $image = $p['image_url'] ?? '';
+    // image_url stores multiple images comma-separated (e.g. "url1,url2,url3");
+    // split into a real gallery array instead of repeating a single image.
+    $gallery = array_values(array_filter(array_map('trim', explode(',', $p['image_url'] ?? ''))));
+    if (empty($gallery)) {
+        $gallery = [''];
+    }
+    $image = $gallery[0];
     $features = [];
     if (!empty($p['bullet_points'])) {
         $features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $p['bullet_points']))));
@@ -46,7 +53,7 @@ function bb_product_to_js(array $p): array
         'category'    => $p['category'] ?? '',
         'price'       => (float)$p['price'],
         'image'       => $image,
-        'gallery'     => array_fill(0, 4, $image), // Supabase only stores one image_url today; see note below.
+        'gallery'     => $gallery,
         'tag'         => '',
         'rating'      => 5,
         'stock'       => (int)($p['stock'] ?? 0),

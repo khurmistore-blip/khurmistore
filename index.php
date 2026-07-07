@@ -1,8 +1,10 @@
 ﻿<?php
 // Fetch featured products for the "Destacados" homepage grid (real Supabase data).
+// Excludes refurbished/"Reacondicionado" listings — a reviewer flagged one as
+// looking out of place; hidden from display only, never deleted from the DB.
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
-$featured = sb_get($cfg, 'products?status=eq.active&order=created_at.desc&limit=8');
+$featured = sb_get($cfg, 'products?status=eq.active&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=8');
 
 // Per-category homepage sliders — one row per header "Categorías" dropdown entry.
 // Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
@@ -15,11 +17,44 @@ $categorySliderDefs = [
 ];
 $categorySliders = [];
 foreach ($categorySliderDefs as $def) {
-    $catProducts = sb_get($cfg, 'products?status=eq.active&stock=gt.0&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
+    $catProducts = sb_get($cfg, 'products?status=eq.active&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
     if (!empty($catProducts)) {
         $categorySliders[] = ['slug' => $def['slug'], 'label' => $def['label'], 'products' => $catProducts];
     }
 }
+
+// Real product images for the hero slider — replaces the hardcoded Unsplash
+// stock photos a reviewer flagged as looking like a generic dropship template.
+// Falls back to any active product with a real image if the category itself
+// has none, so the hero never shows a broken image. Also excludes refurbished
+// listings so the hero never showcases that item. Picks 2 different auriculares
+// photos (slides 1 & 3) so the slider doesn't repeat the same image twice.
+function hero_slide_images(array $cfg, string $category, int $count): array
+{
+    $base = 'products?status=eq.active&image_url=not.is.null&name=not.ilike.*Reacondicionado*'
+        . '&order=created_at.desc&limit=' . $count;
+    $rows = sb_get($cfg, $base . '&category=eq.' . rawurlencode($category));
+    if (count($rows) < $count) {
+        $rows = array_merge($rows, sb_get($cfg, $base));
+    }
+    $images = [];
+    foreach ($rows as $row) {
+        $firstImage = trim(explode(',', $row['image_url'] ?? '')[0] ?? '');
+        if ($firstImage !== '') {
+            $images[] = $firstImage;
+        }
+        if (count($images) >= $count) {
+            break;
+        }
+    }
+    return $images;
+}
+
+$heroAudioImages = hero_slide_images($cfg, 'auriculares', 2);
+$heroWatchImages = hero_slide_images($cfg, 'relojes', 1);
+$heroSlide1Image = $heroAudioImages[0] ?? '';
+$heroSlide2Image = $heroWatchImages[0] ?? '';
+$heroSlide3Image = $heroAudioImages[1] ?? $heroSlide1Image;
 
 // Renders one .product-card — same markup as the "Destacados" grid cards — for the
 // category sliders below. Kept as a helper since each slider repeats its card set
@@ -64,9 +99,9 @@ function render_category_slider_card(array $p, array $cfg): string
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="p:domain_verify" content="decfe186d976a1afeea0c9540eca6cec"/>
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
-    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80&fm=webp" type="image/webp" fetchpriority="high">
+    <?php if ($heroSlide1Image !== ''): ?>
+    <link rel="preload" as="image" href="<?= htmlspecialchars($heroSlide1Image) ?>" fetchpriority="high">
+    <?php endif; ?>
     
     <!-- SEO Meta Tags -->
     <title>Accesorios para Móvil y Tech Premium | KhurmiStore</title>
@@ -297,7 +332,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><picture><source srcset="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80&fm=webp" type="image/webp"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80" alt="Auriculares premium con cancelación de ruido" width="800" height="1209" fetchpriority="high" decoding="async"></picture></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Auriculares premium con cancelación de ruido" fetchpriority="high" decoding="async"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -314,7 +349,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80" alt="Reloj inteligente smartwatch" width="800" height="581" loading="lazy" decoding="async"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="Reloj inteligente smartwatch" loading="lazy" decoding="async"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -331,7 +366,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&q=80" alt="Auriculares inalámbricos Bluetooth" width="800" height="533" loading="lazy" decoding="async"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="Auriculares inalámbricos Bluetooth" loading="lazy" decoding="async"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>

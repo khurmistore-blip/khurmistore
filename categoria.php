@@ -17,7 +17,9 @@ require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
 
 $cat   = isset($_GET['cat']) ? trim($_GET['cat']) : '';
-$query = 'products?status=eq.active&order=created_at.desc';
+// Excludes refurbished/"Reacondicionado" listings — a reviewer flagged one as
+// looking out of place; hidden from display only, never deleted from the DB.
+$query = 'products?status=eq.active&name=not.ilike.*Reacondicionado*&order=created_at.desc';
 if ($cat !== '') {
     $query .= '&category=eq.' . rawurlencode($cat);
 }

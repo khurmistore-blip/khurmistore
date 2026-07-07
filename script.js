@@ -908,6 +908,7 @@ function renderProductDetails() {
                     <span class="product-tag detail-tag">${p.tag}</span>
                     <img id="mainProductImg" src="${p.gallery[0]}" alt="${p.name}">
                 </div>
+                ${p.gallery.length > 1 ? `
                 <div class="thumbnail-list">
                     ${p.gallery.map((img, i) => `
                         <div class="thumb ${i === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
@@ -915,6 +916,7 @@ function renderProductDetails() {
                         </div>
                     `).join('')}
                 </div>
+                ` : ''}
             </div>
 
             <div class="product-info-detail">
