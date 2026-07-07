@@ -104,17 +104,17 @@ function render_category_slider_card(array $p, array $cfg): string
     <?php endif; ?>
     
     <!-- SEO Meta Tags -->
-    <title>Accesorios para Móvil y Tech Premium | KhurmiStore</title>
-    <meta name="description" content="Descubre los mejores accesorios para móvil en KhurmiStore: fundas, auriculares, cargadores y más. Envío rápido a España. ¡Compra ahora y mejora tu móvil!">
-    <meta name="keywords" content="auriculares inalámbricos, relojes inteligentes, cascos gaming, accesorios tech, auriculares premium España, ratones gaming, earbuds">
+    <title>KhurmiStore | Belleza, Accesorios Móvil y Electrónica</title>
+    <meta name="description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
+    <meta name="keywords" content="belleza, accesorios para móvil, relojes inteligentes, auriculares inalámbricos, electrónica, fundas para móvil, tecnología premium España">
     <meta name="theme-color" content="#ff6b35">
     <meta name="author" content="KhurmiStore">
     <link rel="canonical" href="https://khurmistore.es/">
     
     <!-- Open Graph Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Accesorios para Móvil y Tech Premium | KhurmiStore">
-    <meta property="og:description" content="Descubre los mejores accesorios para móvil en KhurmiStore. Fundas, auriculares, cargadores y tecnología premium con envío rápido a España.">
+    <meta property="og:title" content="KhurmiStore | Belleza, Accesorios Móvil y Electrónica">
+    <meta property="og:description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
     <meta property="og:url" content="https://khurmistore.es/">
     <meta property="og:image" content="https://khurmistore.es/og-image.jpg">
     <meta property="og:image:width" content="1200">
@@ -123,8 +123,8 @@ function render_category_slider_card(array $p, array $cfg): string
     
     <!-- Twitter Card Tags -->  
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Accesorios para Móvil y Tech Premium | KhurmiStore">
-    <meta name="twitter:description" content="Los mejores accesorios para móvil al mejor precio. Fundas, auriculares, cargadores y más en KhurmiStore. ¡Envío rápido a España!">
+    <meta name="twitter:title" content="KhurmiStore | Belleza, Accesorios Móvil y Electrónica">
+    <meta name="twitter:description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
     <meta name="twitter:image" content="https://khurmistore.es/og-image.jpg">
     
     <!-- Robots Meta -->
@@ -190,7 +190,7 @@ function render_category_slider_card(array $p, array $cfg): string
   "name": "Khurmi Store",
   "url": "https://khurmistore.es",
   "logo": "https://khurmistore.es/images/logo.png",
-  "description": "Tienda online de accesorios tecnológicos premium en España: auriculares, relojes inteligentes, fundas, electrónica y mucho más.",
+  "description": "Tienda online multicategoría en España: belleza, accesorios para móvil, relojes inteligentes, electrónica y mucho más.",
   "email": "info@khurmistore.es",
   "contactPoint": {
     "@type": "ContactPoint",
