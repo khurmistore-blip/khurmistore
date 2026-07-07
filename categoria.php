@@ -102,7 +102,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 <ul>
                     <!-- Inicio (Home) Link -->
                     <li><a href="index.php">Inicio</a></li>
-                    <li><a href="products.html">Tienda</a></li>
+                    <li><a href="categoria.php">Tienda</a></li>
 
                     <!-- Categorías Dropdown - Contains product categories (stays intact) -->
                     <li class="nav-item dropdown">
@@ -115,7 +115,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                             <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=belleza">Belleza</a></li>
                             <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                            <li><a href="categorias.html">Ver Todo</a></li>
+                            <li><a href="categoria.php">Ver Todo</a></li>
                         </ul>
                     </li>
 
@@ -153,7 +153,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 <ul>
                     <!-- Inicio (Home) Link -->
                     <li><a href="index.php" onclick="closeMobileMenu()">Inicio</a></li>
-                    <li><a href="products.html" onclick="closeMobileMenu()">Tienda</a></li>
+                    <li><a href="categoria.php" onclick="closeMobileMenu()">Tienda</a></li>
 
                     <!-- Categorías Dropdown for Mobile -->
                     <li class="nav-item dropdown">
@@ -166,7 +166,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                             <li><a href="categoria.php?cat=accesorios-movil" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
                             <li><a href="categoria.php?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
                             <li><a href="categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="categorias.html" onclick="closeMobileMenu()">Ver Todo</a></li>
+                            <li><a href="categoria.php" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
 
@@ -257,7 +257,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 <h3>Información</h3>
                 <ul>
                     <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categorias.html">Tienda</a></li>
+                    <li><a href="categoria.php">Tienda</a></li>
                     <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
                     <li><a href="contacto.html">Contacto</a></li>
                     <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
@@ -271,10 +271,8 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                     <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
-                    <li><a href="products.html">Todos los productos</a></li>
-                    <li><a href="product-details.html">Ficha de Producto</a></li>
-
+                    <li><a href="categoria.php">Ver todas las categorías</a></li>
+                    <li><a href="categoria.php">Todos los productos</a></li>
                 </ul>
             </div>
             <div class="footer-col">

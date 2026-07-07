@@ -219,7 +219,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 <ul>
                     <!-- Inicio (Home) Link -->
                     <li><a href="index.php">Inicio</a></li>
-                    <li><a href="products.html">Tienda</a></li>
+                    <li><a href="categoria.php">Tienda</a></li>
                     
                     <!-- Categorías Dropdown - Contains product categories (stays intact) -->
                     <li class="nav-item dropdown">
@@ -336,30 +336,12 @@ function render_category_slider_card(array $p, array $cfg): string
                     </div>
                 </div>
             </div>
-            <div class="slide">
-                <div class="hero-content">
-                    <div class="hero-text">
-                        <span class="badge">SERIE GAMING</span>
-                        <h2>Equipos <span class="highlight">Gaming Pro</span><br>Sube de Nivel</h2>
-                        <p>Accesorios gaming profesionales de alta calidad</p>
-                        <div class="hero-buttons">
-                            <button class="btn-primary" onclick="scrollToProducts()">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
-                            <button class="btn-secondary">Explorar</button>
-                        </div>
-                    </div>
-                    <div class="hero-image">
-                        <div class="floating-3d"><img src="https://images.unsplash.com/photo-1599669454699-248893623440?w=800&q=80" alt="Auriculares gaming profesionales" width="800" height="534" loading="lazy" decoding="async"></div>
-                        <div class="glow-circle"></div>
-                    </div>
-                </div>
-            </div>
             <button class="slider-btn prev" onclick="changeSlide(-1)" aria-label="Producto anterior"><i class="fas fa-chevron-left"></i></button>
             <button class="slider-btn next" onclick="changeSlide(1)" aria-label="Siguiente producto"><i class="fas fa-chevron-right"></i></button>
             <div class="slider-dots">
                 <span class="dot active" onclick="goToSlide(0)"></span>
                 <span class="dot" onclick="goToSlide(1)"></span>
                 <span class="dot" onclick="goToSlide(2)"></span>
-                <span class="dot" onclick="goToSlide(3)"></span>
             </div>
         </div>
     </section>
@@ -475,7 +457,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 <h3>Información</h3>
                 <ul>
                     <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categorias.html">Tienda</a></li>
+                    <li><a href="categoria.php">Tienda</a></li>
                     <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
                     <li><a href="contacto.html">Contacto</a></li>
                     <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
@@ -489,10 +471,8 @@ function render_category_slider_card(array $p, array $cfg): string
                     <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
                     <li><a href="categoria.php?cat=gaming">Videojuegos</a></li>
                     <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="categorias.html#categories">Ver todas las categorías</a></li>
-                    <li><a href="products.html">Todos los productos</a></li>
-                    <li><a href="product-details.html">Ficha de Producto</a></li>
-
+                    <li><a href="categoria.php">Ver todas las categorías</a></li>
+                    <li><a href="categoria.php">Todos los productos</a></li>
                 </ul>
             </div>
             <div class="footer-col">

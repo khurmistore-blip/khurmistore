@@ -7,9 +7,10 @@ declare(strict_types=1);
  * product URLs are pulled live from Supabase so new/removed products are
  * reflected automatically — no manual sitemap editing after each sync.
  *
- * products.html / product-details.html are intentionally NOT listed here:
- * they're legacy static demo pages, superseded by the real category/product
- * pages (categoria.php / producto.php) that pull live Supabase data.
+ * products.html / categorias.html / product-details.html are intentionally NOT
+ * listed here — those legacy static demo pages (fake Unsplash catalog) have
+ * been deleted, superseded by the real category/product pages (categoria.php /
+ * producto.php) that pull live Supabase data.
  */
 
 require_once __DIR__ . '/supabase.php';
@@ -29,7 +30,7 @@ $urls = [];
 
 // ── Página principal ────────────────────────────────────────────────────
 $urls[] = ['loc' => 'https://khurmistore.es/', 'changefreq' => 'weekly', 'priority' => '1.0'];
-$urls[] = ['loc' => 'https://khurmistore.es/categorias.html', 'changefreq' => 'weekly', 'priority' => '0.9'];
+$urls[] = ['loc' => 'https://khurmistore.es/categoria.php', 'changefreq' => 'weekly', 'priority' => '0.9'];
 
 // ── Categorías (contenido real, vía categoria.php) ──────────────────────
 foreach ($categorySlugs as $slug) {

@@ -10,14 +10,23 @@ RewriteRule ^index\.html$ / [R=301,L]
 # Google Search Console requires the sitemap URL itself to end in .xml)
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
+# Redirect deleted fake-catalog demo pages (48 hardcoded Unsplash products) to
+# the real Supabase-backed store
+RewriteRule ^products\.html$ /index.php [R=301,L]
+RewriteRule ^categorias\.html$ /index.php [R=301,L]
+RewriteRule ^product-details\.html$ /index.php [R=301,L]
+RewriteRule ^categoria\.html$ /index.php [R=301,L]
+
 # 301: missing blog post → nearest existing equivalent
 RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/blog-como-conectar-auriculares-bluetooth [R=301,L]
 
-# Regla para categorías amigables: /category/slug -> categoria.html?cat=slug
-RewriteRule ^category/([^/]+)/?$ categoria.html?cat=$1 [L,QSA]
+# Regla para categorías amigables: /category/slug -> categoria.php?cat=slug
+# (categoria.html, la demo estática, fue eliminada; esto apunta a la página real)
+RewriteRule ^category/([^/]+)/?$ categoria.php?cat=$1 [L,QSA]
 
-# Regla para productos amigables: /producto/slug -> product-details.html?slug=$1
-RewriteRule ^producto/([^/]+)/?$ product-details.html?slug=$1 [L,QSA]
+# Regla para productos amigables: /producto/slug -> redirige a la tienda real
+# (product-details.html fue eliminado; producto.php no tiene lookup por slug)
+RewriteRule ^producto/([^/]+)/?$ /index.php [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

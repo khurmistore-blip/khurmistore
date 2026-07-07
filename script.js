@@ -74,270 +74,15 @@
   else run();
 })();
 
-// Catálogo de Productos - KhurmiStore España
-const products = [
-    // Auriculares (Headphones)
-    { id: 1, name: "Auriculares Inalámbricos Premium", category: "headphones", price: 49.99, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80", tag: "HOT", rating: 5 },
-    { id: 2, name: "Auriculares Sony Studio", category: "headphones", price: 69.99, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 3, name: "Auriculares Bass Boost", category: "headphones", price: 29.99, image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&q=80", tag: "-20%", rating: 4 },
-    { id: 4, name: "Noise Cancel Pro", category: "headphones", price: 89.99, image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&q=80", tag: "PREMIUM", rating: 5 },
-    { id: 5, name: "Auriculares Gaming RGB", category: "headphones", price: 44.99, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&q=80", tag: "GAMING", rating: 5 },
-    { id: 31, name: "Auriculares Deportivos Pro", category: "headphones", price: 34.99, image: "https://images.unsplash.com/photo-1577174881658-0f30ed549adc?w=500&q=80", tag: "DEPORTE", rating: 4 },
-
-    // Relojes Inteligentes (Smart Watches)
-    { id: 6, name: "Smartwatch Pro Series", category: "smartwatch", price: 79.99, image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 7, name: "Reloj Fitness Tracker", category: "smartwatch", price: 44.99, image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&q=80", tag: "TENDENCIA", rating: 5 },
-    { id: 8, name: "Reloj Estilo Clásico", category: "smartwatch", price: 119.99, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80", tag: "PREMIUM", rating: 5 },
-    { id: 9, name: "Reloj Deportivo Smart", category: "smartwatch", price: 34.99, image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=500&q=80", tag: "DEPORTE", rating: 4 },
-    { id: 10, name: "Reloj Digital Clásico", category: "smartwatch", price: 24.99, image: "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=500&q=80", tag: "OFERTA", rating: 4 },
-    { id: 32, name: "Smartwatch GPS Avanzado", category: "smartwatch", price: 99.99, image: "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=500&q=80", tag: "NUEVO", rating: 5 },
-
-    // Auriculares Inalámbricos (Earpods)
-    { id: 11, name: "Earpods Pro Inalámbricos", category: "earpods", price: 29.99, image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=500&q=80", tag: "-20%", rating: 4 },
-    { id: 12, name: "Estilo AirPods Max", category: "earpods", price: 54.99, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80", tag: "HOT", rating: 5 },
-    { id: 13, name: "Buds Pro Wireless", category: "earpods", price: 27.99, image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 14, name: "Earpods Gaming", category: "earpods", price: 39.99, image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80", tag: "GAMING", rating: 4 },
-    { id: 15, name: "Mini Earbuds Compactos", category: "earpods", price: 17.99, image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=500&q=80", tag: "OFERTA", rating: 4 },
-    { id: 33, name: "Earbuds con ANC", category: "earpods", price: 59.99, image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=500&q=80", tag: "PREMIUM", rating: 5 },
-
-    // Fundas de Móvil (Mobile Covers)
-    { id: 16, name: "Funda Premium iPhone", category: "covers", price: 12.99, image: "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80", tag: "OFERTA", rating: 5 },
-    { id: 17, name: "Funda Transparente Samsung", category: "covers", price: 7.99, image: "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&q=80", tag: "HOT", rating: 4 },
-    { id: 18, name: "Funda de Cuero Tipo Libro", category: "covers", price: 17.99, image: "https://images.unsplash.com/photo-1592434134753-a70baf7979d5?w=500&q=80", tag: "PREMIUM", rating: 5 },
-    { id: 19, name: "Funda Magnética MagSafe", category: "covers", price: 11.99, image: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80", tag: "NUEVO", rating: 4 },
-    { id: 34, name: "Funda Antigolpes Reforzada", category: "covers", price: 14.99, image: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500&q=80", tag: "HOT", rating: 5 },
-
-    // Cascos Gaming (Head Gear)
-    { id: 20, name: "Casco Gaming RGB Pro", category: "headgear", price: 59.99, image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80", tag: "GAMING", rating: 5 },
-    { id: 21, name: "Visor VR Realidad Virtual", category: "headgear", price: 139.99, image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=500&q=80", tag: "PREMIUM", rating: 5 },
-    { id: 22, name: "Casco Gaming Profesional", category: "headgear", price: 84.99, image: "https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=500&q=80", tag: "PRO", rating: 5 },
-    { id: 35, name: "Casco E-Sports Surround 7.1", category: "headgear", price: 74.99, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500&q=80", tag: "NUEVO", rating: 5 },
-
-    // Manos Libres (Hands Free)
-    { id: 23, name: "Manos Libres Bluetooth", category: "handsfree", price: 13.99, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80", tag: "HOT", rating: 4 },
-    { id: 24, name: "Neckband Inalámbrico", category: "handsfree", price: 22.99, image: "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 25, name: "Manos Libres Ejecutivo", category: "handsfree", price: 36.99, image: "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=500&q=80", tag: "PREMIUM", rating: 5 },
-    { id: 26, name: "Manos Libres Deportivo", category: "handsfree", price: 18.99, image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?w=500&q=80", tag: "DEPORTE", rating: 4 },
-
-    // Ratones (Mouse)
-    { id: 27, name: "Ratón Gaming Inalámbrico", category: "mouse", price: 27.99, image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500&q=80", tag: "NUEVO", rating: 5 },
-    { id: 28, name: "Ratón Gaming RGB Pro", category: "mouse", price: 44.99, image: "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=500&q=80", tag: "GAMING", rating: 5 },
-    { id: 29, name: "Ratón Ergonómico Oficina", category: "mouse", price: 18.99, image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80", tag: "OFICINA", rating: 4 },
-    { id: 30, name: "Ratón Compacto Viaje", category: "mouse", price: 9.99, image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500&q=80", tag: "OFERTA", rating: 4 },
-    { id: 36, name: "Ratón Vertical Antiestres", category: "mouse", price: 32.99, image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=500&q=80", tag: "NUEVO", rating: 5 },
-
-    // ===== 10 NUEVOS PRODUCTOS AÑADIDOS =====
-    {
-        id: 37, name: "Auriculares DJ Profesional XBass", category: "headphones", price: 119.99, oldPrice: 159.99,
-        image: "https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1558756520-22cfe5d382ca?w=800&q=80",
-            "https://images.unsplash.com/photo-1545127398-14699f92334b?w=800&q=80",
-            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80",
-            "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80"
-        ],
-        tag: "NUEVO", rating: 5, stock: 24, brand: "KhurmiStore Pro",
-        colors: ["#000000", "#ff6b35", "#004e89"],
-        description: "Auriculares DJ profesionales con sonido de estudio, bajos potentes y aislamiento total del ruido. Perfectos para DJs, productores musicales y amantes del audio de alta fidelidad.",
-        features: [
-            "Drivers de 50mm con sonido Hi-Fi",
-            "Bluetooth 5.3 con baja latencia",
-            "Hasta 40 horas de batería",
-            "Cancelación activa de ruido (ANC)",
-            "Carga rápida USB-C (10 min = 5h)",
-            "Diadema acolchada de espuma viscoelástica"
-        ]
-    },
-    {
-        id: 38, name: "Smartwatch Ultra GPS Sport", category: "smartwatch", price: 149.99, oldPrice: 199.99,
-        image: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=800&q=80",
-            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&q=80",
-            "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=800&q=80",
-            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80"
-        ],
-        tag: "HOT", rating: 5, stock: 18, brand: "KhurmiStore Ultra",
-        colors: ["#1a1a1a", "#c0c0c0", "#ff6b35"],
-        description: "Smartwatch deportivo con GPS integrado, monitor de salud avanzado y pantalla AMOLED de 1.91\". Diseñado para atletas que quieren llevar su rendimiento al siguiente nivel.",
-        features: [
-            "Pantalla AMOLED 1.91\" siempre encendida",
-            "GPS dual integrado",
-            "Monitor de oxígeno SpO2 y ECG",
-            "Resistencia al agua 10ATM",
-            "Más de 120 modos deportivos",
-            "Batería de 14 días de duración"
-        ]
-    },
-    {
-        id: 39, name: "AirBuds Pro Plus ANC", category: "earpods", price: 49.99, oldPrice: 79.99,
-        image: "https://images.unsplash.com/photo-1606741965326-cb990ae01bb2?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1606741965326-cb990ae01bb2?w=800&q=80",
-            "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80",
-            "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
-            "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&q=80"
-        ],
-        tag: "TENDENCIA", rating: 5, stock: 56, brand: "KhurmiStore Audio",
-        colors: ["#ffffff", "#000000", "#ff6b35"],
-        description: "AirBuds Pro Plus con cancelación activa de ruido, sonido espacial 3D y estuche de carga inalámbrica. La libertad inalámbrica que siempre quisiste.",
-        features: [
-            "Cancelación activa de ruido (ANC)",
-            "Audio espacial 3D Dolby",
-            "Bluetooth 5.3 multi-conexión",
-            "Hasta 32h con estuche",
-            "Carga inalámbrica Qi",
-            "Resistencia al agua IPX5"
-        ]
-    },
-    {
-        id: 40, name: "Funda iPad Pro Magnética 360°", category: "covers", price: 24.99, oldPrice: 39.99,
-        image: "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=800&q=80",
-            "https://images.unsplash.com/photo-1592434134753-a70baf7979d5?w=800&q=80",
-            "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=800&q=80",
-            "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&q=80"
-        ],
-        tag: "NUEVO", rating: 4, stock: 42, brand: "KhurmiStore Cover",
-        colors: ["#000000", "#964B00", "#0066cc", "#cc0000"],
-        description: "Funda magnética para iPad Pro con cierre inteligente, soporte multi-ángulo y compartimento para Apple Pencil. Hecha de piel sintética premium.",
-        features: [
-            "Compatible iPad Pro 11\"/12.9\"",
-            "Cierre magnético inteligente",
-            "Activación/apagado automático",
-            "Soporte para Apple Pencil",
-            "Soporte multi-ángulo",
-            "Material de cuero PU premium"
-        ]
-    },
-    {
-        id: 41, name: "Casco Gaming Pro 7.1 Surround RGB", category: "headgear", price: 99.99, oldPrice: 139.99,
-        image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1599669454699-248893623440?w=800&q=80",
-            "https://images.unsplash.com/photo-1599669454699-248893623440?w=800&q=80",
-            "https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=800&q=80",
-            "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=80"
-        ],
-        tag: "GAMING", rating: 5, stock: 15, brand: "KhurmiStore Gaming",
-        colors: ["#000000", "#ff0000", "#00ff00"],
-        description: "Casco gaming con sonido envolvente 7.1, iluminación RGB personalizable y micrófono con cancelación de ruido. Domina cada partida.",
-        features: [
-            "Sonido envolvente 7.1 virtual",
-            "Iluminación RGB 16.8M colores",
-            "Micrófono con cancelación de ruido",
-            "Drivers de neodimio 50mm",
-            "Compatible PC, PS5, Xbox, Switch",
-            "Almohadillas memory foam"
-        ]
-    },
-    {
-        id: 42, name: "Pinganillo Bluetooth Empresarial", category: "handsfree", price: 28.99, oldPrice: 44.99,
-        image: "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=800&q=80",
-            "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=800&q=80",
-            "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
-            "https://images.unsplash.com/photo-1574920162043-b872873f19c8?w=800&q=80"
-        ],
-        tag: "NUEVO", rating: 5, stock: 33, brand: "KhurmiStore Office",
-        colors: ["#000000", "#c0c0c0"],
-        description: "Pinganillo Bluetooth empresarial con doble micrófono, cancelación de ruido y hasta 12h de conversación. Perfecto para profesionales en movimiento.",
-        features: [
-            "Doble micrófono con cancelación",
-            "Hasta 12h de conversación",
-            "Bluetooth 5.2 multi-punto",
-            "Compatible con Siri/Google",
-            "Solo 4g de peso ultraligero",
-            "Estuche de carga 24h extra"
-        ]
-    },
-    {
-        id: 43, name: "Ratón Gaming Pro Inalámbrico 26K DPI", category: "mouse", price: 54.99, oldPrice: 79.99,
-        image: "https://images.unsplash.com/photo-1629429407759-01cd3d7cfb38?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1629429407759-01cd3d7cfb38?w=800&q=80",
-            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80",
-            "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=800&q=80",
-            "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80"
-        ],
-        tag: "GAMING", rating: 5, stock: 22, brand: "KhurmiStore Gaming",
-        colors: ["#000000", "#ffffff"],
-        description: "Ratón gaming inalámbrico de alta precisión con sensor óptico 26000 DPI, 8 botones programables e iluminación RGB. Para gamers profesionales y e-sports.",
-        features: [
-            "Sensor óptico PixArt 26000 DPI",
-            "Inalámbrico 2.4GHz + Bluetooth",
-            "8 botones programables",
-            "Iluminación RGB Chroma",
-            "Batería 70h de juego",
-            "Solo 80g - ultraligero"
-        ]
-    },
-    {
-        id: 44, name: "Auriculares Studio Monitor Hi-Res", category: "headphones", price: 159.99, oldPrice: 219.99,
-        image: "https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=800&q=80",
-            "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80",
-            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
-            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80"
-        ],
-        tag: "PREMIUM", rating: 5, stock: 12, brand: "KhurmiStore Studio",
-        colors: ["#1a1a1a", "#964B00"],
-        description: "Auriculares de monitor de estudio con certificación Hi-Res Audio, drivers planares y respuesta de frecuencia ampliada. Pureza de sonido absoluta.",
-        features: [
-            "Certificación Hi-Res Audio",
-            "Drivers magnético-planares 40mm",
-            "Respuesta 5Hz - 40kHz",
-            "Cable desmontable 3m",
-            "Almohadillas terciopelo premium",
-            "Estuche rígido incluido"
-        ]
-    },
-    {
-        id: 45, name: "Reloj Infantil GPS 4G Tracker", category: "smartwatch", price: 39.99, oldPrice: 69.99,
-        image: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=800&q=80",
-            "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80",
-            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
-            "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=800&q=80"
-        ],
-        tag: "OFERTA", rating: 4, stock: 38, brand: "KhurmiStore Kids",
-        colors: ["#ff69b4", "#0066cc", "#00cc66"],
-        description: "Reloj inteligente para niños con GPS 4G en tiempo real, llamadas, SOS y cámara. La tranquilidad que los padres necesitan.",
-        features: [
-            "GPS 4G localización en tiempo real",
-            "Llamadas bidireccionales",
-            "Botón SOS de emergencia",
-            "Cámara HD frontal",
-            "App para padres (iOS/Android)",
-            "Resistente al agua IP67"
-        ]
-    },
-    {
-        id: 46, name: "Earbuds Traductor IA 40 Idiomas", category: "earpods", price: 79.99, oldPrice: 129.99,
-        image: "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=500&q=80",
-        gallery: [
-            "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=80",
-            "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&q=80",
-            "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=80",
-            "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=80"
-        ],
-        tag: "NUEVO", rating: 5, stock: 19, brand: "KhurmiStore AI",
-        colors: ["#ffffff", "#000000"],
-        description: "Earbuds revolucionarios con traducción simultánea por IA en 40 idiomas. Habla con cualquiera en el mundo en tiempo real.",
-        features: [
-            "Traducción IA en 40+ idiomas",
-            "Traducción en tiempo real",
-            "Bluetooth 5.3 dual",
-            "App con conversaciones offline",
-            "Hasta 25h con estuche",
-            "Audio HD para llamadas claras"
-        ]
-    }
-];
+// Catalogo de Productos - KhurmiStore Espana
+// Intentionally empty: this used to hold 48 hardcoded demo products with
+// Unsplash stock photos (the "generic dropship template" look a reviewer
+// flagged). Real pages (index.php, categoria.php, producto.php) seed this
+// array from live Supabase data before calling the render functions below,
+// so they are unaffected. Kept as an empty array rather than deleted so
+// renderProducts()/renderProductDetails() keep working via their existing
+// null-checks/empty-states instead of erroring on a missing global.
+const products = [];
 
 let cart = [];
 
@@ -378,121 +123,13 @@ function renderProducts(filter = 'all') {
     `).join('');
 }
 
-function getCategoryPageConfig(slug) {
-    const config = {
-        // === ACTIVE CATEGORIES ===
-        'auriculares': {
-            name: 'Auriculares y Audio',
-            description: 'Auriculares inalámbricos, earbuds y cascos con la mejor calidad de sonido. Escucha tu música sin cables y con total libertad.',
-            categories: ['headphones', 'earpods']
-        },
-        'smartwatches': {
-            name: 'Smartwatches',
-            description: 'Relojes inteligentes con seguimiento de actividad, GPS y notificaciones en tu muñeca. Tecnología wearable para un estilo de vida activo.',
-            categories: ['smartwatch']
-        },
-        'accesorios-moviles': {
-            name: 'Accesorios para Móvil',
-            description: 'Fundas protectoras y dispositivos manos libres para tu smartphone. Protege y potencia tu móvil con accesorios de calidad.',
-            categories: ['covers', 'handsfree']
-        },
-        'gaming': {
-            name: 'Gaming',
-            description: 'Cascos gaming y ratones de alta precisión para llevar tu experiencia de juego al siguiente nivel. Equipamiento gaming profesional.',
-            categories: ['headgear', 'mouse']
-        },
-        // === COMING SOON (old BigBuy slugs + smart-home → empty, show Próximamente) ===
-        'bebe':                         { name: 'Bebé',                          description: 'Próximamente.', categories: [] },
-        'belleza':                      { name: 'Belleza',                       description: 'Próximamente.', categories: [] },
-        'coche-y-moto':                 { name: 'Coche y moto',                  description: 'Próximamente.', categories: [] },
-        'ropa':                         { name: 'Ropa',                          description: 'Próximamente.', categories: [] },
-        'informatica':                  { name: 'Informática',                   description: 'Próximamente.', categories: [] },
-        'bricolaje-y-herramientas':     { name: 'Bricolaje y herramientas',      description: 'Próximamente.', categories: [] },
-        'electronica':                  { name: 'Electrónica',                   description: 'Próximamente.', categories: [] },
-        'alimentacion-y-bebidas':       { name: 'Alimentación y bebidas',        description: 'Próximamente.', categories: [] },
-        'jardin':                       { name: 'Jardín',                        description: 'Próximamente.', categories: [] },
-        'salud-y-cuidado-personal':     { name: 'Salud y cuidado personal',      description: 'Próximamente.', categories: [] },
-        'hogar-y-cocina':               { name: 'Hogar y cocina',                description: 'Próximamente.', categories: [] },
-        'industria-empresas-y-ciencia': { name: 'Industria, empresas y ciencia', description: 'Próximamente.', categories: [] },
-        'joyeria':                      { name: 'Joyería',                       description: 'Próximamente.', categories: [] },
-        'iluminacion':                  { name: 'Iluminación',                   description: 'Próximamente.', categories: [] },
-        'equipaje':                     { name: 'Equipaje',                      description: 'Próximamente.', categories: [] },
-        'oficina-y-papeleria':          { name: 'Oficina y papelería',           description: 'Próximamente.', categories: [] },
-        'productos-para-mascotas':      { name: 'Productos para mascotas',       description: 'Próximamente.', categories: [] },
-        'sexo-y-sensualidad':           { name: 'Sexo y sensualidad',            description: 'Próximamente.', categories: [] },
-        'calzado-y-accesorios':         { name: 'Calzado y accesorios',          description: 'Próximamente.', categories: [] },
-        'deportes-y-aire-libre':        { name: 'Deportes y aire libre',         description: 'Próximamente.', categories: [] },
-        'juguetes-y-juegos':            { name: 'Juguetes y juegos',             description: 'Próximamente.', categories: [] },
-        'relojes':                      { name: 'Relojes',                       description: 'Próximamente.', categories: [] },
-        'smart-home':                   { name: 'Smart Home',                    description: 'Próximamente.', categories: [] }
-    };
-    return config[slug];
-}
-
-function formatCategorySlug(slug) {
-    return slug
-        ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-        : 'Categoría no encontrada';
-}
-
-function renderCategoryPage() {
-    const categoryTitleHeading = document.getElementById('categoryTitleHeading');
-    const categoryTitle = document.getElementById('categoryTitle');
-    const categoryDescription = document.getElementById('categoryDescription');
-    const productsGrid = document.getElementById('productsGrid');
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get('cat');
-
-    if (!categoryTitleHeading || !categoryTitle || !categoryDescription || !productsGrid) return;
-
-    const config = getCategoryPageConfig(slug);
-    const title = config ? config.name : formatCategorySlug(slug);
-    const description = config ? config.description : 'Lo sentimos, no se reconoce esta categoría. Explora otras opciones desde el menú.';
-    const categories = config ? config.categories : [];
-    const categoryEmptyMessage = document.getElementById('categoryEmptyMessage');
-    const categoryEmptyText = document.getElementById('categoryEmptyText');
-
-    categoryTitleHeading.textContent = title;
-    categoryTitle.textContent = title;
-    categoryDescription.textContent = description;
-    document.title = `${title} | KhurmiStore`;
-
-    const filteredProducts = categories.length ? products.filter(p => categories.includes(p.category)) : [];
-    if (filteredProducts.length === 0) {
-        productsGrid.innerHTML = '';
-        productsGrid.style.display = 'none';
-        if (categoryEmptyMessage) categoryEmptyMessage.classList.add('active');
-        if (categoryEmptyText) categoryEmptyText.textContent = `Estamos preparando los mejores productos de ${title} para ti. ¡Vuelve pronto!`;
-        return;
-    }
-
-    if (categoryEmptyMessage) categoryEmptyMessage.classList.remove('active');
-    productsGrid.style.display = '';
-    productsGrid.innerHTML = filteredProducts.map(p => `
-        <div class="product-card" onclick="goToProduct(${p.id})">
-            <div class="product-img">
-                <span class="product-tag">${p.tag}</span>
-                <img src="${p.image}" alt="${p.name}">
-                <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
-            </div>
-            <div class="product-info">
-                <h3>${p.name}</h3>
-                <p class="product-cat">${getCategoryName(p.category)}</p>
-                <span class="badge-nuevo">Nuevo</span>
-                <div class="product-price">
-                    <span class="price">${formatPrice(p.price)}${p.oldPrice ? ` <small style="color:#888;text-decoration:line-through;font-size:13px;">${formatPrice(p.oldPrice)}</small>` : ''}</span>
-                    <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Añadir ${p.name} al carrito">
-                        <i class="fas fa-cart-plus"></i> Añadir al carrito
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
+// getCategoryPageConfig() / formatCategorySlug() / renderCategoryPage() removed:
+// they only ever rendered categoria.html (the static demo category page,
+// deleted). No live page has the categoryTitleHeading/categoryTitle/
+// categoryDescription/productsGrid ids this used, so it was 100% dead code.
 // Navegar a la página de detalles del producto
 function goToProduct(id) {
-    window.location.href = `product-details.html?id=${id}`;
+    window.location.href = `producto.php?id=${id}`;
 }
 
 function getCategoryName(cat) {
@@ -708,7 +345,7 @@ function openCheckout() {
         return;
     }
     if (!document.getElementById('checkoutModal')) {
-        window.location.href = 'products.html?checkout=1';
+        window.location.href = 'index.php?checkout=1';
         return;
     }
     closeCart();
@@ -1813,8 +1450,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeBenefitBtn) {
         closeBenefitBtn.addEventListener('click', closeBenefitModal);
     }
-
-    renderCategoryPage();
 });
 
 // PayPal Smart Buttons
