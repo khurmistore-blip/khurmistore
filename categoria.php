@@ -212,7 +212,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 <?php foreach ($products as $p): ?>
                     <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
                         <div class="product-img">
-                            <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+                            <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
                             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
                         </div>
                         <div class="product-info">
@@ -445,7 +445,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                 'name'     => $p['name'],
                 'category' => $p['category'] ?? '',
                 'price'    => (float)$p['price'],
-                'image'    => $p['image_url'] ?? '',
+                'image'    => first_product_image($p['image_url'] ?? ''),
                 'tag'      => '',
                 'rating'   => 5,
             ];

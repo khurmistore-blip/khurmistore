@@ -65,7 +65,7 @@ function render_category_slider_card(array $p, array $cfg): string
     ?>
     <div class="product-card category-slider-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
         <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
-            <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+            <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
         </a>
         <div class="product-info">
@@ -403,7 +403,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 <?php foreach ($featured as $p): ?>
                     <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
                         <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
-                            <img src="<?= htmlspecialchars($p['image_url'] ?? '') ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+                            <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
                             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
                         </a>
                         <div class="product-info">
@@ -756,7 +756,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 'name'     => $p['name'],
                 'category' => $p['category'] ?? '',
                 'price'    => (float)$p['price'],
-                'image'    => $p['image_url'] ?? '',
+                'image'    => first_product_image($p['image_url'] ?? ''),
                 'tag'      => '',
                 'rating'   => 5,
             ];

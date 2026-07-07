@@ -33,6 +33,14 @@ $pageDesc  = $p
     : 'El producto que buscas no está disponible en KhurmiStore.';
 $canonicalUrl = $p ? "https://khurmistore.es/producto.php?id={$p['id']}" : 'https://khurmistore.es/producto.php';
 
+// image_url stores multiple images comma-separated; social-share crawlers need
+// a single real HTTP image (not the SVG placeholder used for card thumbnails),
+// so fall back to the site's default og-image.jpg instead when there's none.
+$socialImage = $p ? trim(explode(',', $p['image_url'] ?? '')[0] ?? '') : '';
+if ($socialImage === '') {
+    $socialImage = 'https://khurmistore.es/og-image.jpg';
+}
+
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
 function bb_product_to_js(array $p): array
 {
@@ -82,12 +90,12 @@ function bb_product_to_js(array $p): array
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle) ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($pageDesc) ?>">
-    <meta name="twitter:image" content="<?= htmlspecialchars($p['image_url'] ?? 'https://khurmistore.es/og-image.jpg') ?>">
+    <meta name="twitter:image" content="<?= htmlspecialchars($socialImage) ?>">
     <meta property="og:type" content="product">
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle) ?>">
     <meta property="og:description" content="<?= htmlspecialchars($pageDesc) ?>">
     <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl) ?>">
-    <meta property="og:image" content="<?= htmlspecialchars($p['image_url'] ?? 'https://khurmistore.es/og-image.jpg') ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($socialImage) ?>">
     <meta property="og:locale" content="es_ES">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.min.css">

@@ -41,3 +41,21 @@ function price_es(float $price, string $symbol = '€'): string
 {
     return number_format($price, 2, ',', '.') . ' ' . $symbol;
 }
+
+/**
+ * First image URL from a product's comma-separated image_url column
+ * (e.g. "url1.jpg,url2.jpg,url3.jpg" -> "url1.jpg"). Used everywhere a
+ * product CARD shows a single image (the full gallery lives on producto.php).
+ * Falls back to a small inline SVG placeholder (dark navy, matches the
+ * site's --dark token) so a product with no image never shows a broken
+ * <img> icon. Always pass the result through htmlspecialchars() at the
+ * call site, same as any other attribute value.
+ */
+function first_product_image(?string $imageUrl): string
+{
+    $first = trim(explode(',', $imageUrl ?? '')[0] ?? '');
+    if ($first !== '') {
+        return $first;
+    }
+    return 'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/></svg>';
+}
