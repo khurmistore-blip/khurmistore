@@ -28,9 +28,74 @@ if (!$p) {
 $related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&name=not.ilike.*Reacondicionado*&limit=5") : [];
 
 $pageTitle = $p ? ($p['seo_title'] ?: $p['name']) : 'Producto no encontrado';
-$pageDesc  = $p
-    ? ($p['seo_description'] ?: mb_substr(strip_tags($p['description'] ?? ''), 0, 155))
-    : 'El producto que buscas no está disponible en KhurmiStore.';
+
+// <title>: "<name> | KhurmiStore", truncated so the total stays ~60 chars
+// (Google truncates longer titles in search results).
+$titleSuffix   = ' | KhurmiStore';
+$maxTitleChars = 60;
+$titleName     = $pageTitle;
+if (mb_strlen($titleName . $titleSuffix) > $maxTitleChars) {
+    $available = max(10, $maxTitleChars - mb_strlen($titleSuffix) - 1); // -1 for the ellipsis
+    $titleName = rtrim(mb_substr($titleName, 0, $available)) . '…';
+}
+$fullPageTitle = $titleName . $titleSuffix;
+
+/**
+ * Builds a 120-155 char Spanish meta description from real product data
+ * (HTML-stripped), padded with a relevant generic sentence when the
+ * product's own description is too short/empty so it's never under ~120
+ * chars, and hard-capped at ~155 since Google truncates search snippets
+ * around there.
+ */
+function build_product_meta_description(?array $p): string
+{
+    if (!$p) {
+        return 'El producto que buscas no está disponible en KhurmiStore. Descubre miles de productos de belleza, tecnología y electrónica con envío rápido a España.';
+    }
+
+    $name      = (string)($p['name'] ?? 'este producto');
+    $descPlain = trim(strip_tags((string)($p['description'] ?? '')));
+
+    $snippet = '';
+    if ($descPlain !== '') {
+        $snippet = mb_substr($descPlain, 0, 100);
+        if (mb_strlen($descPlain) > 100) {
+            $lastSpace = mb_strrpos($snippet, ' ');
+            if ($lastSpace !== false && $lastSpace > 40) {
+                $snippet = mb_substr($snippet, 0, $lastSpace);
+            }
+        }
+        $snippet = rtrim($snippet, " .,;:") . '.';
+    }
+
+    $desc = "Compra {$name} al mejor precio" . ($snippet !== '' ? ". {$snippet}" : ' en KhurmiStore.')
+        . ' Envío rápido a España. ¡Pídelo ya en KhurmiStore!';
+
+    // Guarantee a minimum length (~120 chars) when the real description was
+    // too short to reach it on its own.
+    if (mb_strlen($desc) < 120) {
+        $desc = "Compra {$name} al mejor precio en KhurmiStore." . ($snippet !== '' ? " {$snippet}" : '')
+            . ' Envío rápido a toda España, pago 100% seguro y atención en español. ¡Pídelo ya!';
+    }
+
+    if (mb_strlen($desc) > 155) {
+        $desc = mb_substr($desc, 0, 152);
+        $lastSpace = mb_strrpos($desc, ' ');
+        if ($lastSpace !== false && $lastSpace > 100) {
+            $desc = mb_substr($desc, 0, $lastSpace);
+        }
+        $desc = rtrim($desc, " .,;:") . '...';
+    }
+
+    return $desc;
+}
+
+// Respect a manually-curated seo_description if the store owner set one and
+// it already meets the length target; otherwise build one from real data.
+$pageDesc = ($p && !empty($p['seo_description']) && mb_strlen(trim($p['seo_description'])) >= 120)
+    ? $p['seo_description']
+    : build_product_meta_description($p);
+
 $canonicalUrl = $p ? "https://khurmistore.es/producto.php?id={$p['id']}" : 'https://khurmistore.es/producto.php';
 
 // image_url stores multiple images comma-separated; social-share crawlers need
@@ -39,6 +104,34 @@ $canonicalUrl = $p ? "https://khurmistore.es/producto.php?id={$p['id']}" : 'http
 $socialImage = $p ? trim(explode(',', $p['image_url'] ?? '')[0] ?? '') : '';
 if ($socialImage === '') {
     $socialImage = 'https://khurmistore.es/og-image.jpg';
+}
+
+// Product JSON-LD (schema.org) for rich results — uses the same data already
+// fetched above, no extra Supabase query.
+$productSchema = null;
+if ($p) {
+    $priceValue = number_format((float)$p['price'], 2, '.', '');
+    $productSchema = [
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Product',
+        'name'        => $p['name'],
+        'description' => $pageDesc,
+        'image'       => $socialImage,
+        'sku'         => (string)$p['id'],
+        'brand'       => [
+            '@type' => 'Brand',
+            'name'  => 'KhurmiStore',
+        ],
+        'offers' => [
+            '@type'         => 'Offer',
+            'url'           => $canonicalUrl,
+            'priceCurrency' => 'EUR',
+            'price'         => $priceValue,
+            'availability'  => ((int)($p['stock'] ?? 0) > 0)
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+        ],
+    ];
 }
 
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
@@ -83,20 +176,27 @@ function bb_product_to_js(array $p): array
       gtag('config', 'G-CTNSGTD2JS');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($pageTitle) ?> — KhurmiStore</title>
+    <title><?= htmlspecialchars($fullPageTitle) ?></title>
     <meta name="description" content="<?= htmlspecialchars($pageDesc) ?>">
     <?php if ($p && !empty($p['seo_keywords'])): ?><meta name="keywords" content="<?= htmlspecialchars($p['seo_keywords']) ?>"><?php endif; ?>
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle) ?>">
+    <meta name="twitter:title" content="<?= htmlspecialchars($fullPageTitle) ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($pageDesc) ?>">
     <meta name="twitter:image" content="<?= htmlspecialchars($socialImage) ?>">
     <meta property="og:type" content="product">
-    <meta property="og:title" content="<?= htmlspecialchars($pageTitle) ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($fullPageTitle) ?>">
     <meta property="og:description" content="<?= htmlspecialchars($pageDesc) ?>">
     <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl) ?>">
     <meta property="og:image" content="<?= htmlspecialchars($socialImage) ?>">
     <meta property="og:locale" content="es_ES">
+    <?php if ($p): ?>
+    <meta property="og:price:amount" content="<?= htmlspecialchars(number_format((float)$p['price'], 2, '.', '')) ?>">
+    <meta property="og:price:currency" content="EUR">
+    <?php endif; ?>
+    <?php if ($productSchema): ?>
+    <script type="application/ld+json"><?= json_encode($productSchema, JSON_UNESCAPED_UNICODE) ?></script>
+    <?php endif; ?>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.min.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
@@ -229,7 +329,12 @@ function bb_product_to_js(array $p): array
 
     <!-- Contenedor de Detalles del Producto -->
     <main class="product-details-page">
-        <div id="productDetailsContainer"><h1>Detalles del Producto | KhurmiStore</h1></div>
+        <!-- Server-rendered H1 with the real product name so crawlers that
+             don't execute JS still see unique, keyword-relevant content
+             immediately. renderProductDetails() below replaces this whole
+             container's innerHTML (including its own <h1>) once it runs, so
+             the visible page always ends up with exactly one <h1>. -->
+        <div id="productDetailsContainer"><h1><?= htmlspecialchars($p ? $p['name'] : 'Producto no encontrado') ?></h1></div>
     </main>
 
     <!-- Características -->
