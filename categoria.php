@@ -305,9 +305,7 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
                         <li><a href="blog-como-elegir-raton-inalambrico.html">Elegir Ratón Inalámbrico</a></li>
                         <li><a href="blog-como-elegir-funda-movil.html">Elegir Funda para Móvil</a></li>
                         <li><a href="blog-manos-libres-coche.html">Manos Libres para el Coche</a></li>
-                        <li><a href="blog-protector-pantalla-sin-burbujas.html">Protector de Pantalla sin Burbujas</a></li>
-                        <li><a href="blog-khurram-shahzad-fundador-khurmistore.html">Fundador de KhurmiStore</a></li>
-                    </ul>
+                        <li><a href="blog-protector-pantalla-sin-burbujas.html">Protector de Pantalla sin Burbujas</a></li>                    </ul>
                 </nav>
                 <nav class="footer-seo-col footer-legal" aria-label="Legal">
                     <h4 class="footer-seo-h">Legal</h4>

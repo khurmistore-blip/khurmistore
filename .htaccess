@@ -20,6 +20,9 @@ RewriteRule ^categoria\.html$ /index.php [R=301,L]
 # 301: missing blog post → nearest existing equivalent
 RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/blog-como-conectar-auriculares-bluetooth [R=301,L]
 
+# 301: founder-bio post removed (flagged as manufactured legitimacy) → blog index
+RewriteRule ^blog-khurram-shahzad-fundador-khurmistore\.html$ /blog.html [R=301,L]
+
 # Regla para categorías amigables: /category/slug -> categoria.php?cat=slug
 # (categoria.html, la demo estática, fue eliminada; esto apunta a la página real)
 RewriteRule ^category/([^/]+)/?$ categoria.php?cat=$1 [L,QSA]

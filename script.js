@@ -702,7 +702,12 @@ style.textContent = `@keyframes slideIn { from { transform: translateX(400px); o
 document.head.appendChild(style);
 
 // ===== BARRA DE ANUNCIOS =====
-document.body.classList.add('announcement-active');
+// Only shift the header down if this page actually has an announcement bar —
+// pages where it was removed (see the "beware of imitators" banner cleanup)
+// must not get the extra top spacing with nothing occupying it.
+if (document.getElementById('announcementBar')) {
+    document.body.classList.add('announcement-active');
+}
 
 function closeAnnouncement() {
     document.getElementById('announcementBar')?.classList.add('hidden');

@@ -64,7 +64,6 @@ $blogPosts = [
     'blog-como-elegir-funda-movil.html',
     'blog-manos-libres-coche.html',
     'blog-protector-pantalla-sin-burbujas.html',
-    'blog-khurram-shahzad-fundador-khurmistore.html',
 ];
 foreach ($blogPosts as $slug) {
     $urls[] = ['loc' => 'https://khurmistore.es/' . $slug, 'changefreq' => 'monthly', 'priority' => '0.7'];
