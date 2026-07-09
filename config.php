@@ -75,6 +75,9 @@ return [
     'bigbuy_api_key'       => env('BIGBUY_API_KEY', ''),
     'bigbuy_sandbox'       => filter_var(env('BIGBUY_SANDBOX', 'false'), FILTER_VALIDATE_BOOLEAN),
 
+    // Anthropic (rewrite_descriptions.php)
+    'anthropic_api_key'    => env('ANTHROPIC_API_KEY', ''),
+
     // Pricing rule (cost x multiplier, .99 ending)
     'price_multiplier'     => 2.5,
     'price_ending'         => 0.99,
