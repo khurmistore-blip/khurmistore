@@ -25,14 +25,107 @@ if ($cat !== '') {
 }
 $products = sb_get($cfg, $query);
 
-$categoryLabels = [
-    'auriculares'         => 'Auriculares y Audio',
-    'relojes'             => 'Relojes',
-    'accesorios-movil'    => 'Accesorios para Móvil',
-    'belleza'             => 'Belleza',
+// Per-category SEO config: display label, <title>, meta description
+// (120-155 chars), and a short keyword-rich intro paragraph shown under the
+// H1. Keeps categoria.php's existing single-file-covers-every-category
+// approach — this dict is the only thing that grows as categories change.
+$categoryConfig = [
+    'auriculares' => [
+        'label'       => 'Auriculares y Audio',
+        'title'       => 'Auriculares y Cascos | Comprar Online en España | KhurmiStore',
+        'description' => 'Descubre nuestra selección de auriculares inalámbricos, cascos gaming y accesorios de audio. Envío rápido a toda España y pago seguro en KhurmiStore.',
+        'intro'       => 'En KhurmiStore encontrarás una amplia gama de auriculares inalámbricos y cascos gaming pensados para quienes buscan la mejor calidad de sonido. Desde auriculares deportivos hasta modelos con cancelación de ruido, toda nuestra selección de audio llega con envío rápido a toda España.',
+    ],
+    'relojes' => [
+        'label'       => 'Relojes',
+        'title'       => 'Relojes de Hombre y Mujer | Comprar Online | KhurmiStore',
+        'description' => 'Compra relojes de hombre, mujer y unisex de las mejores marcas al mejor precio. Diseños elegantes y deportivos con envío rápido a toda España.',
+        'intro'       => 'Nuestra colección de relojes incluye modelos de hombre, mujer y unisex de marcas reconocidas, combinando diseños elegantes para el día a día con opciones más deportivas. Encuentra el estilo perfecto y recíbelo rápido en cualquier punto de España.',
+    ],
+    'accesorios-movil' => [
+        'label'       => 'Accesorios para Móvil',
+        'title'       => 'Accesorios para Móvil: Fundas y Protectores | KhurmiStore',
+        'description' => 'Fundas, protectores de pantalla y accesorios para tu móvil y tablet. Protección de calidad al mejor precio, con envío rápido a toda España.',
+        'intro'       => 'Protege tu smartphone con nuestra selección de fundas y protectores de pantalla compatibles con los modelos más populares del mercado. Calidad y protección al mejor precio, con envío rápido a toda España.',
+    ],
+    'belleza' => [
+        'label'       => 'Belleza',
+        'title'       => 'Productos de Belleza y Cuidado Facial | KhurmiStore',
+        'description' => 'Cosmética, cuidado facial, dispositivos de belleza y cuidado del cabello de marcas líderes. Descubre tu rutina ideal con envío rápido a toda España.',
+        'intro'       => 'Descubre cosmética y cuidado facial de marcas líderes, además de dispositivos de belleza y productos para el cuidado del cabello pensados para toda rutina. Encuentra tu próximo imprescindible con envío rápido a toda España.',
+    ],
+    'electronica' => [
+        'label'       => 'Electrónica',
+        'title'       => 'Electrónica y Gadgets | Comprar Online | KhurmiStore',
+        'description' => 'Altavoces, cargadores, cables y gadgets electrónicos al mejor precio. Tecnología de calidad con envío rápido a toda España y pago seguro.',
+        'intro'       => 'Explora nuestra selección de altavoces, cargadores, cables y gadgets electrónicos para el día a día. Tecnología de calidad al mejor precio, con envío rápido a toda España y pago 100% seguro.',
+    ],
 ];
-$catLabel  = $cat ? ($categoryLabels[$cat] ?? $cat) : 'Todos los Productos';
-$pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
+
+// Fallback used both when ?cat= is missing (the "todos los productos" view)
+// and when it's set to an unrecognized/old slug — never an empty title,
+// description, or H1.
+$defaultCatConfig = [
+    'label'       => 'Todos los Productos',
+    'title'       => 'Tienda Online | Belleza, Tech y Electrónica | KhurmiStore',
+    'description' => 'Descubre toda la tienda de KhurmiStore: belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago 100% seguro.',
+    'intro'       => 'Bienvenido a la tienda de KhurmiStore, con una selección cuidada de productos de belleza, accesorios para móvil, relojes y electrónica. Compra con confianza: envío rápido a toda España y pago 100% seguro.',
+];
+
+if ($cat !== '' && isset($categoryConfig[$cat])) {
+    $catConfig = $categoryConfig[$cat];
+} elseif ($cat !== '') {
+    // Unknown/old slug (e.g. a deleted category) — keep the attempted slug
+    // as the visible label but fall back to generic, still non-empty SEO copy.
+    $catConfig = $defaultCatConfig;
+    $catConfig['label'] = ucfirst(str_replace('-', ' ', $cat));
+} else {
+    $catConfig = $defaultCatConfig;
+}
+$catLabel = $catConfig['label'];
+
+// Slug -> label map for the product cards' category tag, derived from the
+// same config above (previously a separate, incomplete list missing
+// "electronica" entirely).
+$categoryLabels = array_combine(array_keys($categoryConfig), array_column($categoryConfig, 'label'));
+
+// <title>: cap at ~60 chars (Google truncates longer titles), same
+// truncate-with-ellipsis approach used on producto.php.
+$pageTitle = $catConfig['title'];
+if (mb_strlen($pageTitle) > 60) {
+    $pageTitle = rtrim(mb_substr($pageTitle, 0, 59)) . '…';
+}
+
+$canonicalUrl = 'https://khurmistore.es/categoria.php' . ($cat !== '' ? '?cat=' . rawurlencode($cat) : '');
+
+// og:image: first image of the first product already fetched above for this
+// category — zero extra Supabase queries. Falls back to the site's default
+// og-image.jpg (not the SVG placeholder used for card thumbnails — social
+// crawlers need a real HTTP image).
+$catSocialImage = '';
+if (!empty($products)) {
+    $catSocialImage = trim(explode(',', $products[0]['image_url'] ?? '')[0] ?? '');
+}
+if ($catSocialImage === '') {
+    $catSocialImage = 'https://khurmistore.es/og-image.jpg';
+}
+
+// CollectionPage + BreadcrumbList JSON-LD (schema.org) for this category.
+$collectionSchema = [
+    '@context'    => 'https://schema.org',
+    '@type'       => 'CollectionPage',
+    'name'        => $catConfig['title'],
+    'description' => $catConfig['description'],
+    'url'         => $canonicalUrl,
+];
+$breadcrumbSchema = [
+    '@context'        => 'https://schema.org',
+    '@type'           => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => 'https://khurmistore.es/'],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $catLabel, 'item' => $canonicalUrl],
+    ],
+];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -48,13 +141,20 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($pageTitle) ?></title>
-<meta name="description" content="Compra <?= htmlspecialchars($cat ? $catLabel : 'accesorios tecnológicos') ?> en <?= htmlspecialchars($cfg['store_name']) ?>. Envío rápido a España.">
-<link rel="canonical" href="<?= htmlspecialchars('https://khurmistore.es/categoria.php' . ($cat ? '?cat=' . rawurlencode($cat) : '')) ?>">
+<meta name="description" content="<?= htmlspecialchars($catConfig['description']) ?>">
+<link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<?= htmlspecialchars($pageTitle) ?>">
+<meta name="twitter:description" content="<?= htmlspecialchars($catConfig['description']) ?>">
+<meta name="twitter:image" content="<?= htmlspecialchars($catSocialImage) ?>">
 <meta property="og:type" content="website">
 <meta property="og:title" content="<?= htmlspecialchars($pageTitle) ?>">
-<meta property="og:description" content="Navega por los accesorios tecnológicos de <?= htmlspecialchars($cfg['store_name']) ?> y encuentra auriculares, smartwatches, gaming y mucho más.">
-<meta property="og:image" content="https://khurmistore.es/og-image.jpg">
+<meta property="og:description" content="<?= htmlspecialchars($catConfig['description']) ?>">
+<meta property="og:url" content="<?= htmlspecialchars($canonicalUrl) ?>">
+<meta property="og:image" content="<?= htmlspecialchars($catSocialImage) ?>">
 <meta property="og:locale" content="es_ES">
+<script type="application/ld+json"><?= json_encode($collectionSchema, JSON_UNESCAPED_UNICODE) ?></script>
+<script type="application/ld+json"><?= json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE) ?></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="style.min.css">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
@@ -196,7 +296,11 @@ $pageTitle = $cfg['store_name'] . ' — ' . $catLabel;
     <section class="products" id="products">
         <div class="section-header">
             <span class="subtitle"><?= $cat ? 'CATEGORÍA' : 'CATÁLOGO COMPLETO' ?></span>
-            <h2><?= htmlspecialchars($catLabel) ?></h2>
+            <h1><?= htmlspecialchars($catLabel) ?></h1>
+            <!-- Indexable intro copy — the grid alone is thin content for SEO. -->
+            <p style="color:#9AA0BC;font-size:14px;line-height:1.7;max-width:720px;margin:14px auto 0;">
+                <?= htmlspecialchars($catConfig['intro']) ?>
+            </p>
             <p style="color:#9AA0BC;margin-top:8px;">
                 <?= count($products) ?> producto<?= count($products) === 1 ? '' : 's' ?> disponible<?= count($products) === 1 ? '' : 's' ?>
             </p>
