@@ -31,7 +31,6 @@ if (php_sapi_name() !== 'cli') {
 }
 set_time_limit(0);
 
-require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
 
 if (empty($cfg['anthropic_api_key'])) {
@@ -39,6 +38,59 @@ if (empty($cfg['anthropic_api_key'])) {
 }
 
 const MODEL = 'claude-sonnet-4-6';
+
+/* ------------------------------------------------------------------ *
+ *  Self-test mode (?test=1): ONE bare API call, no Supabase, no
+ *  products. Prints the exact request payload plus the full raw
+ *  response (status + body) so API/key/model problems are isolated
+ *  from anything product-related.
+ * ------------------------------------------------------------------ */
+if (($_GET['test'] ?? '') === '1') {
+    echo "==========================================\n";
+    echo " Anthropic API self-test (no Supabase, no products)\n";
+    echo " Model: " . MODEL . "\n";
+    echo "==========================================\n\n";
+
+    $payload = json_encode([
+        'model'      => MODEL,
+        'max_tokens' => 10,
+        'messages'   => [
+            ['role' => 'user', 'content' => 'Hola'],
+        ],
+    ], JSON_UNESCAPED_UNICODE);
+
+    if ($payload === false) {
+        exit("json_encode failed building the test request: " . json_last_error_msg() . "\n");
+    }
+
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER     => [
+            'x-api-key: ' . $cfg['anthropic_api_key'],
+            'anthropic-version: 2023-06-01',
+            'content-type: application/json',
+        ],
+        CURLOPT_POSTFIELDS => $payload,
+    ]);
+    $body    = curl_exec($ch);
+    $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+
+    echo "Request payload sent:\n$payload\n\n";
+    echo "HTTP status: $status\n";
+    if ($curlErr !== '') {
+        echo "curl error: $curlErr\n";
+    }
+    echo "Raw response body:\n" . ($body === false ? '(curl_exec returned false — no body)' : $body) . "\n";
+    exit;
+}
+
+require_once __DIR__ . '/supabase.php';
 
 // Slug -> natural Spanish phrase used inside the prompt (not the raw slug).
 const CATEGORY_LABELS = [
@@ -84,12 +136,57 @@ function build_user_prompt(string $name, string $categoryLabel, float $price, st
 }
 
 /**
+ * Extract a human-readable error message from an Anthropic API error
+ * response, e.g. {"type":"error","error":{"type":"invalid_request_error",
+ * "message":"..."}}. Falls back to the raw body (truncated) or the curl
+ * error when the body isn't that expected shape, so a failure is never
+ * silently collapsed down to a bare "HTTP 400" with no explanation.
+ */
+function anthropic_extract_error($body, string $curlErr, int $status): string
+{
+    if ($body !== false && $body !== '') {
+        $data = json_decode($body, true);
+        if (is_array($data) && isset($data['error']) && is_array($data['error'])) {
+            $type = $data['error']['type'] ?? 'unknown_error';
+            $msg  = $data['error']['message'] ?? '';
+            $combined = trim("$type: $msg");
+            if ($combined !== ':' && $combined !== '') {
+                return $combined;
+            }
+        }
+        return mb_substr($body, 0, 500); // unexpected shape — show the raw body
+    }
+    return $curlErr !== '' ? "curl error: $curlErr" : "HTTP $status (no response body)";
+}
+
+/**
  * Call the Anthropic Messages API for one product. Retries up to $maxRetries
  * times on HTTP 429/5xx (and on curl-level failure) with linear backoff.
  * Never throws — always returns a result array.
  */
 function anthropic_rewrite(string $apiKey, string $userPrompt, int $maxRetries = 3): array
 {
+    // system is a TOP-LEVEL string field per the Messages API spec — NOT a
+    // message with role "system" in messages[] (that causes HTTP 400).
+    $payload = json_encode([
+        'model'      => MODEL,
+        'max_tokens' => 800,
+        'system'     => SYSTEM_PROMPT,
+        'messages'   => [
+            ['role' => 'user', 'content' => $userPrompt],
+        ],
+    ], JSON_UNESCAPED_UNICODE);
+
+    // Spanish text has accents (á, é, í, ó, ú, ñ) — if the source strings
+    // aren't valid UTF-8, json_encode() silently returns false and the
+    // request body would otherwise go out empty/malformed. Catch it here
+    // instead of sending a broken request that Anthropic then 400s on.
+    if ($payload === false) {
+        $jsonErr = 'json_encode failed: ' . json_last_error_msg();
+        echo "   $jsonErr\n";
+        return ['success' => false, 'status' => 0, 'error' => $jsonErr];
+    }
+
     $attempt = 0;
     $status  = 0;
     $err     = '';
@@ -108,18 +205,11 @@ function anthropic_rewrite(string $apiKey, string $userPrompt, int $maxRetries =
                 'anthropic-version: 2023-06-01',
                 'content-type: application/json',
             ],
-            CURLOPT_POSTFIELDS => json_encode([
-                'model'      => MODEL,
-                'max_tokens' => 800,
-                'system'     => SYSTEM_PROMPT,
-                'messages'   => [
-                    ['role' => 'user', 'content' => $userPrompt],
-                ],
-            ], JSON_UNESCAPED_UNICODE),
+            CURLOPT_POSTFIELDS => $payload,
         ]);
-        $body   = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err    = curl_error($ch);
+        $body    = curl_exec($ch);
+        $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr = curl_error($ch);
         curl_close($ch);
 
         if ($body !== false && $status >= 200 && $status < 300) {
@@ -131,13 +221,17 @@ function anthropic_rewrite(string $apiKey, string $userPrompt, int $maxRetries =
             if ($text !== '') {
                 return ['success' => true, 'text' => $text];
             }
-            $err = 'empty response text';
+            $err = 'empty response text (raw body: ' . mb_substr($body, 0, 300) . ')';
+        } else {
+            // Capture and surface Anthropic's actual JSON error body instead
+            // of just the bare HTTP status.
+            $err = anthropic_extract_error($body, $curlErr, $status);
         }
 
         $retryable = $body === false || $status === 429 || $status >= 500;
         if ($retryable && $attempt < $maxRetries) {
             $wait = 5 * $attempt; // 5s, 10s, ...
-            echo "   HTTP $status" . ($err ? " ($err)" : '') . ", retrying in {$wait}s (attempt $attempt/$maxRetries)...\n";
+            echo "   HTTP $status ($err), retrying in {$wait}s (attempt $attempt/$maxRetries)...\n";
             @ob_flush(); @flush();
             sleep($wait);
             continue;
