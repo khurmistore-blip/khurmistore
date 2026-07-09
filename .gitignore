@@ -1,4 +1,6 @@
 .env
+capi-config.php
+capi.log
 wa_test.php
 wa_test.js
 node_modules/

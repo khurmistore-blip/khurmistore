@@ -1509,8 +1509,9 @@ function initPayPalButtons() {
                 : [address, city, postal].filter(Boolean).join(', ');
 
             // 1. Guardar pedido en servidor — SIEMPRE, antes de WhatsApp y confirmación
+            let orderId = details.id; // fallback if save_order.php's response is unavailable
             try {
-                await fetch('save_order.php', {
+                const saveRes  = await fetch('save_order.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1524,12 +1525,15 @@ function initPayPalButtons() {
                         notes,
                     }),
                 });
+                const saveData = await saveRes.json();
+                if (saveData?.orderId) { orderId = saveData.orderId; }
             } catch (e) {
                 console.error('save_order.php error:', e);
             }
 
-            // 2. Facebook Pixel
-            fbq('track', 'Purchase', { value: total, currency: 'EUR' });
+            // 2. Facebook Pixel — eventID matches capi.php's eventIdForOrder()
+            // so Meta dedupes this against the server-side Conversions API event.
+            fbq('track', 'Purchase', { value: total, currency: 'EUR' }, { eventID: 'purchase_' + orderId });
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
             const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');

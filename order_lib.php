@@ -134,6 +134,27 @@ function saveOrder(array $data): array
         $sideErrors[] = "Supabase no guardado (HTTP {$sbStatus}" . ($sbErr ? ": {$sbErr}" : '') . ')';
     }
 
+    // ── 2b. Meta Conversions API — Purchase (server-side, deduplicated with ──
+    //        the browser Pixel Purchase event via event_id 'purchase_<orderId>')
+    $nameParts = explode(' ', $name, 2);
+    require_once __DIR__ . '/capi.php';
+    try {
+        MetaCAPI::purchase([
+            'order_id'   => $orderId,
+            'value'      => $total,
+            'currency'   => 'EUR',
+            'email'      => $email,
+            'phone'      => $phone,
+            'first_name' => $nameParts[0] ?? '',
+            'last_name'  => $nameParts[1] ?? '',
+            'city'       => '',
+            'zip'        => '',
+            'country'    => 'es',
+        ]);
+    } catch (Throwable $e) {
+        error_log('CAPI failed: ' . $e->getMessage());
+    }
+
     // ── 3. Enviar email al dueño ───────────────────────────────────────────
     $emailSubject  = '=?UTF-8?B?' . base64_encode('Nuevo pedido KhurmiStore') . '?=';
     $emailBody     = "Nuevo pedido recibido en KhurmiStore\n";
