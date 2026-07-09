@@ -1533,7 +1533,7 @@ function initPayPalButtons() {
 
             // 2. Facebook Pixel — eventID matches capi.php's eventIdForOrder()
             // so Meta dedupes this against the server-side Conversions API event.
-            fbq('track', 'Purchase', { value: total, currency: 'EUR' }, { eventID: 'purchase_' + orderId });
+            fbq('track', 'Purchase', { value: total, currency: 'EUR' }, { eventID: 'purchase_' + details.id });
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
             const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');

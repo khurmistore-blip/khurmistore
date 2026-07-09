@@ -135,12 +135,15 @@ function saveOrder(array $data): array
     }
 
     // ── 2b. Meta Conversions API — Purchase (server-side, deduplicated with ──
-    //        the browser Pixel Purchase event via event_id 'purchase_<orderId>')
+    //        the browser Pixel Purchase event via event_id 'purchase_<paymentId>')
     $nameParts = explode(' ', $name, 2);
+    $zip = '';
+    if (preg_match('/\b(\d{5})\b/', $address, $m)) { $zip = $m[1]; }
     require_once __DIR__ . '/capi.php';
     try {
         MetaCAPI::purchase([
             'order_id'   => $orderId,
+            'event_id'   => MetaCAPI::eventIdForOrder($paymentId),
             'value'      => $total,
             'currency'   => 'EUR',
             'email'      => $email,
@@ -148,7 +151,7 @@ function saveOrder(array $data): array
             'first_name' => $nameParts[0] ?? '',
             'last_name'  => $nameParts[1] ?? '',
             'city'       => '',
-            'zip'        => '',
+            'zip'        => $zip,
             'country'    => 'es',
         ]);
     } catch (Throwable $e) {
