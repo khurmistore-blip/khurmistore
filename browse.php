@@ -5,8 +5,9 @@
  * -------------------------------------------------------------------------
  * STEP 1 - niches:   khurmistore.es/browse.php?key=khurmi2026
  * STEP 2 - products: khurmistore.es/browse.php?key=khurmi2026&tax=TAX_ID&limit=20
- * Cost range:        &min=6 &max=25
- * (Note: catalog only has ID/SKU/price, not names, so keyword filter is by SKU.)
+ * Cost range:        &min=6 &max=60
+ * Name keyword filter (STEP 2 only): &q=reloj — matches the name fetched
+ * per-SKU via getProductInfoBySku(), case-insensitive. Omit &q= to show all.
  * DELETE after use.
  */
 
@@ -61,7 +62,8 @@ function bb_get(string $url, string $key): array {
 $tax   = $_GET['tax'] ?? '';
 $limit = (int)($_GET['limit'] ?? 20);
 $min   = (float)($_GET['min'] ?? 6);
-$max   = (float)($_GET['max'] ?? 25);
+$max   = (float)($_GET['max'] ?? 60);
+$q     = trim((string)($_GET['q'] ?? ''));
 
 echo "==========================================\n";
 echo " BigBuy Browser  (x$MULT pricing)\n";
@@ -90,7 +92,8 @@ if ($res['status'] == 429) { echo "Rate limit. Wait ~10 min.\n"; exit; }
 if (!is_array($res['data'])) { echo substr($res['raw'],0,600); exit; }
 
 $products = $res['data'];
-echo "Category has " . count($products) . " products. Showing EUR $min-$max cost:\n\n";
+echo "Category has " . count($products) . " products. Showing EUR $min-$max cost:\n";
+echo ($q !== '' ? "Name filter: \"$q\" (case-insensitive)\n" : '') . "\n";
 echo "(Fetching each shown product's name via a separate BigBuy call — this is slower than before.)\n\n";
 echo str_pad("ID",10).str_pad("SKU",14).str_pad("Cost",11).str_pad("Sell(x$MULT)",12).str_pad("Margin",10)."NAME\n";
 echo str_repeat("-",90)."\n";
@@ -106,6 +109,10 @@ foreach ($products as $p) {
     $margin = $sell - $cost;
     $sku    = $p['sku'] ?? '';
     $name   = bb_product_name($bb, $sku);
+    if ($q !== '' && stripos($name, $q) === false) {
+        usleep(300000); // still paced — we still made the name lookup call above
+        continue;
+    }
     echo str_pad((string)($p['id']??'?'),10).str_pad((string)$sku,14)
        . str_pad("EUR ".number_format($cost,2),11)
        . str_pad("EUR ".number_format($sell,2),12)
