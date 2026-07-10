@@ -14,10 +14,38 @@ if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forb
 header('Content-Type: text/plain; charset=utf-8');
 set_time_limit(120);
 
+require_once __DIR__ . '/bigbuy.php';
+
 $cfg  = require __DIR__ . '/config.php';
 $base = ($cfg['bigbuy_sandbox'] ?? true) ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
 $key  = $cfg['bigbuy_api_key'] ?? '';
 $MULT = 2.5;
+
+// products.json (used below) has no name/description field — only
+// id/sku/price. Name comes from a SEPARATE per-SKU call, same class method
+// sync_products.php already uses. Display-only: no sync, no DB writes.
+$bb = new BigBuy($key, $cfg['bigbuy_sandbox'] ?? true);
+
+/**
+ * Look up one product's name by SKU via BigBuy::getProductInfoBySku().
+ * Same response-unwrapping as sync_products.php (the endpoint sometimes
+ * wraps the record in a single-item list). Never throws — falls back to a
+ * placeholder so one failed lookup doesn't break the whole listing.
+ */
+function bb_product_name(BigBuy $bb, string $sku): string
+{
+    if ($sku === '') {
+        return '(sin SKU)';
+    }
+    $infoRes = $bb->getProductInfoBySku($sku, 'es');
+    if (!($infoRes['success'] ?? false)) {
+        return '(nombre no disponible)';
+    }
+    $info = $infoRes['data'];
+    $rec  = (is_array($info) && isset($info[0]) && is_array($info[0])) ? $info[0] : $info;
+    $name = is_array($rec) ? ($rec['name'] ?? $rec['title'] ?? '') : '';
+    return $name !== '' ? $name : '(nombre no disponible)';
+}
 
 function bb_get(string $url, string $key): array {
     $ch = curl_init($url);
@@ -63,8 +91,9 @@ if (!is_array($res['data'])) { echo substr($res['raw'],0,600); exit; }
 
 $products = $res['data'];
 echo "Category has " . count($products) . " products. Showing EUR $min-$max cost:\n\n";
-echo str_pad("ID",10).str_pad("SKU",14).str_pad("Cost",11).str_pad("Sell(x$MULT)",12)."Margin\n";
-echo str_repeat("-",56)."\n";
+echo "(Fetching each shown product's name via a separate BigBuy call — this is slower than before.)\n\n";
+echo str_pad("ID",10).str_pad("SKU",14).str_pad("Cost",11).str_pad("Sell(x$MULT)",12).str_pad("Margin",10)."NAME\n";
+echo str_repeat("-",90)."\n";
 
 $shown=0; $skus=[];
 foreach ($products as $p) {
@@ -75,11 +104,15 @@ foreach ($products as $p) {
     if ($cost < $min || $cost > $max) continue;
     $sell   = ceil($cost*$MULT) - 0.01;
     $margin = $sell - $cost;
-    echo str_pad((string)($p['id']??'?'),10).str_pad((string)($p['sku']??'?'),14)
+    $sku    = $p['sku'] ?? '';
+    $name   = bb_product_name($bb, $sku);
+    echo str_pad((string)($p['id']??'?'),10).str_pad((string)$sku,14)
        . str_pad("EUR ".number_format($cost,2),11)
        . str_pad("EUR ".number_format($sell,2),12)
-       . "EUR ".number_format($margin,2)."\n";
-    $skus[]=$p['sku']??''; $shown++;
+       . str_pad("EUR ".number_format($margin,2),10)
+       . $name."\n";
+    $skus[]=$sku; $shown++;
+    usleep(300000); // pace the extra per-SKU name lookups, avoid BigBuy 429s
 }
 
 if ($shown===0) { echo "(No products in range. Try &min=5&max=40.)\n"; }
