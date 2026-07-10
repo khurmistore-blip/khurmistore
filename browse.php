@@ -92,7 +92,13 @@ if ($res['status'] == 429) { echo "Rate limit. Wait ~10 min.\n"; exit; }
 if (!is_array($res['data'])) { echo substr($res['raw'],0,600); exit; }
 
 $products = $res['data'];
-echo "Category has " . count($products) . " products. Showing EUR $min-$max cost:\n";
+
+// Taxonomy 19667 = Relojes/watches — no price ceiling there (watches
+// legitimately run higher than the EUR 6-60 range everything else uses).
+$noCostFilter = ($tax === '19667');
+
+echo "Category has " . count($products) . " products. "
+    . ($noCostFilter ? "No cost filter (tax 19667 = Relojes)" : "Showing EUR $min-$max cost") . ":\n";
 echo ($q !== '' ? "Name filter: \"$q\" (case-insensitive)\n" : '') . "\n";
 echo "(Fetching each shown product's name via a separate BigBuy call — this is slower than before.)\n\n";
 echo str_pad("ID",10).str_pad("SKU",14).str_pad("Cost",11).str_pad("Sell(x$MULT)",12).str_pad("Margin",10)."NAME\n";
@@ -104,20 +110,26 @@ foreach ($products as $p) {
     if (($p['active'] ?? 1) != 1) continue;
     if (($p['condition'] ?? 'NEW') !== 'NEW') continue;
     $cost = (float)($p['wholesalePrice'] ?? 0);
-    if ($cost < $min || $cost > $max) continue;
+    if (!$noCostFilter && ($cost < $min || $cost > $max)) continue;
     $sell   = ceil($cost*$MULT) - 0.01;
     $margin = $sell - $cost;
     $sku    = $p['sku'] ?? '';
     $name   = bb_product_name($bb, $sku);
-    if ($q !== '' && stripos($name, $q) === false) {
+    $nameUnavailable = ($name === '(nombre no disponible)');
+
+    // Keyword filter only excludes a product when we actually KNOW its name
+    // and that name doesn't match — an unknown name can't be ruled out, so
+    // it's kept and marked "[?]" instead of silently dropped.
+    if ($q !== '' && !$nameUnavailable && stripos($name, $q) === false) {
         usleep(300000); // still paced — we still made the name lookup call above
         continue;
     }
+    $displayName = $nameUnavailable ? '[?] ' . $name : $name;
     echo str_pad((string)($p['id']??'?'),10).str_pad((string)$sku,14)
        . str_pad("EUR ".number_format($cost,2),11)
        . str_pad("EUR ".number_format($sell,2),12)
        . str_pad("EUR ".number_format($margin,2),10)
-       . $name."\n";
+       . $displayName."\n";
     $skus[]=$sku; $shown++;
     usleep(300000); // pace the extra per-SKU name lookups, avoid BigBuy 429s
 }
