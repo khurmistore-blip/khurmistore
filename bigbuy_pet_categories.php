@@ -5,14 +5,14 @@ declare(strict_types=1);
  * bigbuy_pet_categories.php — Fetches the full BigBuy category tree and
  * prints only the categories related to pets (mascotas). Read-only —
  * makes no writes to BigBuy, Supabase, or anywhere else.
- * ---------------------------------------------------------------------------
- * HOW TO RUN (CLI): php bigbuy_pet_categories.php
+ * -------------------------------------------------------------------------
+ * khurmistore.es/bigbuy_pet_categories.php?key=khurmi2026
+ * DELETE after use.
  */
 
-if (php_sapi_name() !== 'cli') {
-    if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forbidden'); }
-    header('Content-Type: text/plain; charset=utf-8');
-}
+if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forbidden'); }
+header('Content-Type: text/plain; charset=utf-8');
+set_time_limit(120);
 
 require_once __DIR__ . '/bigbuy.php';
 $cfg = require __DIR__ . '/config.php';
