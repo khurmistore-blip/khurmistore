@@ -153,6 +153,7 @@ function bb_product_to_js(array $p): array
         'name'        => $p['name'],
         'category'    => $p['category'] ?? '',
         'price'       => (float)$p['price'],
+        'shippingCost' => isset($p['shipping_cost']) && $p['shipping_cost'] !== null ? (float)$p['shipping_cost'] : null,
         'image'       => $image,
         'gallery'     => $gallery,
         'tag'         => '',

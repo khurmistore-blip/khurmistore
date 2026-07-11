@@ -523,6 +523,16 @@
         </tbody>
       </table>
     </div>
+
+    <div class="panel" style="margin-top:24px;">
+      <div class="panelHead"><span class="panelTitle">📦 Shipping cost (BigBuy reference)</span></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>cj_pid</th><th>Cost (cj_price)</th><th>Shipping cost</th></tr></thead>
+          <tbody id="shippingBody"><tr><td colspan="5" class="emptyState">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -759,6 +769,7 @@
     document.getElementById('dashboard').style.display = 'block';
     document.getElementById('userEmail').textContent = user.email;
     loadOrders();
+    loadShippingCosts();
     // auto-refresh every 60s so new orders appear without reloading
     if(autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(()=>loadOrders(false), 60000);
@@ -781,6 +792,27 @@
 
     const lu = document.getElementById('lastUpdated');
     if(lu){ lu.textContent = 'Updated ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}); }
+  }
+
+  // ---------- LOAD SHIPPING COSTS (read-only BigBuy reference, see sync_shipping.php) ----------
+  async function loadShippingCosts(){
+    const body = document.getElementById('shippingBody');
+    if(!body) return;
+    const { data, error } = await sb.from('products')
+      .select('id,name,cj_pid,cj_price,shipping_cost').order('id');
+    if(error){ body.innerHTML = '<tr><td colspan="5" class="emptyState">Error loading products</td></tr>'; console.error(error); return; }
+    if(!data || data.length === 0){ body.innerHTML = '<tr><td colspan="5" class="emptyState">No products found</td></tr>'; return; }
+    body.innerHTML = data.map(p=>{
+      const cost = p.cj_price !== null && p.cj_price !== undefined ? '€' + parseFloat(p.cj_price).toFixed(2) : '—';
+      const ship = p.shipping_cost !== null && p.shipping_cost !== undefined ? '€' + parseFloat(p.shipping_cost).toFixed(2) : '—';
+      return `<tr>
+        <td>${p.id}</td>
+        <td>${escHtml(p.name || '')}</td>
+        <td>${escHtml(p.cj_pid || '—')}</td>
+        <td>${cost}</td>
+        <td>${ship}</td>
+      </tr>`;
+    }).join('');
   }
 
   function updateStats(){

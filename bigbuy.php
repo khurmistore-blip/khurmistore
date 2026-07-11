@@ -140,6 +140,44 @@ class BigBuy
         return $this->request('POST', '/rest/shipping/orders.json', ['order' => $order]);
     }
 
+    /**
+     * Lowest shipping cost for ONE product (by SKU reference) to a given
+     * country — different endpoint/purpose from getShippingCost() above,
+     * which quotes a full cart+address. This is the per-SKU estimate used
+     * to populate the `shipping_cost` column (see sync_shipping.php).
+     *
+     * cj_pid (stored in Supabase) is BigBuy's numeric product ID, NOT this
+     * reference — callers must first resolve it via getProduct($cjPid)['data']['sku'].
+     *
+     * Returns null on ANY failure (bad reference, HTTP error, unexpected
+     * response shape, rate limit) — never 0, so callers can tell "unknown"
+     * apart from "genuinely free shipping". Does not sleep/retry itself —
+     * callers looping over many products are responsible for their own
+     * pacing (see sync_shipping.php's 1-request-per-second delay).
+     */
+    public function getLowestShippingCost(string $reference, string $country = 'ES'): ?float
+    {
+        $result = $this->request('POST', '/rest/shipping/lowest-shipping-cost-by-country.json', [
+            'productCountry' => [
+                'reference'      => $reference,
+                'countryIsoCode' => $country,
+            ],
+        ]);
+
+        if (!($result['success'] ?? false)) {
+            return null;
+        }
+
+        $data = $result['data'];
+        $rec  = (is_array($data) && isset($data[0]) && is_array($data[0])) ? $data[0] : $data;
+
+        if (!is_array($rec) || !isset($rec['shippingCost'])) {
+            return null;
+        }
+
+        return (float)$rec['shippingCost'];
+    }
+
     /* ---------------------------------------------------------------
      *  ORDER (dropshipping fulfillment)
      * --------------------------------------------------------------- */

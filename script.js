@@ -951,6 +951,7 @@ function renderProductDetails() {
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
                     ${discount ? `<span class="discount-tag">Ahorras ${formatPrice(p.oldPrice - p.price)}</span>` : ''}
                 </div>
+                ${p.shippingCost != null ? `<p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Coste de envío estimado: ${formatPrice(p.shippingCost)}</p>` : ''}
 
                 <p class="product-description">${p.description}</p>
 
