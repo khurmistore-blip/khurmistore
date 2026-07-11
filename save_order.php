@@ -38,15 +38,16 @@ if (!is_array($data) || json_last_error() !== JSON_ERROR_NONE) {
 }
 
 $result = saveOrder([
-    'paymentId'     => $data['paypalId']  ?? '',
-    'name'          => $data['name']      ?? '',
-    'email'         => $data['email']     ?? '',
-    'phone'         => $data['phone']     ?? '',
-    'address'       => $data['address']   ?? '',
-    'total'         => $data['total']     ?? 0.0,
-    'products'      => $data['products']  ?? [],
-    'notes'         => $data['notes']     ?? '',
-    'paymentMethod' => 'paypal',
+    'paymentId'      => $data['paypalId']       ?? '',
+    'name'           => $data['name']           ?? '',
+    'email'          => $data['email']          ?? '',
+    'phone'          => $data['phone']          ?? '',
+    'address'        => $data['address']        ?? '',
+    'total'          => $data['total']          ?? 0.0,
+    'shippingAmount' => $data['shippingAmount'] ?? null,
+    'products'       => $data['products']       ?? [],
+    'notes'          => $data['notes']          ?? '',
+    'paymentMethod'  => 'paypal',
 ]);
 
 echo json_encode($result, JSON_UNESCAPED_UNICODE);

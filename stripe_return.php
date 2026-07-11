@@ -49,20 +49,22 @@ if (!is_array($products)) {
 $addressParts = array_filter([$metadata['address'] ?? '', $metadata['city'] ?? '']);
 $fullAddress  = implode(', ', $addressParts);
 
-$paymentId = (string)($session['payment_intent'] ?? $session['id'] ?? $sessionId);
-$total     = (float)(($session['amount_total'] ?? 0) / 100);
-$email     = (string)($metadata['email'] ?? ($session['customer_details']['email'] ?? ''));
+$paymentId      = (string)($session['payment_intent'] ?? $session['id'] ?? $sessionId);
+$total          = (float)(($session['amount_total'] ?? 0) / 100);
+$email          = (string)($metadata['email'] ?? ($session['customer_details']['email'] ?? ''));
+$shippingAmount = isset($metadata['shipping_amount']) ? (float)$metadata['shipping_amount'] : null;
 
 saveOrder([
-    'paymentId'     => $paymentId,
-    'name'          => $metadata['name']  ?? '',
-    'email'         => $email,
-    'phone'         => $metadata['phone'] ?? '',
-    'address'       => $fullAddress,
-    'total'         => $total,
-    'products'      => $products,
-    'notes'         => $metadata['notes'] ?? '',
-    'paymentMethod' => 'stripe',
+    'paymentId'      => $paymentId,
+    'name'           => $metadata['name']  ?? '',
+    'email'          => $email,
+    'phone'          => $metadata['phone'] ?? '',
+    'address'        => $fullAddress,
+    'total'          => $total,
+    'shippingAmount' => $shippingAmount,
+    'products'       => $products,
+    'notes'          => $metadata['notes'] ?? '',
+    'paymentMethod'  => 'stripe',
 ]);
 
 header('Location: https://khurmistore.es/?pago=exitoso');

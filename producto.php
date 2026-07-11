@@ -13,6 +13,7 @@
  */
 
 require_once __DIR__ . '/supabase.php';
+require_once __DIR__ . '/shipping_lib.php';
 $cfg = require __DIR__ . '/config.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -153,7 +154,8 @@ function bb_product_to_js(array $p): array
         'name'        => $p['name'],
         'category'    => $p['category'] ?? '',
         'price'       => (float)$p['price'],
-        'shippingCost' => isset($p['shipping_cost']) && $p['shipping_cost'] !== null ? (float)$p['shipping_cost'] : null,
+        'weight'      => isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null,
+        'shippingCost' => calcShipping(isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null),
         'image'       => $image,
         'gallery'     => $gallery,
         'tag'         => '',
@@ -475,7 +477,7 @@ function bb_product_to_js(array $p): array
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
-                        <div class="summary-row"><span>Envío:</span><span>€4,99</span></div>
+                        <div class="summary-row"><span>Envío:</span><span id="summaryShipping">€4,99</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
                     <div style="margin-top:10px;">

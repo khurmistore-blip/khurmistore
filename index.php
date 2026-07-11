@@ -605,7 +605,7 @@ function render_category_slider_card(array $p, array $cfg): string
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
-                        <div class="summary-row"><span>Envío:</span><span>€4,99</span></div>
+                        <div class="summary-row"><span>Envío:</span><span id="summaryShipping">€4,99</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
                     <div style="margin-top:10px;">
@@ -743,6 +743,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 'name'     => $p['name'],
                 'category' => $p['category'] ?? '',
                 'price'    => (float)$p['price'],
+                'weight'   => isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null,
                 'image'    => first_product_image($p['image_url'] ?? ''),
                 'tag'      => '',
                 'rating'   => 5,

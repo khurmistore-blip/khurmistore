@@ -9,6 +9,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/shipping_lib.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -51,18 +52,26 @@ if ($email === '' || empty($products)) {
 }
 
 // Never trust a total sent from the client — recompute server-side using the
-// SAME formula as updateSummary() in script.js: subtotal + flat 4.99€ shipping.
+// SAME formula as updateSummary()/calcCartShippingJS() in script.js:
+// subtotal + MAX(per-item shipping, from weight via shipping_lib.php).
+// (Note: item `price` itself is still taken from the client here, same as
+// before this change — a pre-existing characteristic of this endpoint, not
+// something newly introduced by the shipping calculation.)
 $subtotal      = 0.0;
 $productsClean = [];
+$weightItems   = [];
 foreach ($products as $p) {
-    $pName  = trim((string)($p['name']  ?? '?'));
-    $pQty   = max(1, (int)($p['qty']    ?? 1));
-    $pPrice = (float)($p['price']       ?? 0.0);
+    $pName   = trim((string)($p['name']   ?? '?'));
+    $pQty    = max(1, (int)($p['qty']     ?? 1));
+    $pPrice  = (float)($p['price']        ?? 0.0);
+    $pWeight = isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null;
     $subtotal += $pPrice * $pQty;
     $productsClean[] = ['name' => $pName, 'qty' => $pQty, 'price' => $pPrice];
+    $weightItems[]   = ['weight' => $pWeight];
 }
-$total       = round($subtotal + 4.99, 2);
-$amountCents = (int)round($total * 100);
+$shippingAmount = calcCartShipping($weightItems);
+$total          = round($subtotal + $shippingAmount, 2);
+$amountCents    = (int)round($total * 100);
 
 if ($amountCents <= 0) {
     http_response_code(400);
@@ -73,13 +82,14 @@ if ($amountCents <= 0) {
 // Stash everything needed to rebuild the order after payment — Checkout
 // Session metadata is the only thing guaranteed to survive the redirect.
 $metadata = [
-    'name'     => $name,
-    'email'    => $email,
-    'phone'    => $phone,
-    'address'  => $address,
-    'city'     => $city,
-    'notes'    => $notes,
-    'products' => json_encode($productsClean, JSON_UNESCAPED_UNICODE),
+    'name'            => $name,
+    'email'           => $email,
+    'phone'           => $phone,
+    'address'         => $address,
+    'city'            => $city,
+    'notes'           => $notes,
+    'products'        => json_encode($productsClean, JSON_UNESCAPED_UNICODE),
+    'shipping_amount' => number_format($shippingAmount, 2, '.', ''),
 ];
 
 $params = [

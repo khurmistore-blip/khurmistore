@@ -29,16 +29,17 @@ const CSV_FILE = CSV_DIR . '/orders.csv';
  */
 function saveOrder(array $data): array
 {
-    $paymentId     = trim((string)($data['paymentId']     ?? ''));
-    $name          = trim((string)($data['name']          ?? ''));
-    $email         = trim((string)($data['email']         ?? ''));
-    $phone         = trim((string)($data['phone']         ?? ''));
-    $address       = trim((string)($data['address']       ?? ''));
-    $total         = (float)($data['total']                ?? 0.0);
-    $products      = is_array($data['products'] ?? null) ? $data['products'] : [];
-    $notes         = trim((string)($data['notes']          ?? ''));
-    $paymentMethod = trim((string)($data['paymentMethod']  ?? 'paypal'));
-    $datetime      = date('Y-m-d H:i:s');
+    $paymentId      = trim((string)($data['paymentId']     ?? ''));
+    $name           = trim((string)($data['name']          ?? ''));
+    $email          = trim((string)($data['email']         ?? ''));
+    $phone          = trim((string)($data['phone']         ?? ''));
+    $address        = trim((string)($data['address']       ?? ''));
+    $total          = (float)($data['total']                ?? 0.0);
+    $shippingAmount = isset($data['shippingAmount']) && $data['shippingAmount'] !== null ? (float)$data['shippingAmount'] : null;
+    $products       = is_array($data['products'] ?? null) ? $data['products'] : [];
+    $notes          = trim((string)($data['notes']          ?? ''));
+    $paymentMethod  = trim((string)($data['paymentMethod']  ?? 'paypal'));
+    $datetime       = date('Y-m-d H:i:s');
 
     // ── Construir resumen de productos ────────────────────────────────────
     $productLines = [];
@@ -103,9 +104,10 @@ function saveOrder(array $data): array
         'phone'          => $phone,
         'email'          => $email,
         'address'        => $address,
-        'products'       => $productsJson,
-        'total_amount'   => $total,
-        'payment_method' => $paymentMethod,
+        'products'        => $productsJson,
+        'total_amount'    => $total,
+        'shipping_amount' => $shippingAmount,
+        'payment_method'  => $paymentMethod,
         'source'         => 'website',
         'status'         => 'pending',
         'notes'          => $notes,

@@ -86,6 +86,37 @@ const products = [];
 
 let cart = [];
 
+// ===== SHIPPING (Spain, weight-based) =====
+// Mirrors shipping_lib.php's calcShipping()/calcCartShipping() — keep both
+// in sync if the rate table ever changes. Client-side copy is needed since
+// this runs before any server round-trip (cart drawer, checkout summary).
+const SHIPPING_RATES_ES = {
+    1: 4.94, 2: 5.16, 3: 5.26, 4: 5.26, 5: 6.36,
+    6: 6.54, 7: 6.41, 8: 6.49, 9: 6.52, 10: 7.34,
+};
+const SHIPPING_DEFAULT_ES = 4.99;
+
+function calcShippingJS(weightKg) {
+    if (weightKg === null || weightKg === undefined || weightKg <= 0) {
+        return SHIPPING_DEFAULT_ES;
+    }
+    let tier = Math.ceil(weightKg);
+    if (tier < 1) tier = 1;
+    if (tier > 10) tier = 10; // table has no tier above 10kg — clamp to highest known rate
+    return SHIPPING_RATES_ES[tier] ?? SHIPPING_DEFAULT_ES;
+}
+
+// Cart-level: MAX of each item's per-unit shipping (not x qty, not summed —
+// BigBuy typically consolidates a cart into one shipment).
+function calcCartShippingJS(items) {
+    let max = 0;
+    for (const item of items) {
+        const cost = calcShippingJS(item?.weight ?? null);
+        if (cost > max) max = cost;
+    }
+    return max > 0 ? max : SHIPPING_DEFAULT_ES;
+}
+
 // Formatear precio en Euros
 function formatPrice(price) {
     return price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
@@ -210,7 +241,7 @@ function changeQty(id, change) {
 function updateCart() {
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const totalPrice = subtotal; // Modify here if shipping or fees are added later
+    const totalPrice = subtotal; // Cart drawer shows subtotal only — real shipping is added in the checkout summary (updateSummary())
 
     const cartCountEl = document.querySelector('.cart-count');
     const cartSubtotalEl = document.getElementById('cartSubtotal');
@@ -471,10 +502,13 @@ function backToDetails() {
 
 function updateSummary() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const total = subtotal + 4.99;
+    const shipping = calcCartShippingJS(cart);
+    const total = subtotal + shipping;
     const subEl = document.getElementById('summarySubtotal');
     const totEl = document.getElementById('summaryTotal');
+    const shipEl = document.getElementById('summaryShipping');
     if (subEl) subEl.textContent = formatPrice(subtotal);
+    if (shipEl) shipEl.textContent = formatPrice(shipping);
     if (totEl) totEl.textContent = formatPrice(total);
 }
 
@@ -1471,7 +1505,7 @@ function initPayPalButtons() {
         style: { color: 'blue', shape: 'rect', label: 'pay', height: 45 },
         createOrder: function(data, actions) {
             const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            const total = (subtotal + 4.99).toFixed(2);
+            const total = (subtotal + calcCartShippingJS(cart)).toFixed(2);
             return actions.order.create({
                 purchase_units: [{
                     amount: { value: total, currency_code: 'EUR' },
@@ -1490,8 +1524,9 @@ function initPayPalButtons() {
             const city    = document.getElementById('custCity')?.value.trim()    || '';
             const postal  = document.getElementById('custPostal')?.value.trim()  || '';
             const notes   = document.getElementById('custNotes')?.value.trim()   || '';
-            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            const total    = parseFloat((subtotal + 4.99).toFixed(2));
+            const subtotal     = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const shippingCost = calcCartShippingJS(cart);
+            const total        = parseFloat((subtotal + shippingCost).toFixed(2));
 
             // Datos confirmados por PayPal (más fiables que el formulario)
             const payerName  = details.payer?.name
@@ -1522,6 +1557,7 @@ function initPayPalButtons() {
                         phone,
                         address  : fullAddress,
                         total,
+                        shippingAmount: shippingCost,
                         products : cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
                         notes,
                     }),
@@ -1538,7 +1574,7 @@ function initPayPalButtons() {
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
             const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
-            const msg   = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: 4,99 €\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
+            const msg   = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: ${formatPrice(shippingCost)}\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
             window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
 
             // 4. Pantalla de confirmación
@@ -1594,7 +1630,7 @@ function initStripeButton() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name, email, phone, address, city, notes,
-                    products: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                    products: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price, weight: i.weight ?? null })),
                 }),
             });
             const result = await res.json();
