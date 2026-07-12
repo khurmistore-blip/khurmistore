@@ -135,6 +135,7 @@ if (empty($products)) {
 $batch = array_slice($products, $start, $count);
 
 echo "==========================================\n";
+echo "=== VERSION: single-product-v3 ===\n";
 echo " BigBuy stock sync (single-product endpoint, " . STOCK_CALL_DELAY_SECONDS . "s spacing) — " . ($apply ? "APPLY to Supabase" : "PREVIEW ONLY (no DB writes)") . "\n";
 echo " Batch: products $start.." . ($start + count($batch)) . " of " . count($products) . "\n";
 echo " Estimated time: ~" . round(count($batch) * STOCK_CALL_DELAY_SECONDS) . "s\n";
