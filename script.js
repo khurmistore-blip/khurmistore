@@ -225,6 +225,15 @@ function addToCart(id, qty = 1) {
     updateCart();
     showNotification(`¡${product.name} añadido al carrito!`);
     fbq('track','AddToCart',{value: product.price, currency:'EUR'});
+
+    // Best-effort analytics only — never let this affect the cart above.
+    try {
+        fetch('track_cart_event.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: id }),
+        }).catch(() => {});
+    } catch (e) {}
 }
 
 function removeFromCart(id) {

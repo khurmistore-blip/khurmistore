@@ -533,6 +533,26 @@
         </table>
       </div>
     </div>
+
+    <div class="panel" style="margin-top:24px;">
+      <div class="panelHead"><span class="panelTitle">🛒 Top added products (Add to Cart)</span></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>Product</th><th>Times added</th></tr></thead>
+          <tbody id="topCartProductsBody"><tr><td colspan="2" class="emptyState">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:24px;">
+      <div class="panelHead"><span class="panelTitle">🛒 Recent Add to Cart events</span></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>Product</th><th>Price</th><th>Time</th></tr></thead>
+          <tbody id="cartEventsBody"><tr><td colspan="3" class="emptyState">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -770,6 +790,7 @@
     document.getElementById('userEmail').textContent = user.email;
     loadOrders();
     loadShippingCosts();
+    loadCartEvents();
     // auto-refresh every 60s so new orders appear without reloading
     if(autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(()=>loadOrders(false), 60000);
@@ -813,6 +834,56 @@
         <td>${ship}</td>
       </tr>`;
     }).join('');
+  }
+
+  // ---------- LOAD CART EVENTS (Add to Cart tracking, see track_cart_event.php) ----------
+  async function loadCartEvents(){
+    const topBody   = document.getElementById('topCartProductsBody');
+    const eventsBody = document.getElementById('cartEventsBody');
+    if(!topBody && !eventsBody) return;
+
+    const { data, error } = await sb.from('cart_events')
+      .select('product_id,product_name,price,created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if(error){
+      if(topBody) topBody.innerHTML = '<tr><td colspan="2" class="emptyState">Error loading cart events</td></tr>';
+      if(eventsBody) eventsBody.innerHTML = '<tr><td colspan="3" class="emptyState">Error loading cart events</td></tr>';
+      console.error(error);
+      return;
+    }
+
+    const events = data || [];
+
+    // Top added products: group the same 200 most-recent events by product_id, count, sort desc.
+    if(topBody){
+      if(events.length === 0){
+        topBody.innerHTML = '<tr><td colspan="2" class="emptyState">No Add to Cart events yet</td></tr>';
+      } else {
+        const counts = {};
+        events.forEach(e=>{
+          const key = e.product_id;
+          if(!counts[key]) counts[key] = { name: e.product_name, count: 0 };
+          counts[key].count++;
+        });
+        const top = Object.values(counts).sort((a,b)=>b.count - a.count);
+        topBody.innerHTML = top.map(t=>`<tr><td>${escHtml(t.name || '')}</td><td>${t.count}</td></tr>`).join('');
+      }
+    }
+
+    // Recent events table — same 200-row fetch, already newest-first.
+    if(eventsBody){
+      if(events.length === 0){
+        eventsBody.innerHTML = '<tr><td colspan="3" class="emptyState">No Add to Cart events yet</td></tr>';
+      } else {
+        eventsBody.innerHTML = events.map(e=>{
+          const price = e.price !== null && e.price !== undefined ? '€' + parseFloat(e.price).toFixed(2) : '—';
+          const when  = e.created_at ? new Date(e.created_at).toLocaleString('es-ES') : '—';
+          return `<tr><td>${escHtml(e.product_name || '')}</td><td>${price}</td><td>${when}</td></tr>`;
+        }).join('');
+      }
+    }
   }
 
   function updateStats(){
