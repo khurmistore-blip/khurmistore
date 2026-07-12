@@ -125,15 +125,27 @@ class BigBuy
     }
 
     /**
-     * Batch stock for ALL products, paginated (the endpoint that actually
-     * works, per BigBuy's official OpenAPI spec). Each item: {id, sku,
-     * stocks: [{quantity, minHandlingDays, maxHandlingDays, warehouse}]}.
-     * Caller is responsible for paginating with &page= until a page
-     * returns fewer than $pageSize results (see bigbuy_stock_sync.php).
+     * Batch stock for ALL products, paginated. Works, but rate-limited hard
+     * enough (429 hit around page 11 / ~10,000 products in practice) that
+     * paging through BigBuy's entire catalog to find our ~55 products isn't
+     * viable — see getProductStockByHandlingDays() below for the per-product
+     * fallback actually used by bigbuy_stock_sync.php. Left here in case a
+     * future use case can tolerate the full-catalog page cost.
      */
     public function getProductsStockByHandlingDays(int $page = 1, int $pageSize = 1000): array
     {
         return $this->request('GET', "/rest/catalog/productsstockbyhandlingdays.json?page=$page&pageSize=$pageSize");
+    }
+
+    /**
+     * Stock for ONE product by BigBuy id (= our cj_pid). Rate limit: 1
+     * request per 5 seconds — caller MUST pace calls at least that far
+     * apart (see bigbuy_stock_sync.php). Response shape: {id, sku,
+     * stocks: [{quantity, minHandlingDays, maxHandlingDays, warehouse}]}.
+     */
+    public function getProductStockByHandlingDays(int $productId): array
+    {
+        return $this->request('GET', "/rest/catalog/productstockbyhandlingdays/$productId.json");
     }
 
     /** All images for a product. */
