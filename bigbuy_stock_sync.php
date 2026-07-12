@@ -30,19 +30,34 @@ declare(strict_types=1);
  *   alter table public.products add column if not exists stock_synced_at timestamptz;
  *
  * HOW TO RUN:
- *   Browser (preview, no DB writes): khurmistore.es/bigbuy_stock_sync.php?key=khurmi2026&start=0&count=3
- *   Browser (apply):                 khurmistore.es/bigbuy_stock_sync.php?key=khurmi2026&start=0&count=55&apply=1
- *   CLI (cron):                      php bigbuy_stock_sync.php apply=1   (no &key= needed — CLI bypasses the guard)
+ *   Browser, manual batch (preview): khurmistore.es/bigbuy_stock_sync.php?key=khurmi2026&start=0&count=3
+ *   Browser, manual batch (apply):   khurmistore.es/bigbuy_stock_sync.php?key=khurmi2026&start=0&count=20&apply=1
+ *   Browser, FULL catalog (apply):   khurmistore.es/bigbuy_stock_sync.php?key=khurmi2026&apply=1   (no &start/&count -> all products)
+ *   CLI (cron):                      php bigbuy_stock_sync.php   (no &key needed, apply mode is AUTOMATIC, ALL products, every run)
+ *
+ * CLI runs always process every product and always write to Supabase —
+ * there's no CLI preview mode. Test with the browser batch mode first.
+ *
+ * A ~55-product full run takes ~7-10 minutes (7s/product + any end-of-run
+ * retries) — set_time_limit(0) below so it isn't killed partway through.
+ *
+ * Every run appends a timestamped summary to stock_sync.log (same
+ * directory) — check that after a cron run instead of relying on cron's
+ * own output capture.
  *
  * Never deletes products — only PATCHes stock/is_active/stock_synced_at,
  * and only for products this run actually got a definitive answer for.
  */
 
-if (php_sapi_name() !== 'cli') {
+$isCli = php_sapi_name() === 'cli';
+
+if (!$isCli) {
     if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forbidden'); }
     header('Content-Type: text/plain; charset=utf-8');
 }
 set_time_limit(0);
+
+$runStartedAt = date('c');
 
 require_once __DIR__ . '/bigbuy.php';
 require_once __DIR__ . '/supabase.php';
@@ -153,22 +168,41 @@ function bb_check_product_stock(BigBuy $bb, int $cjPid): array
 
 /* ------------------------------------------------------------------ *
  *  Batch/pagination + mode
+ *  - CLI: always ALL products, always apply=true, no &key needed.
+ *  - Browser with no &start/&count: also ALL products (still requires
+ *    &apply=1 to actually write — no CLI-style auto-apply for browser).
+ *  - Browser with &start/&count: manual batch mode, unchanged from before.
  * ------------------------------------------------------------------ */
-$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
-$count = isset($_GET['count']) ? (int)$_GET['count'] : 20;
-$apply = ($_GET['apply'] ?? '') === '1';
+$noRangeSpecified = !isset($_GET['start']) && !isset($_GET['count']);
+$processAll       = $isCli || $noRangeSpecified;
+$apply            = $isCli || ($_GET['apply'] ?? '') === '1';
 
 $products = sb_get($cfg, 'products?cj_pid=not.is.null&select=id,name,cj_pid,stock,is_active&order=id.asc');
 if (empty($products)) {
     exit("No products with cj_pid found — check Supabase credentials/connection.\n");
 }
-$batch = array_slice($products, $start, $count);
+
+if ($processAll) {
+    $start = 0;
+    $batch = $products;
+} else {
+    $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
+    $count = isset($_GET['count']) ? (int)$_GET['count'] : 20;
+    $batch = array_slice($products, $start, $count);
+}
+
+$logLines = []; // summary-only lines, appended to stock_sync.log at the end
+function log_line(string $line, array &$logLines): void
+{
+    echo $line . "\n";
+    $logLines[] = $line;
+}
 
 echo "==========================================\n";
-echo "=== VERSION: single-product-v4-retry-queue ===\n";
-echo " BigBuy stock sync (single-product endpoint, " . STOCK_CALL_DELAY_SECONDS . "s spacing) — " . ($apply ? "APPLY to Supabase" : "PREVIEW ONLY (no DB writes)") . "\n";
-echo " Batch: products $start.." . ($start + count($batch)) . " of " . count($products) . "\n";
-echo " Estimated time (main pass): ~" . round(count($batch) * STOCK_CALL_DELAY_SECONDS) . "s (+ time for any end-of-run retries)\n";
+echo "=== VERSION: single-product-v5-cron-ready ===\n";
+echo " BigBuy stock sync (single-product endpoint, " . STOCK_CALL_DELAY_SECONDS . "s spacing) — " . ($apply ? "APPLY to Supabase" : "PREVIEW ONLY (no DB writes)") . ($isCli ? " [CLI]" : " [browser]") . "\n";
+echo " Batch: products $start.." . ($start + count($batch)) . " of " . count($products) . ($processAll ? " (ALL — no &start/&count given)" : '') . "\n";
+echo " Estimated time (main pass): ~" . round(count($batch) * STOCK_CALL_DELAY_SECONDS / 60, 1) . " min (+ time for any end-of-run retries)\n";
 echo "==========================================\n\n";
 
 $succeeded  = []; // id => ['name'=>..., 'qty'=>int, 'isActive'=>bool]
@@ -256,13 +290,18 @@ if (!empty($retryQueue)) {
 $nowInStock    = count(array_filter($succeeded, fn($r) => $r['isActive']));
 $nowOutOfStock = count($succeeded) - $nowInStock;
 
-echo "\n==========================================\n";
-echo ($apply ? "Updated & saved: " : "Would update: ") . count($succeeded) . "\n";
-echo "Now in-stock:     $nowInStock\n";
-echo "Now out-of-stock: $nowOutOfStock\n";
-echo "Still pending (429, untouched in DB, re-run the script for these): " . count($pendingIds) . (empty($pendingIds) ? '' : ' (ids: ' . implode(', ', $pendingIds) . ')') . "\n";
-echo "Failed (other errors, not auto-retried): " . count($failedIds) . (empty($failedIds) ? '' : ' (ids: ' . implode(', ', $failedIds) . ')') . "\n";
+echo "\n";
+log_line("==========================================", $logLines);
+log_line("Run finished " . date('c') . " (" . ($isCli ? 'CLI/cron' : 'browser') . ", " . ($apply ? 'APPLY' : 'PREVIEW') . ", " . ($processAll ? 'all products' : "start=$start") . ")", $logLines);
+log_line(($apply ? "Updated & saved: " : "Would update: ") . count($succeeded), $logLines);
+log_line("Now in-stock:     $nowInStock", $logLines);
+log_line("Now out-of-stock: $nowOutOfStock", $logLines);
+log_line("Still pending (429, untouched in DB, re-run the script for these): " . count($pendingIds) . (empty($pendingIds) ? '' : ' (ids: ' . implode(', ', $pendingIds) . ')'), $logLines);
+log_line("Failed (other errors, not auto-retried): " . count($failedIds) . (empty($failedIds) ? '' : ' (ids: ' . implode(', ', $failedIds) . ')'), $logLines);
 if (!$apply) {
     echo "\nPreview only — re-run with &apply=1 on the same &start/&count to save.\n";
 }
 echo "==========================================\n";
+
+$logEntry = "\n=== Run started $runStartedAt ===\n" . implode("\n", $logLines) . "\n";
+@file_put_contents(__DIR__ . '/stock_sync.log', $logEntry, FILE_APPEND | LOCK_EX);
