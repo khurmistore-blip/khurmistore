@@ -30,6 +30,9 @@ header('Content-Type: application/xml; charset=utf-8');
 // doesn't exist.
 $products = sb_get($cfg, 'products?status=eq.active&order=id.asc');
 
+// Manual exclusion list by product id — add more ids here as needed.
+$excluded_ids = [176, 178, 183, 185]; // CBD products
+
 /** XML-safe CDATA block; guards against a literal "]]>" breaking out early. */
 function xml_cdata(string $value): string
 {
@@ -60,6 +63,19 @@ echo '<description>' . xml_esc('KhurmiStore product feed for Google Merchant Cen
 foreach ($products as $p) {
     $id = (int)($p['id'] ?? 0);
     if (!$id) {
+        continue;
+    }
+
+    // Manual exclusion by id, or any product whose title/description
+    // mentions CBD (case-insensitive) — checked against the raw DB values,
+    // before HTML-stripping/cleanup.
+    $rawName = (string)($p['name'] ?? '');
+    $rawDesc = (string)($p['description'] ?? '');
+    if (
+        in_array($id, $excluded_ids, true)
+        || stripos($rawName, 'CBD') !== false
+        || stripos($rawDesc, 'CBD') !== false
+    ) {
         continue;
     }
 
