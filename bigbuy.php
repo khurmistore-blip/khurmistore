@@ -109,10 +109,31 @@ class BigBuy
         return $this->request('GET', "/rest/catalog/product/$productId.json?isoCode=$iso");
     }
 
-    /** Real-time stock for one product. */
+    /**
+     * Real-time stock for one product. NOTE: this endpoint no longer exists
+     * in BigBuy's current API (confirmed via their OpenAPI spec — returns
+     * HTTP 400 for every product) — left here unmodified since fixing it
+     * wasn't requested, but it is broken. sync_products.php also calls this
+     * method for its stock lookup, so that script's stock values have been
+     * silently falling back to their default (1) this whole time too — not
+     * fixed here, flagging for awareness. Use
+     * getProductsStockByHandlingDays() (batch endpoint, below) instead.
+     */
     public function getProductStock(int $productId): array
     {
         return $this->request('GET', "/rest/catalog/productstock/$productId.json");
+    }
+
+    /**
+     * Batch stock for ALL products, paginated (the endpoint that actually
+     * works, per BigBuy's official OpenAPI spec). Each item: {id, sku,
+     * stocks: [{quantity, minHandlingDays, maxHandlingDays, warehouse}]}.
+     * Caller is responsible for paginating with &page= until a page
+     * returns fewer than $pageSize results (see bigbuy_stock_sync.php).
+     */
+    public function getProductsStockByHandlingDays(int $page = 1, int $pageSize = 1000): array
+    {
+        return $this->request('GET', "/rest/catalog/productsstockbyhandlingdays.json?page=$page&pageSize=$pageSize");
     }
 
     /** All images for a product. */
