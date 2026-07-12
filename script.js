@@ -106,15 +106,15 @@ function calcShippingJS(weightKg) {
     return SHIPPING_RATES_ES[tier] ?? SHIPPING_DEFAULT_ES;
 }
 
-// Cart-level: MAX of each item's per-unit shipping (not x qty, not summed —
-// BigBuy typically consolidates a cart into one shipment).
+// Cart-level: SUM of each item's per-unit shipping (product A + product B +
+// ...). Not multiplied by qty — one line item contributes its shipping cost
+// once regardless of quantity in that line.
 function calcCartShippingJS(items) {
-    let max = 0;
+    let sum = 0;
     for (const item of items) {
-        const cost = calcShippingJS(item?.weight ?? null);
-        if (cost > max) max = cost;
+        sum += calcShippingJS(item?.weight ?? null);
     }
-    return max > 0 ? max : SHIPPING_DEFAULT_ES;
+    return sum > 0 ? sum : SHIPPING_DEFAULT_ES;
 }
 
 // Formatear precio en Euros
@@ -264,6 +264,10 @@ function updateCart() {
                 <span>${item.name}</span>
                 <span>${item.qty} x ${formatPrice(item.price)}</span>
             </div>
+            <div class="cart-summary-item cart-summary-shipping">
+                <span>Envío de este producto</span>
+                <span>${formatPrice(calcShippingJS(item.weight ?? null))}</span>
+            </div>
         `).join('') : '';
     }
     if (cartSummarySubtotalEl) cartSummarySubtotalEl.textContent = formatPrice(subtotal);
@@ -280,6 +284,7 @@ function updateCart() {
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
                     <span class="price">${formatPrice(item.price)}</span>
+                    <span class="cart-item-shipping" style="display:block;font-size:12px;color:var(--muted,#888);"><i class="fas fa-truck-fast"></i> Envío: ${formatPrice(calcShippingJS(item.weight ?? null))}</span>
                     <div class="qty-controls">
                         <button type="button" onclick="changeQty(${item.id}, -1)">-</button>
                         <span>${item.qty}</span>
@@ -507,9 +512,18 @@ function updateSummary() {
     const subEl = document.getElementById('summarySubtotal');
     const totEl = document.getElementById('summaryTotal');
     const shipEl = document.getElementById('summaryShipping');
+    const breakdownEl = document.getElementById('summaryShippingBreakdown');
     if (subEl) subEl.textContent = formatPrice(subtotal);
     if (shipEl) shipEl.textContent = formatPrice(shipping);
     if (totEl) totEl.textContent = formatPrice(total);
+    if (breakdownEl) {
+        breakdownEl.innerHTML = cart.map(item => `
+            <div class="summary-row summary-row-shipping-item" style="font-size:13px;color:var(--muted,#888);">
+                <span>Envío — ${item.name}</span>
+                <span>${formatPrice(calcShippingJS(item.weight ?? null))}</span>
+            </div>
+        `).join('');
+    }
 }
 
 

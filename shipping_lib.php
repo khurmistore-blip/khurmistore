@@ -38,20 +38,19 @@ function calcShipping(?float $weightKg): float
 }
 
 /**
- * Cart-level shipping: MAX of each distinct item's per-unit shipping cost
- * (not multiplied by qty, not summed across items — BigBuy typically
- * consolidates a cart into one shipment, so charging per-item would
- * over-charge). $items is an array of arrays/objects with a 'weight' key.
+ * Cart-level shipping: SUM of each distinct item's per-unit shipping cost
+ * (product A's shipping + product B's shipping + ...). NOT multiplied by
+ * qty — one line item contributes its shipping cost once regardless of how
+ * many units are in that line (BigBuy typically consolidates same-product
+ * quantities into one package). $items is an array of arrays/objects with
+ * a 'weight' key.
  */
 function calcCartShipping(array $items): float
 {
-    $max = 0.0;
+    $sum = 0.0;
     foreach ($items as $item) {
         $weight = is_array($item) ? ($item['weight'] ?? null) : null;
-        $cost   = calcShipping($weight !== null ? (float)$weight : null);
-        if ($cost > $max) {
-            $max = $cost;
-        }
+        $sum += calcShipping($weight !== null ? (float)$weight : null);
     }
-    return $max > 0 ? $max : SHIPPING_DEFAULT_ES;
+    return $sum > 0 ? $sum : SHIPPING_DEFAULT_ES;
 }

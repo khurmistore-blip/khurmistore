@@ -472,6 +472,7 @@ $breadcrumbSchema = [
                     <button type="button" class="btn-primary full-btn" id="stripeCheckoutBtn"><i class="fas fa-credit-card"></i> Finalizar Compra</button>
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
+                        <div id="summaryShippingBreakdown"></div>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
                         <div class="summary-row"><span>Envío:</span><span id="summaryShipping">€4,99</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
