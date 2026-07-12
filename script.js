@@ -211,6 +211,10 @@ function saveCart() {
 function addToCart(id, qty = 1) {
     const product = products.find(p => p.id === id);
     if (!product) return;
+    if ((product.stock ?? 1) <= 0 || product.isActive === false) {
+        showNotification('Lo sentimos, este producto está agotado.');
+        return;
+    }
     const existing = cart.find(item => item.id === id);
     if (existing) {
         existing.qty += qty;
@@ -943,6 +947,7 @@ function renderProductDetails() {
 
     const p = getProductDetails(product);
     const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+    const inStock = p.stock > 0 && p.isActive !== false;
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -978,9 +983,9 @@ function renderProductDetails() {
                 <h1>${p.name}</h1>
                 <div class="detail-rating">
                     <span class="badge-nuevo">Nuevo</span>
-                    <span class="stock-badge ${p.stock > 5 ? 'in-stock' : 'low-stock'}">
-                        <i class="fas fa-${p.stock > 5 ? 'check-circle' : 'exclamation-circle'}"></i>
-                        ${p.stock > 5 ? `${p.stock} en stock` : `¡Solo ${p.stock} disponibles!`}
+                    <span class="stock-badge ${inStock ? 'in-stock' : 'low-stock'}">
+                        <i class="fas fa-${inStock ? 'check-circle' : 'times-circle'}"></i>
+                        ${inStock ? 'En stock' : 'Agotado'}
                     </span>
                 </div>
 
@@ -990,7 +995,7 @@ function renderProductDetails() {
                     <div class="summary-grid">
                         <div class="summary-item"><strong>Uso recomendado</strong><span>${getCategoryName(p.category)} de alta calidad para uso diario y regalo.</span></div>
                         <div class="summary-item"><strong>Precio</strong><span>${formatPrice(p.price)}${p.oldPrice ? ` (${formatPrice(p.oldPrice)} antes)` : ''}</span></div>
-                        <div class="summary-item"><strong>Disponibilidad</strong><span>${p.stock > 5 ? `${p.stock} unidades disponibles` : `Solo ${p.stock} unidades restantes`}</span></div>
+                        <div class="summary-item"><strong>Disponibilidad</strong><span>${inStock ? 'En stock' : 'Agotado'}</span></div>
                         <div class="summary-item"><strong>Envío</strong><span>2-4 días laborables. Gratis en pedidos +50€.</span></div>
                     </div>
                 </div>
@@ -1000,6 +1005,10 @@ function renderProductDetails() {
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
                     ${discount ? `<span class="discount-tag">Ahorras ${formatPrice(p.oldPrice - p.price)}</span>` : ''}
                 </div>
+                <span class="stock-badge ${inStock ? 'in-stock' : 'low-stock'}" style="margin:4px 0 12px;">
+                    <i class="fas fa-${inStock ? 'check-circle' : 'times-circle'}"></i>
+                    ${inStock ? 'En stock' : 'Agotado'}
+                </span>
                 ${p.shippingCost != null ? `<p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Coste de envío estimado: ${formatPrice(p.shippingCost)}</p>` : ''}
 
                 <p class="product-description">${p.description}</p>
@@ -1053,11 +1062,11 @@ function renderProductDetails() {
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn-primary big-btn" onclick="addToCartFromDetails(${p.id})">
-                        <i class="fas fa-cart-plus"></i> Añadir al Carrito
+                    <button class="btn-primary big-btn" onclick="addToCartFromDetails(${p.id})" ${inStock ? '' : 'disabled'}>
+                        <i class="fas fa-cart-plus"></i> ${inStock ? 'Añadir al Carrito' : 'Agotado'}
                     </button>
-                    <button class="btn-secondary big-btn" onclick="buyNow(${p.id})">
-                        <i class="fas fa-bolt"></i> Comprar Ahora
+                    <button class="btn-secondary big-btn" onclick="buyNow(${p.id})" ${inStock ? '' : 'disabled'}>
+                        <i class="fas fa-bolt"></i> ${inStock ? 'Comprar Ahora' : 'No disponible'}
                     </button>
                     <button class="wishlist-btn" onclick="toggleWishlist(${p.id}, this)"><i class="far fa-heart"></i></button>
                 </div>
