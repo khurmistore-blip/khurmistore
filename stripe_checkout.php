@@ -53,7 +53,7 @@ if ($email === '' || empty($products)) {
 
 // Never trust a total sent from the client — recompute server-side using the
 // SAME formula as updateSummary()/calcCartShippingJS() in script.js:
-// subtotal + MAX(per-item shipping, from weight via shipping_lib.php).
+// subtotal + SUM(per-item shipping, from weight via shipping_lib.php).
 // (Note: item `price` itself is still taken from the client here, same as
 // before this change — a pre-existing characteristic of this endpoint, not
 // something newly introduced by the shipping calculation.)

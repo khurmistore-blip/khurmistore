@@ -241,7 +241,8 @@ function changeQty(id, change) {
 function updateCart() {
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const totalPrice = subtotal; // Cart drawer shows subtotal only — real shipping is added in the checkout summary (updateSummary())
+    const shipping = calcCartShippingJS(cart);
+    const totalPrice = subtotal + shipping; // Cart drawer Total now includes shipping, same formula as updateSummary()
 
     const cartCountEl = document.querySelector('.cart-count');
     const cartSubtotalEl = document.getElementById('cartSubtotal');
