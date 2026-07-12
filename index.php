@@ -370,51 +370,6 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
     </section>
 
-    <!-- Productos -->
-    <section class="products" id="products">
-        <div class="section-header">
-            <span class="subtitle">NUESTRA COLECCIÓN</span>
-            <h2>Productos <span>Destacados</span></h2>
-        </div>
-        <div class="filter-buttons">
-            <button class="filter-btn active" data-filter="all">Todos</button>
-            <button class="filter-btn" data-filter="headphones">Auriculares</button>
-            <button class="filter-btn" data-filter="smartwatch">Relojes</button>
-            <button class="filter-btn" data-filter="earpods">Inalámbricos</button>
-            <button class="filter-btn" data-filter="covers">Fundas</button>
-            <button class="filter-btn" data-filter="headgear">Cascos Gaming</button>
-            <button class="filter-btn" data-filter="handsfree">Manos Libres</button>
-            <button class="filter-btn" data-filter="mouse">Ratones</button>
-        </div>
-        <?php if (!empty($featured)): ?>
-            <!-- Real Supabase products, server-rendered (same .product-card markup script.js's dummy grid uses). -->
-            <div class="products-grid" id="featuredProductsGrid">
-                <?php foreach ($featured as $p): ?>
-                    <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
-                        <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
-                            <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
-                            <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
-                        </a>
-                        <div class="product-info">
-                            <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
-                            <?php if (!empty($p['category'])): ?><p class="product-cat"><?= htmlspecialchars($p['category']) ?></p><?php endif; ?>
-                            <span class="badge-nuevo">Nuevo</span>
-                            <div class="product-price">
-                                <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
-                                <button type="button" class="add-cart" onclick="event.stopPropagation(); addToCart(<?= (int)$p['id'] ?>)" aria-label="Añadir <?= htmlspecialchars($p['name']) ?> al carrito">
-                                    <i class="fas fa-cart-plus"></i> Añadir al carrito
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <!-- No active products in Supabase yet: fall back to script.js's demo grid so this section never looks empty. -->
-            <div class="products-grid" id="productsGrid"></div>
-        <?php endif; ?>
-    </section>
-
     <!-- Sliders de Categoría (uno por cada categoría del menú, datos reales de Supabase) -->
     <?php foreach ($categorySliders as $slider): ?>
         <section class="category-slider-section" aria-label="<?= htmlspecialchars($slider['label']) ?>">
