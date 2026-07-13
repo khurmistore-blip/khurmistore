@@ -23,46 +23,68 @@ foreach ($categorySliderDefs as $def) {
     }
 }
 
-// Real product images for the hero slider — replaces the hardcoded Unsplash
-// stock photos a reviewer flagged as looking like a generic dropship template.
-// Also excludes refurbished listings so the hero never showcases that item.
-// Picks up to 2 different auriculares photos (slides 1 & 3). NEVER falls back
-// to a different category — a slide's text always names a specific category
-// (e.g. "Auriculares Premium"), so showing an unrelated product's photo there
-// is a real content bug, not an acceptable placeholder. If the category has
-// fewer than $count distinct photographed products, the ones it does have
-// are repeated instead — a duplicate auriculares photo is fine, an L'Occitane
-// photo on an auriculares slide is not.
-function hero_slide_images(array $cfg, string $category, int $count): array
-{
-    $rows = sb_get($cfg, 'products?status=eq.active&image_url=not.is.null'
-        . '&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($category)
-        . '&order=created_at.desc');
+// Hero slider — 3 PINNED real products (not a random/latest category pick,
+// which is what kept breaking: a category query could land on a product
+// whose image_url was dead). Each slide is now tied to a specific product
+// id, using that exact row's image_url — the SAME field/value categoria.php
+// already renders successfully — so the image is confirmed working, not
+// guessed at.
 
-    $images = [];
-    foreach ($rows as $row) {
-        $firstImage = trim(explode(',', $row['image_url'] ?? '')[0] ?? '');
-        if ($firstImage !== '') {
-            $images[] = $firstImage;
+/** First image from a product's comma-separated image_url column. */
+function hero_product_image(?array $p): string
+{
+    if (!$p) {
+        return '';
+    }
+    return trim(explode(',', $p['image_url'] ?? '')[0] ?? '');
+}
+
+/**
+ * Finds ONE active, photographed, in-stock product in $category whose name
+ * matches $nameLike (case-insensitive substring) — used to prefer a
+ * specific well-known product (e.g. "L'Occitane", "Xiaomi") without hard-
+ * coding its id. Falls back to any active photographed product in that
+ * category if no name match exists, so the slide is never empty.
+ */
+function hero_find_product(array $cfg, string $category, string $nameLike = ''): ?array
+{
+    $base = 'products?status=eq.active&image_url=not.is.null&stock=gt.0'
+        . '&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($category)
+        . '&order=created_at.desc&limit=1';
+
+    if ($nameLike !== '') {
+        $rows = sb_get($cfg, $base . '&name=ilike.*' . rawurlencode($nameLike) . '*');
+        if (!empty($rows)) {
+            return $rows[0];
         }
     }
 
-    if (empty($images)) {
-        return []; // no photographed product in this category — caller handles empty gracefully
-    }
-
-    $result = [];
-    for ($i = 0; $i < $count; $i++) {
-        $result[] = $images[$i % count($images)];
-    }
-    return $result;
+    $rows = sb_get($cfg, $base);
+    return $rows[0] ?? null;
 }
 
-$heroAudioImages = hero_slide_images($cfg, 'auriculares', 2);
-$heroWatchImages = hero_slide_images($cfg, 'relojes', 1);
-$heroSlide1Image = $heroAudioImages[0] ?? '';
-$heroSlide2Image = $heroWatchImages[0] ?? '';
-$heroSlide3Image = $heroAudioImages[1] ?? $heroSlide1Image;
+// Slide 1 — pinned to a specific product: id=179, Hidrolimpiador Facial Hyser.
+$heroP1Rows = sb_get($cfg, 'products?id=eq.179&status=eq.active&limit=1');
+$heroP1     = $heroP1Rows[0] ?? null;
+
+// Slide 2 — belleza, prefer a named perfume/L'Occitane product, else any
+// active photographed belleza product.
+$heroP2 = hero_find_product($cfg, 'belleza', "Occitane")
+    ?? hero_find_product($cfg, 'belleza', 'Perfume')
+    ?? hero_find_product($cfg, 'belleza');
+
+// Slide 3 — electronica, prefer the Xiaomi router or a Startech cable, else
+// any active photographed electronica product.
+$heroP3 = hero_find_product($cfg, 'electronica', 'Xiaomi')
+    ?? hero_find_product($cfg, 'electronica', 'Startech')
+    ?? hero_find_product($cfg, 'electronica');
+
+$heroSlide1Image = hero_product_image($heroP1);
+$heroSlide1Id    = $heroP1['id'] ?? null;
+$heroSlide2Image = hero_product_image($heroP2);
+$heroSlide2Id    = $heroP2['id'] ?? null;
+$heroSlide3Image = hero_product_image($heroP3);
+$heroSlide3Id    = $heroP3['id'] ?? null;
 
 // Renders one .product-card — same markup as the "Destacados" grid cards — for the
 // category sliders below. Kept as a helper since each slider repeats its card set
@@ -320,16 +342,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide active">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">NUEVA COLECCIÓN 2025</span>
-                        <h1>Auriculares <span class="highlight">Premium</span><br>Sonido Puro</h1>
-                        <p>Auriculares de calidad de estudio con cancelación de ruido</p>
+                        <span class="badge">CUIDADO FACIAL</span>
+                        <h1>Limpieza <span class="highlight">Facial</span><br>Profunda</h1>
+                        <p>Hidrolimpiador facial recargable para una piel radiante</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="scrollToProducts()">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide1Id ? "window.location.href='producto.php?id=" . (int)$heroSlide1Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Auriculares premium con cancelación de ruido" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Hidrolimpiador facial Hyser" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -337,16 +359,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">TECNOLOGÍA INTELIGENTE</span>
-                        <h2>Relojes <span class="highlight">Inteligentes</span><br>Controla Tu Vida</h2>
-                        <p>Mantente conectado con los últimos smartwatches</p>
+                        <span class="badge">BELLEZA PREMIUM</span>
+                        <h2>Perfumería y <span class="highlight">Belleza</span><br>Para Ti</h2>
+                        <p>Descubre nuestra selección de perfumería y cuidado personal</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="scrollToProducts()">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide2Id ? "window.location.href='producto.php?id=" . (int)$heroSlide2Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="Reloj inteligente smartwatch" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="<?= htmlspecialchars($heroP2['name'] ?? 'Producto de belleza') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -354,16 +376,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">LIBERTAD INALÁMBRICA</span>
-                        <h2>Auriculares <span class="highlight">Inalámbricos</span><br>Audio Claro</h2>
-                        <p>Libertad inalámbrica total con sonido premium</p>
+                        <span class="badge">TECNOLOGÍA</span>
+                        <h2>Electrónica y <span class="highlight">Gadgets</span><br>Para tu Día a Día</h2>
+                        <p>Tecnología de calidad al mejor precio, envío rápido a toda España</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="scrollToProducts()">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide3Id ? "window.location.href='producto.php?id=" . (int)$heroSlide3Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="Auriculares inalámbricos Bluetooth" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="<?= htmlspecialchars($heroP3['name'] ?? 'Producto de electrónica') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
