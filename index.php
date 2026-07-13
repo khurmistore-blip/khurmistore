@@ -329,7 +329,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Auriculares premium con cancelación de ruido" fetchpriority="high" decoding="async"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Auriculares premium con cancelación de ruido" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -346,7 +346,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="Reloj inteligente smartwatch" loading="lazy" decoding="async"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="Reloj inteligente smartwatch" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -363,7 +363,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="Auriculares inalámbricos Bluetooth" loading="lazy" decoding="async"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="Auriculares inalámbricos Bluetooth" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
