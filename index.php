@@ -25,29 +25,37 @@ foreach ($categorySliderDefs as $def) {
 
 // Real product images for the hero slider — replaces the hardcoded Unsplash
 // stock photos a reviewer flagged as looking like a generic dropship template.
-// Falls back to any active product with a real image if the category itself
-// has none, so the hero never shows a broken image. Also excludes refurbished
-// listings so the hero never showcases that item. Picks 2 different auriculares
-// photos (slides 1 & 3) so the slider doesn't repeat the same image twice.
+// Also excludes refurbished listings so the hero never showcases that item.
+// Picks up to 2 different auriculares photos (slides 1 & 3). NEVER falls back
+// to a different category — a slide's text always names a specific category
+// (e.g. "Auriculares Premium"), so showing an unrelated product's photo there
+// is a real content bug, not an acceptable placeholder. If the category has
+// fewer than $count distinct photographed products, the ones it does have
+// are repeated instead — a duplicate auriculares photo is fine, an L'Occitane
+// photo on an auriculares slide is not.
 function hero_slide_images(array $cfg, string $category, int $count): array
 {
-    $base = 'products?status=eq.active&image_url=not.is.null&name=not.ilike.*Reacondicionado*'
-        . '&order=created_at.desc&limit=' . $count;
-    $rows = sb_get($cfg, $base . '&category=eq.' . rawurlencode($category));
-    if (count($rows) < $count) {
-        $rows = array_merge($rows, sb_get($cfg, $base));
-    }
+    $rows = sb_get($cfg, 'products?status=eq.active&image_url=not.is.null'
+        . '&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($category)
+        . '&order=created_at.desc');
+
     $images = [];
     foreach ($rows as $row) {
         $firstImage = trim(explode(',', $row['image_url'] ?? '')[0] ?? '');
         if ($firstImage !== '') {
             $images[] = $firstImage;
         }
-        if (count($images) >= $count) {
-            break;
-        }
     }
-    return $images;
+
+    if (empty($images)) {
+        return []; // no photographed product in this category — caller handles empty gracefully
+    }
+
+    $result = [];
+    for ($i = 0; $i < $count; $i++) {
+        $result[] = $images[$i % count($images)];
+    }
+    return $result;
 }
 
 $heroAudioImages = hero_slide_images($cfg, 'auriculares', 2);
