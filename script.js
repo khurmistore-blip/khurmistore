@@ -96,25 +96,15 @@ const SHIPPING_RATES_ES = {
 };
 const SHIPPING_DEFAULT_ES = 4.99;
 
+// STORE-WIDE FREE SHIPPING: always 0, regardless of weight — mirrors
+// shipping_lib.php's calcShipping()/calcCartShipping(). Rate table/default
+// above kept in place (unused) in case free shipping is ever reverted.
 function calcShippingJS(weightKg) {
-    if (weightKg === null || weightKg === undefined || weightKg <= 0) {
-        return SHIPPING_DEFAULT_ES;
-    }
-    let tier = Math.ceil(weightKg);
-    if (tier < 1) tier = 1;
-    if (tier > 10) tier = 10; // table has no tier above 10kg — clamp to highest known rate
-    return SHIPPING_RATES_ES[tier] ?? SHIPPING_DEFAULT_ES;
+    return 0;
 }
 
-// Cart-level: SUM of each item's per-unit shipping (product A + product B +
-// ...). Not multiplied by qty — one line item contributes its shipping cost
-// once regardless of quantity in that line.
 function calcCartShippingJS(items) {
-    let sum = 0;
-    for (const item of items) {
-        sum += calcShippingJS(item?.weight ?? null);
-    }
-    return sum > 0 ? sum : SHIPPING_DEFAULT_ES;
+    return 0;
 }
 
 // Formatear precio en Euros
@@ -280,7 +270,7 @@ function updateCart() {
             </div>
             <div class="cart-summary-item cart-summary-shipping">
                 <span>Envío de este producto</span>
-                <span>${formatPrice(calcShippingJS(item.weight ?? null))}</span>
+                <span>GRATIS</span>
             </div>
         `).join('') : '';
     }
@@ -298,7 +288,7 @@ function updateCart() {
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
                     <span class="price">${formatPrice(item.price)}</span>
-                    <span class="cart-item-shipping" style="display:block;font-size:12px;color:var(--muted,#888);"><i class="fas fa-truck-fast"></i> Envío: ${formatPrice(calcShippingJS(item.weight ?? null))}</span>
+                    <span class="cart-item-shipping" style="display:block;font-size:12px;color:var(--muted,#888);"><i class="fas fa-truck-fast"></i> Envío: GRATIS</span>
                     <div class="qty-controls">
                         <button type="button" onclick="changeQty(${item.id}, -1)">-</button>
                         <span>${item.qty}</span>
@@ -521,23 +511,19 @@ function backToDetails() {
 
 function updateSummary() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const shipping = calcCartShippingJS(cart);
+    const shipping = calcCartShippingJS(cart); // always 0 — store-wide free shipping
     const total = subtotal + shipping;
     const subEl = document.getElementById('summarySubtotal');
     const totEl = document.getElementById('summaryTotal');
     const shipEl = document.getElementById('summaryShipping');
     const breakdownEl = document.getElementById('summaryShippingBreakdown');
     if (subEl) subEl.textContent = formatPrice(subtotal);
-    if (shipEl) shipEl.textContent = formatPrice(shipping);
+    if (shipEl) shipEl.textContent = 'Gratis';
     if (totEl) totEl.textContent = formatPrice(total);
-    if (breakdownEl) {
-        breakdownEl.innerHTML = cart.map(item => `
-            <div class="summary-row summary-row-shipping-item" style="font-size:13px;color:var(--muted,#888);">
-                <span>Envío — ${item.name}</span>
-                <span>${formatPrice(calcShippingJS(item.weight ?? null))}</span>
-            </div>
-        `).join('');
-    }
+    // Per-item shipping breakdown removed — every line would now redundantly
+    // say "Gratis" since shipping is free store-wide; the single "Envío:
+    // Gratis" row above already says everything that needs saying.
+    if (breakdownEl) breakdownEl.innerHTML = '';
 }
 
 
@@ -1022,7 +1008,7 @@ function renderProductDetails() {
                     <i class="fas fa-${stockBadgeIcon}"></i>
                     ${stockBadgeText}
                 </span>
-                ${p.shippingCost != null ? `<p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Coste de envío estimado: ${formatPrice(p.shippingCost)}</p>` : ''}
+                <p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
 
                 <p class="product-description">${p.description}</p>
 
@@ -1712,5 +1698,41 @@ function initStripeButton() {
     const query  = params.toString();
     const newUrl = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
     window.history.replaceState({}, '', newUrl);
+})();
+
+// ===== FREE SHIPPING POPUP — once per session, any page that loads script.js =====
+(function () {
+    const STORAGE_KEY = 'kw_free_shipping_popup_seen';
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    // Mark as seen immediately (not on close) — this must fire only once per
+    // session total, not once per page the user happens to close it on.
+    sessionStorage.setItem(STORAGE_KEY, '1');
+
+    function showFreeShippingPopup() {
+        const popup = document.createElement('div');
+        popup.className = 'free-shipping-popup';
+        popup.id = 'freeShippingPopup';
+        popup.innerHTML = `
+            <button type="button" class="free-shipping-popup-close" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+            <div class="free-shipping-popup-icon"><i class="fas fa-truck-fast"></i></div>
+            <div class="free-shipping-popup-text">
+                <strong>¡Envío GRATIS!</strong>
+                <span>a toda España en todos los pedidos</span>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        requestAnimationFrame(() => popup.classList.add('active'));
+
+        popup.querySelector('.free-shipping-popup-close').addEventListener('click', () => {
+            popup.classList.remove('active');
+            setTimeout(() => popup.remove(), 400);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(showFreeShippingPopup, 1200));
+    } else {
+        setTimeout(showFreeShippingPopup, 1200);
+    }
 })();
 

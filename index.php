@@ -246,6 +246,16 @@ function render_category_slider_card(array $p, array $cfg): string
 
 <script src="/js/meta-pixel.js" defer></script>
 <body>
+<!-- Barra de Anuncios -->
+<div class="announcement-bar" id="announcementBar">
+    <div class="announcement-content">
+        <i class="fas fa-bolt"></i>
+        <span class="scroll-text">
+             🚚 Envío GRATIS a toda España • ¡Mega Rebajas! 50% de DESCUENTO en todos los auriculares • Compra 2 y llévate 1 GRATIS en auriculares inalámbricos • Pago a plazos disponible
+        </span>
+        <button class="close-announcement" onclick="closeAnnouncement()" aria-label="Cerrar anuncio"><i class="fas fa-times"></i></button>
+    </div>
+</div>
 <!-- ===== HEADER / NAVIGATION ===== -->
     <header class="header">
         <div class="nav-container">
@@ -591,7 +601,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <h4>Resumen del Pedido</h4>
                         <div id="summaryShippingBreakdown"></div>
                         <div class="summary-row"><span>Subtotal:</span><span id="summarySubtotal">€0,00</span></div>
-                        <div class="summary-row"><span>Envío:</span><span id="summaryShipping">€4,99</span></div>
+                        <div class="summary-row"><span>Envío:</span><span id="summaryShipping">Gratis</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
                     <div style="margin-top:10px;">

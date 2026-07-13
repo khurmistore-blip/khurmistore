@@ -335,3 +335,15 @@ body.announcement-active .product-details-page{padding-top:172px}
   text-transform: uppercase;
   margin-bottom: 10px;
 }
+
+/* Free shipping session popup (see script.js) — small dismissible corner
+   banner, bottom-left so it never overlaps the WhatsApp float/chat widget
+   buttons already docked bottom-right. */
+.free-shipping-popup{position:fixed;bottom:25px;left:25px;max-width:320px;background:var(--dark);border:1px solid rgba(255,107,53,0.35);border-radius:16px;padding:16px 40px 16px 16px;box-shadow:0 20px 50px rgba(0,0,0,0.35);z-index:9998;display:flex;align-items:center;gap:12px;opacity:0;visibility:hidden;transform:translateY(20px);transition:opacity 0.4s ease,transform 0.4s ease,visibility 0.4s ease;}
+.free-shipping-popup.active{opacity:1;visibility:visible;transform:translateY(0);}
+.free-shipping-popup-icon{width:42px;height:42px;border-radius:50%;background:var(--gradient2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+.free-shipping-popup-text{display:flex;flex-direction:column;gap:2px;color:#fff;font-size:13px;line-height:1.4;}
+.free-shipping-popup-text strong{color:var(--primary);font-size:14px;}
+.free-shipping-popup-close{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.08);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:11px;transition:0.2s;display:flex;align-items:center;justify-content:center;}
+.free-shipping-popup-close:hover{background:var(--primary);}
+@media (max-width:480px){.free-shipping-popup{left:12px;right:12px;bottom:12px;max-width:none;}}

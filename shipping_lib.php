@@ -15,42 +15,22 @@ const SHIPPING_RATES_ES = [
 const SHIPPING_DEFAULT_ES = 4.99;
 
 /**
- * Spain shipping cost for ONE product by weight (kg):
- *  - rounds UP to the next whole-kg tier (e.g. 2.1kg -> 3kg rate)
- *  - weight < 1kg uses the 1kg rate
- *  - weight > 10kg clamps to the 10kg rate (the table has no tier above
- *    10kg — this is the highest known rate, used as a ceiling)
- *  - null/0/negative weight (unknown) falls back to SHIPPING_DEFAULT_ES
+ * Spain shipping cost for ONE product. STORE-WIDE FREE SHIPPING: always 0,
+ * regardless of weight — the store absorbs the real BigBuy shipping cost.
+ * Weight-tier table/default above kept in place (unused) rather than
+ * deleted, in case free shipping is ever reverted.
  */
 function calcShipping(?float $weightKg): float
 {
-    if ($weightKg === null || $weightKg <= 0) {
-        return SHIPPING_DEFAULT_ES;
-    }
-    $tier = (int)ceil($weightKg);
-    if ($tier < 1) {
-        $tier = 1;
-    }
-    if ($tier > 10) {
-        $tier = 10; // table has no tier above 10kg — clamp to highest known rate
-    }
-    return SHIPPING_RATES_ES[$tier] ?? SHIPPING_DEFAULT_ES;
+    return 0.0;
 }
 
 /**
- * Cart-level shipping: SUM of each distinct item's per-unit shipping cost
- * (product A's shipping + product B's shipping + ...). NOT multiplied by
- * qty — one line item contributes its shipping cost once regardless of how
- * many units are in that line (BigBuy typically consolidates same-product
- * quantities into one package). $items is an array of arrays/objects with
- * a 'weight' key.
+ * Cart-level shipping: always 0 (store-wide free shipping). Kept as a
+ * function (rather than inlined at call sites) since callers (checkout
+ * summary, PayPal, Stripe, feed.php) already depend on this exact name.
  */
 function calcCartShipping(array $items): float
 {
-    $sum = 0.0;
-    foreach ($items as $item) {
-        $weight = is_array($item) ? ($item['weight'] ?? null) : null;
-        $sum += calcShipping($weight !== null ? (float)$weight : null);
-    }
-    return $sum > 0 ? $sum : SHIPPING_DEFAULT_ES;
+    return 0.0;
 }
