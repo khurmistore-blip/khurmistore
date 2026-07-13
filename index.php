@@ -251,7 +251,7 @@ function render_category_slider_card(array $p, array $cfg): string
     <div class="announcement-content">
         <i class="fas fa-bolt"></i>
         <span class="scroll-text">
-             🚚 Envío GRATIS a toda España • ¡Mega Rebajas! 50% de DESCUENTO en todos los auriculares • Compra 2 y llévate 1 GRATIS en auriculares inalámbricos • Pago a plazos disponible
+             🚚 Envío GRATIS a toda España
         </span>
         <button class="close-announcement" onclick="closeAnnouncement()" aria-label="Cerrar anuncio"><i class="fas fa-times"></i></button>
     </div>
@@ -650,36 +650,6 @@ function render_category_slider_card(array $p, array $cfg): string
     </div>
 
     <!-- Popup de Bienvenida -->
-<div class="welcome-popup-overlay" id="welcomePopup">
-    <div class="welcome-popup">
-        <button class="popup-close" onclick="closeWelcomePopup()" aria-label="Cerrar bienvenida"><i class="fas fa-times"></i></button>
-        <div class="popup-left">
-            <div class="popup-badge">🔥 OFERTA EXCLUSIVA</div>
-            <h2>Obtén <span class="discount-text">ENVÍO GRATIS</span></h2>
-            <p class="popup-subtitle">¡En Pedidos Superiores a 50€!</p>
-            <p class="popup-desc">Suscríbete ahora y consigue ENVÍO GRATIS en pedidos superiores a 50€</p>
-            <div class="popup-form">
-                <input type="email" id="popupEmail" placeholder="Introduce tu correo...">
-                <button onclick="subscribeNow()">Conseguir Envío Gratis <i class="fas fa-arrow-right"></i></button>
-            </div>
-            <div class="popup-features">
-                <span><i class="fas fa-check"></i> Ofertas Exclusivas</span>
-                <span><i class="fas fa-check"></i> Nuevas Llegadas</span>
-                <span><i class="fas fa-check"></i> Envío Gratis</span>
-            </div>
-            <p class="popup-skip" onclick="closeWelcomePopup()">No gracias, prefiero pagar el envío</p>
-        </div>
-        <div class="popup-right">
-            <div class="popup-image">
-                <img data-src="img/gift-box.jpg" alt="Oferta" width="500" height="333">
-                <div class="discount-circle">
-                    <span>GRATIS</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Aviso de Cookies RGPD -->
 <div class="cookie-consent hidden" id="cookieConsent">
     <div class="cookie-content">

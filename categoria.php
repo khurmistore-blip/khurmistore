@@ -175,7 +175,7 @@ $breadcrumbSchema = [
     <div class="announcement-content">
         <i class="fas fa-bolt"></i>
         <span class="scroll-text">
-             🚚 Envío GRATIS a toda España • ¡Mega Rebajas! 50% de DESCUENTO en todos los auriculares • Compra 2 y llévate 1 GRATIS en auriculares inalámbricos • Pago a plazos disponible
+             🚚 Envío GRATIS a toda España
         </span>
         <button class="close-announcement" onclick="closeAnnouncement()" aria-label="Cerrar anuncio"><i class="fas fa-times"></i></button>
     </div>

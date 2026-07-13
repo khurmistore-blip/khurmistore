@@ -762,54 +762,6 @@ function closeAnnouncement() {
     document.body.classList.remove('announcement-active');
 }
 
-// ===== POPUP DE BIENVENIDA =====
-function openWelcomePopup() {
-    if (sessionStorage.getItem('popupShown')) return;
-    sessionStorage.setItem('popupShown', 'true');
-    // Lazy-load image only when popup is actually shown
-    const img = document.querySelector('#welcomePopup .popup-image img[data-src]');
-    if (img) img.src = img.dataset.src;
-    document.getElementById('welcomePopup')?.classList.add('active');
-}
-
-window.addEventListener('load', () => {
-    if (sessionStorage.getItem('popupShown')) return;
-
-    const timer = setTimeout(openWelcomePopup, 5000);
-
-    function onExitIntent(e) {
-        if (e.clientY <= 0) {
-            clearTimeout(timer);
-            document.removeEventListener('mouseleave', onExitIntent);
-            openWelcomePopup();
-        }
-    }
-    document.addEventListener('mouseleave', onExitIntent);
-});
-
-function closeWelcomePopup() {
-    document.getElementById('welcomePopup')?.classList.remove('active');
-}
-
-function subscribeNow() {
-    const email = document.getElementById('popupEmail').value;
-    if (!email || !email.includes('@')) {
-        showNotification('¡Por favor, introduce un correo válido!');
-        return;
-    }
-    showNotification('🎉 ¡Éxito! Revisa tu correo para activar tu envío gratis en pedidos superiores a 50€');
-    closeWelcomePopup();
-}
-
-const wp = document.getElementById('welcomePopup');
-if (wp) {
-    wp.addEventListener('click', (e) => {
-        if (e.target.id === 'welcomePopup') {
-            closeWelcomePopup();
-        }
-    });
-}
-
 // ===== TEMPORIZADOR OFERTA FLASH =====
 function updateCountdown() {
     let saleEnd = localStorage.getItem('saleEnd');
