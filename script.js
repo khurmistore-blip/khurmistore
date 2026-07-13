@@ -956,7 +956,11 @@ function renderProductDetails() {
 
     const p = getProductDetails(product);
     const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
-    const inStock = p.stock > 0 && p.isActive !== false;
+    const inStock  = p.stock > 0 && p.isActive !== false; // unchanged — still drives the add-to-cart/button-disable logic below
+    const lowStock = inStock && p.stock <= 10;
+    const stockBadgeClass = inStock ? (lowStock ? 'low-stock' : 'in-stock') : 'low-stock';
+    const stockBadgeIcon  = !inStock ? 'times-circle' : (lowStock ? 'exclamation-circle' : 'check-circle');
+    const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? `¡Solo ${p.stock} disponibles!` : 'En stock');
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -992,9 +996,9 @@ function renderProductDetails() {
                 <h1>${p.name}</h1>
                 <div class="detail-rating">
                     <span class="badge-nuevo">Nuevo</span>
-                    <span class="stock-badge ${inStock ? 'in-stock' : 'low-stock'}">
-                        <i class="fas fa-${inStock ? 'check-circle' : 'times-circle'}"></i>
-                        ${inStock ? 'En stock' : 'Agotado'}
+                    <span class="stock-badge ${stockBadgeClass}">
+                        <i class="fas fa-${stockBadgeIcon}"></i>
+                        ${stockBadgeText}
                     </span>
                 </div>
 
@@ -1004,7 +1008,7 @@ function renderProductDetails() {
                     <div class="summary-grid">
                         <div class="summary-item"><strong>Uso recomendado</strong><span>${getCategoryName(p.category)} de alta calidad para uso diario y regalo.</span></div>
                         <div class="summary-item"><strong>Precio</strong><span>${formatPrice(p.price)}${p.oldPrice ? ` (${formatPrice(p.oldPrice)} antes)` : ''}</span></div>
-                        <div class="summary-item"><strong>Disponibilidad</strong><span>${inStock ? 'En stock' : 'Agotado'}</span></div>
+                        <div class="summary-item"><strong>Disponibilidad</strong><span>${stockBadgeText}</span></div>
                         <div class="summary-item"><strong>Envío</strong><span>2-4 días laborables. Gratis en pedidos +50€.</span></div>
                     </div>
                 </div>
@@ -1014,9 +1018,9 @@ function renderProductDetails() {
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
                     ${discount ? `<span class="discount-tag">Ahorras ${formatPrice(p.oldPrice - p.price)}</span>` : ''}
                 </div>
-                <span class="stock-badge ${inStock ? 'in-stock' : 'low-stock'}" style="margin:4px 0 12px;">
-                    <i class="fas fa-${inStock ? 'check-circle' : 'times-circle'}"></i>
-                    ${inStock ? 'En stock' : 'Agotado'}
+                <span class="stock-badge ${stockBadgeClass}" style="margin:4px 0 12px;">
+                    <i class="fas fa-${stockBadgeIcon}"></i>
+                    ${stockBadgeText}
                 </span>
                 ${p.shippingCost != null ? `<p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Coste de envío estimado: ${formatPrice(p.shippingCost)}</p>` : ''}
 
