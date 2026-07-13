@@ -22,7 +22,7 @@ if (php_sapi_name() !== 'cli') {
     if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forbidden'); }
     header('Content-Type: text/plain; charset=utf-8');
 }
-set_time_limit(300);
+set_time_limit(0); // was 300 — that silently overrode the set_time_limit(0) above it
 
 require_once __DIR__ . '/bigbuy.php';
 $cfg = require __DIR__ . '/config.php';
@@ -50,7 +50,7 @@ $SKUS = [
  *  time when syncing large SKU lists with sleep() rate-limit delays).
  * ------------------------------------------------------------------ */
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
-$count = isset($_GET['count']) ? (int)$_GET['count'] : 20;
+$count = isset($_GET['count']) ? (int)$_GET['count'] : 5;
 $batch = array_slice($SKUS, $start, $count);
 
 echo "==========================================\n";
@@ -91,7 +91,17 @@ foreach ($batch as $sku) {
 
     // price
     $cost = 0.0;
-    $prodRes = $bb->getProduct((int)$bbId, 'es');
+    $attempts = 0;
+    do {
+        $prodRes  = $bb->getProduct((int)$bbId, 'es');
+        $httpCode = $prodRes['status'] ?? null;
+        if ($httpCode == 429) {
+            $attempts++;
+            echo "   429 rate-limited (price), waiting 20s (retry $attempts/5)...\n";
+            @ob_flush(); @flush();
+            sleep(20);
+        }
+    } while ($httpCode == 429 && $attempts < 5);
     if ($prodRes['success'] ?? false) {
         $pd = $prodRes['data'];
         $prec = (is_array($pd) && isset($pd[0]) && is_array($pd[0])) ? $pd[0] : $pd;
@@ -140,7 +150,17 @@ foreach ($batch as $sku) {
 
     // stock
     $stock = 1;
-    $stockRes = $bb->getProductStock((int)$bbId);
+    $attempts = 0;
+    do {
+        $stockRes = $bb->getProductStock((int)$bbId);
+        $httpCode = $stockRes['status'] ?? null;
+        if ($httpCode == 429) {
+            $attempts++;
+            echo "   429 rate-limited (stock), waiting 20s (retry $attempts/5)...\n";
+            @ob_flush(); @flush();
+            sleep(20);
+        }
+    } while ($httpCode == 429 && $attempts < 5);
     if ($stockRes['success'] ?? false) {
         $sd = $stockRes['data'];
         $srec = (is_array($sd) && isset($sd[0]) && is_array($sd[0])) ? $sd[0] : $sd;
@@ -172,8 +192,19 @@ foreach ($batch as $sku) {
     sleep(5);
 }
 
-echo "\nDone. $ok synced into '$CATEGORY', $fail failed.\n";
-echo "Batch done. Processed SKUs $start to " . ($start + count($batch)) . " of " . count($SKUS) . " total.\n";
+$nextStart = $start + count($batch);
+
+echo "\n==========================================\n";
+echo "Imported: $ok\n";
+echo "Failed:   $fail\n";
+echo "Batch done. Processed SKUs $start to $nextStart of " . count($SKUS) . " total.\n";
+if ($nextStart < count($SKUS)) {
+    echo "\nNext run:\n";
+    echo "  sync_products.php?key=khurmi2026&cat=$CATEGORY&start=$nextStart&count=$count\n";
+} else {
+    echo "\nAll SKUs processed for category '$CATEGORY'.\n";
+}
+echo "==========================================\n";
 
 
 function supabaseUpsert(array $cfg, string $table, array $row, string $conflictCol): bool
