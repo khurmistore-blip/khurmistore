@@ -177,7 +177,10 @@ $noRangeSpecified = !isset($_GET['start']) && !isset($_GET['count']);
 $processAll       = $isCli || $noRangeSpecified;
 $apply            = $isCli || ($_GET['apply'] ?? '') === '1';
 
-$products = sb_get($cfg, 'products?cj_pid=not.is.null&select=id,name,cj_pid,stock,is_active&order=id.asc');
+// &limit=1000 — Supabase/PostgREST's default max-rows setting was capping
+// this at 60 despite no filter excluding the rest (confirmed via SQL: DB
+// actually has 83+ products with a cj_pid). Explicit limit overrides that.
+$products = sb_get($cfg, 'products?cj_pid=not.is.null&select=id,name,cj_pid,stock,is_active&order=id.asc&limit=1000');
 if (empty($products)) {
     exit("No products with cj_pid found — check Supabase credentials/connection.\n");
 }
