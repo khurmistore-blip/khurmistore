@@ -960,7 +960,7 @@ function renderProductDetails() {
     const lowStock = inStock && p.stock <= 10;
     const stockBadgeClass = inStock ? (lowStock ? 'low-stock' : 'in-stock') : 'low-stock';
     const stockBadgeIcon  = !inStock ? 'times-circle' : (lowStock ? 'exclamation-circle' : 'check-circle');
-    const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? `¡Solo ${p.stock} disponibles!` : 'En stock');
+    const stockBadgeText  = !inStock ? 'Agotado' : `En stock: ${p.stock} disponibles`;
 
     container.innerHTML = `
         <div class="breadcrumb">
