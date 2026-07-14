@@ -184,6 +184,11 @@ $products = sb_get($cfg, 'products?cj_pid=not.is.null&select=id,name,cj_pid,stoc
 if (empty($products)) {
     exit("No products with cj_pid found — check Supabase credentials/connection.\n");
 }
+// DIAGNOSTIC (temporary): written immediately, not deferred to end-of-run,
+// so progress survives even if the process gets killed mid-run (e.g. by a
+// hosting/cron timeout) — the normal end-of-run summary below writes nothing
+// in that case since it never gets reached.
+@file_put_contents(__DIR__ . '/stock_sync.log', "\n=== Run started $runStartedAt (" . ($isCli ? 'CLI/cron' : 'browser') . ") — fetched " . count($products) . " products total ===\n", FILE_APPEND | LOCK_EX);
 
 if ($processAll) {
     $start = 0;
@@ -269,6 +274,8 @@ foreach ($batch as $p) {
     }
 
     $outcome = process_one($p, $bb, $cfg, $apply, date('c'), $succeeded, $failedIds);
+    // DIAGNOSTIC (temporary): immediate per-product write, see note above.
+    @file_put_contents(__DIR__ . '/stock_sync.log', date('c') . " MAIN  id=$id \"" . ($p['name'] ?? '') . "\" outcome=$outcome\n", FILE_APPEND | LOCK_EX);
     if ($outcome === 'rate_limited') {
         $retryQueue[] = $p;
     }
@@ -282,6 +289,8 @@ if (!empty($retryQueue)) {
     foreach ($retryQueue as $p) {
         $id = (int)($p['id'] ?? 0);
         $outcome = process_one($p, $bb, $cfg, $apply, date('c'), $succeeded, $failedIds);
+        // DIAGNOSTIC (temporary): immediate per-product write, see note above.
+        @file_put_contents(__DIR__ . '/stock_sync.log', date('c') . " RETRY id=$id \"" . ($p['name'] ?? '') . "\" outcome=$outcome\n", FILE_APPEND | LOCK_EX);
         if ($outcome === 'rate_limited') {
             $pendingIds[] = $id;
         }
