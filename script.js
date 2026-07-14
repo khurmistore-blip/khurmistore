@@ -991,7 +991,7 @@ function renderProductDetails() {
                         <span class="toggle-icon">+</span>
                     </button>
                     <div class="faq-answer" id="faqAnswer0">
-                        El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
+                        El envío estándar llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra.
                     </div>
                 </div>
                 <div class="faq-item" data-faq-index="1">
@@ -1030,7 +1030,7 @@ function renderProductDetails() {
                 </div>
                 <div id="tab-shipping" class="tab-pane">
                     <h3>Información de Envío</h3>
-                    <p><i class="fas fa-truck"></i> <strong>Envío Estándar:</strong> 2-4 días laborables (Gratis en pedidos +50€)</p>
+                    <p><i class="fas fa-truck"></i> <strong>Envío Estándar:</strong> 2-4 días laborables (Gratis siempre, sin mínimo)</p>
                     <p><i class="fas fa-shipping-fast"></i> <strong>Envío Express:</strong> 24 horas (+9,99€)</p>
                     <p><i class="fas fa-rotate-left"></i> <strong>Devolución:</strong> 14 días para cambios o devoluciones gratuitas</p>
                     <p><i class="fas fa-globe"></i> <strong>Cobertura:</strong> Toda España peninsular y Baleares</p>
@@ -1099,7 +1099,7 @@ function injectProductFAQSchema(p) {
                 "name": "¿Cuánto tarda el envío?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "El envío estándar para este producto llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito."
+                    "text": "El envío estándar para este producto llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra."
                 }
             },
             {

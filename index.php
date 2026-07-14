@@ -249,9 +249,14 @@ function render_category_slider_card(array $p, array $cfg): string
 <!-- Barra de Anuncios -->
 <div class="announcement-bar" id="announcementBar">
     <div class="announcement-content">
-        <i class="fas fa-bolt"></i>
         <span class="scroll-text">
-             🚚 Envío GRATIS a toda España
+            <span class="ab-item">🚚 Envío GRATIS a toda España</span>
+            <span class="ab-dot ab-mobile-hide">·</span>
+            <span class="ab-item ab-mobile-hide">📍 Enviado desde España</span>
+            <span class="ab-dot">·</span>
+            <span class="ab-item">🔒 Pago Seguro</span>
+            <span class="ab-dot ab-mobile-hide">·</span>
+            <span class="ab-item ab-mobile-hide">↩️ 14 días para devoluciones</span>
         </span>
         <button class="close-announcement" onclick="closeAnnouncement()" aria-label="Cerrar anuncio"><i class="fas fa-times"></i></button>
     </div>
