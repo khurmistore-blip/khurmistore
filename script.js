@@ -990,38 +990,40 @@ function renderProductDetails() {
                     <div class="benefit"><i class="fas fa-shield-halved"></i><span>Garantía<br><small>1 año</small></span></div>
                     <div class="benefit"><i class="fas fa-lock"></i><span>Pago Seguro<br><small>SSL</small></span></div>
                 </div>
+            </div>
+        </div>
 
-                <p style="color:var(--muted,#666);font-size:14px;margin:20px 0 0;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
+        <div class="product-full-details">
+            <p style="color:var(--muted,#666);font-size:14px;margin:0 0 10px;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
 
-                <p class="product-description">${p.description}</p>
+            <p class="product-description">${p.description}</p>
 
-                <div class="faq-accordion">
-                    <div class="faq-item" data-faq-index="0">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
-                            <strong>¿Cuánto tarda el envío?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer0">
-                            El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
-                        </div>
+            <div class="faq-accordion">
+                <div class="faq-item" data-faq-index="0">
+                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
+                        <strong>¿Cuánto tarda el envío?</strong>
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer" id="faqAnswer0">
+                        El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
                     </div>
-                    <div class="faq-item" data-faq-index="1">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
-                            <strong>¿Qué garantía ofrece este producto?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer1">
-                            Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
-                        </div>
+                </div>
+                <div class="faq-item" data-faq-index="1">
+                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
+                        <strong>¿Qué garantía ofrece este producto?</strong>
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer" id="faqAnswer1">
+                        Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
                     </div>
-                    <div class="faq-item" data-faq-index="2">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
-                            <strong>¿Puedo cambiarlo o devolverlo?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer2">
-                            Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
-                        </div>
+                </div>
+                <div class="faq-item" data-faq-index="2">
+                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
+                        <strong>¿Puedo cambiarlo o devolverlo?</strong>
+                        <span class="toggle-icon">+</span>
+                    </button>
+                    <div class="faq-answer" id="faqAnswer2">
+                        Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
                     </div>
                 </div>
             </div>
