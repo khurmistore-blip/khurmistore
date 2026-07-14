@@ -850,11 +850,9 @@ function getProductDetails(p) {
         description: `${p.name} - Producto premium de KhurmiStore con la mejor relación calidad-precio. Diseñado con materiales de alta calidad para ofrecerte una experiencia única. Garantía de 1 año incluida.`,
         features: [
             "Calidad Premium garantizada",
-            "Diseño moderno y ergonómico",
-            "Compatible con múltiples dispositivos",
-            "Garantía de fábrica 1 año",
             "Envío rápido desde España",
-            "Soporte técnico 24/7"
+            "Garantía de fábrica 1 año",
+            "Devolución 14 días"
         ],
         gallery: [p.image, p.image.replace('w=500', 'w=800'), p.image, p.image],
         stock: Math.floor(Math.random() * 40) + 10,
@@ -895,10 +893,19 @@ function renderProductDetails() {
     const p = getProductDetails(product);
     const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
     const inStock  = p.stock > 0 && p.isActive !== false; // unchanged — still drives the add-to-cart/button-disable logic below
-    const lowStock = inStock && p.stock <= 10;
-    const stockBadgeClass = inStock ? (lowStock ? 'low-stock' : 'in-stock') : 'low-stock';
+    // Never show the raw stock count to the visitor — only a 3-tier status.
+    const lowStock = inStock && p.stock <= 5;
+    const stockBadgeClass = !inStock ? 'low-stock' : (lowStock ? 'low-stock' : 'in-stock');
     const stockBadgeIcon  = !inStock ? 'times-circle' : (lowStock ? 'exclamation-circle' : 'check-circle');
-    const stockBadgeText  = !inStock ? 'Agotado' : `En stock: ${p.stock} disponibles`;
+    const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? 'Últimas unidades' : 'En stock');
+
+    // Short above-the-fold hook: first sentence of the real DB description if
+    // present, otherwise a generic line that works for any product category.
+    const rawDescription = (product.description || '').trim();
+    const firstSentenceMatch = rawDescription.match(/^[^.!?]*[.!?]/);
+    const shortHook = rawDescription
+        ? (firstSentenceMatch ? firstSentenceMatch[0].trim() : rawDescription).slice(0, 160)
+        : 'Envío rápido desde España y garantía de 12 meses.';
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -934,21 +941,6 @@ function renderProductDetails() {
                 <h1>${p.name}</h1>
                 <div class="detail-rating">
                     <span class="badge-nuevo">Nuevo</span>
-                    <span class="stock-badge ${stockBadgeClass}">
-                        <i class="fas fa-${stockBadgeIcon}"></i>
-                        ${stockBadgeText}
-                    </span>
-                </div>
-
-                <div class="quick-summary">
-                    <h3>Resumen rápido</h3>
-                    <p>Producto ideal para quienes buscan ${getCategoryName(p.category).toLowerCase()} premium, envío rápido desde España y garantía de 12 meses.</p>
-                    <div class="summary-grid">
-                        <div class="summary-item"><strong>Uso recomendado</strong><span>${getCategoryName(p.category)} de alta calidad para uso diario y regalo.</span></div>
-                        <div class="summary-item"><strong>Precio</strong><span>${formatPrice(p.price)}${p.oldPrice ? ` (${formatPrice(p.oldPrice)} antes)` : ''}</span></div>
-                        <div class="summary-item"><strong>Disponibilidad</strong><span>${stockBadgeText}</span></div>
-                        <div class="summary-item"><strong>Envío</strong><span>2-4 días laborables. Gratis en pedidos +50€.</span></div>
-                    </div>
                 </div>
 
                 <div class="price-section">
@@ -956,43 +948,13 @@ function renderProductDetails() {
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
                     ${discount ? `<span class="discount-tag">Ahorras ${formatPrice(p.oldPrice - p.price)}</span>` : ''}
                 </div>
-                <span class="stock-badge ${stockBadgeClass}" style="margin:4px 0 12px;">
+
+                <span class="stock-badge ${stockBadgeClass}" style="margin:0 0 14px;">
                     <i class="fas fa-${stockBadgeIcon}"></i>
                     ${stockBadgeText}
                 </span>
-                <p style="color:var(--muted,#666);font-size:14px;margin:6px 0 0;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
 
-                <p class="product-description">${p.description}</p>
-
-                <div class="faq-accordion">
-                    <div class="faq-item" data-faq-index="0">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
-                            <strong>¿Cuánto tarda el envío?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer0">
-                            El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
-                        </div>
-                    </div>
-                    <div class="faq-item" data-faq-index="1">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
-                            <strong>¿Qué garantía ofrece este producto?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer1">
-                            Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
-                        </div>
-                    </div>
-                    <div class="faq-item" data-faq-index="2">
-                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
-                            <strong>¿Puedo cambiarlo o devolverlo?</strong>
-                            <span class="toggle-icon">+</span>
-                        </button>
-                        <div class="faq-answer" id="faqAnswer2">
-                            Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
-                        </div>
-                    </div>
-                </div>
+                <p class="product-hook">${shortHook}</p>
 
                 <div class="color-selector">
                     <h4>Color:</h4>
@@ -1027,6 +989,40 @@ function renderProductDetails() {
                     <div class="benefit"><i class="fas fa-rotate-left"></i><span>Devolución<br><small>14 días</small></span></div>
                     <div class="benefit"><i class="fas fa-shield-halved"></i><span>Garantía<br><small>1 año</small></span></div>
                     <div class="benefit"><i class="fas fa-lock"></i><span>Pago Seguro<br><small>SSL</small></span></div>
+                </div>
+
+                <p style="color:var(--muted,#666);font-size:14px;margin:20px 0 0;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
+
+                <p class="product-description">${p.description}</p>
+
+                <div class="faq-accordion">
+                    <div class="faq-item" data-faq-index="0">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
+                            <strong>¿Cuánto tarda el envío?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer0">
+                            El envío estándar llega en 2-4 días laborables en España. Los pedidos superiores a 50€ tienen envío gratuito.
+                        </div>
+                    </div>
+                    <div class="faq-item" data-faq-index="1">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
+                            <strong>¿Qué garantía ofrece este producto?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer1">
+                            Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
+                        </div>
+                    </div>
+                    <div class="faq-item" data-faq-index="2">
+                        <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
+                            <strong>¿Puedo cambiarlo o devolverlo?</strong>
+                            <span class="toggle-icon">+</span>
+                        </button>
+                        <div class="faq-answer" id="faqAnswer2">
+                            Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
