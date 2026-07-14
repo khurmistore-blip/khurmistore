@@ -1207,6 +1207,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuClose = document.getElementById('mobileNavClose');
     const menuDrawer = document.getElementById('mobileNavDrawer');
     const menuOverlay = document.getElementById('mobileNavOverlay');
+
+    // Mobile "Categorías" accordion: cloned from the desktop #categoryDropdown
+    // list (not a hand-maintained duplicate) so the two can never drift apart.
+    const mobileCategoriesToggle = document.getElementById('mobileCategoriesToggle');
+    const mobileCategoriesSubmenu = document.getElementById('mobileCategoriesSubmenu');
+    const desktopCategoryList = document.getElementById('categoryDropdown');
+    if (mobileCategoriesSubmenu && desktopCategoryList) {
+        desktopCategoryList.querySelectorAll('li').forEach(li => {
+            mobileCategoriesSubmenu.appendChild(li.cloneNode(true));
+        });
+    }
+    if (mobileCategoriesToggle) {
+        mobileCategoriesToggle.addEventListener('click', () => {
+            const dropdown = mobileCategoriesToggle.closest('.mobile-nav-dropdown');
+            const isOpen = dropdown.classList.toggle('mobile-nav-dropdown-open');
+            mobileCategoriesToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    }
+
+    // menuLinks is queried after the clone above so the cloned category links
+    // are included and get the same close-menu-on-click behavior for free.
     const menuLinks = document.querySelectorAll('.mobile-nav-links a');
 
     function openMenu() {
@@ -1223,6 +1244,10 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.classList.remove('active');
         menuToggle.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
+        if (mobileCategoriesToggle) {
+            mobileCategoriesToggle.closest('.mobile-nav-dropdown').classList.remove('mobile-nav-dropdown-open');
+            mobileCategoriesToggle.setAttribute('aria-expanded', 'false');
+        }
     }
 
     if (menuToggle) menuToggle.addEventListener('click', openMenu);

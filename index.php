@@ -339,7 +339,13 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
         <ul class="mobile-nav-links">
             <li><a href="#home"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="#categories"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li class="mobile-nav-dropdown">
+                <button type="button" class="mobile-nav-dropdown-toggle" id="mobileCategoriesToggle" aria-expanded="false" aria-controls="mobileCategoriesSubmenu">
+                    <i class="fas fa-th-large"></i> Categorías <i class="fas fa-chevron-down mobile-dropdown-chevron"></i>
+                </button>
+                <!-- Populated at runtime from the SAME #categoryDropdown list the desktop nav uses (see script.js), so there is one source of truth for categories. -->
+                <ul class="mobile-nav-submenu" id="mobileCategoriesSubmenu"></ul>
+            </li>
             <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
             <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
             <li><a href="blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
