@@ -856,8 +856,7 @@ function getProductDetails(p) {
         ],
         gallery: [p.image, p.image.replace('w=500', 'w=800'), p.image, p.image],
         stock: Math.floor(Math.random() * 40) + 10,
-        brand: "KhurmiStore",
-        colors: ["#000000", "#ff6b35", "#004e89"]
+        brand: "KhurmiStore"
     };
     return {
         ...defaults,
@@ -866,8 +865,7 @@ function getProductDetails(p) {
         features: p.features || defaults.features,
         description: p.description || defaults.description,
         stock: p.stock !== undefined ? p.stock : defaults.stock,
-        brand: p.brand || defaults.brand,
-        colors: p.colors || defaults.colors
+        brand: p.brand || defaults.brand
     };
 }
 
@@ -899,13 +897,10 @@ function renderProductDetails() {
     const stockBadgeIcon  = !inStock ? 'times-circle' : (lowStock ? 'exclamation-circle' : 'check-circle');
     const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? 'Últimas unidades' : 'En stock');
 
-    // Short above-the-fold hook: first sentence of the real DB description if
-    // present, otherwise a generic line that works for any product category.
-    const rawDescription = (product.description || '').trim();
-    const firstSentenceMatch = rawDescription.match(/^[^.!?]*[.!?]/);
-    const shortHook = rawDescription
-        ? (firstSentenceMatch ? firstSentenceMatch[0].trim() : rawDescription).slice(0, 160)
-        : 'Envío rápido desde España y garantía de 12 meses.';
+    // Generic hook only — DB descriptions come from the supplier (e.g. InnovaGoods'
+    // own marketing copy) and aren't reliably accurate per-product, so we don't
+    // interpolate description/category text here.
+    const shortHook = 'Envío rápido desde España y garantía de 12 meses.';
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -956,15 +951,6 @@ function renderProductDetails() {
 
                 <p class="product-hook">${shortHook}</p>
 
-                <div class="color-selector">
-                    <h4>Color:</h4>
-                    <div class="colors">
-                        ${p.colors.map((c, i) => `
-                            <span class="color-dot ${i === 0 ? 'active' : ''}" style="background:${c}" onclick="selectColor(this)" title="Color"></span>
-                        `).join('')}
-                    </div>
-                </div>
-
                 <div class="quantity-selector">
                     <h4>Cantidad:</h4>
                     <div class="qty-box">
@@ -985,7 +971,7 @@ function renderProductDetails() {
                 </div>
 
                 <div class="benefits-grid">
-                    <div class="benefit"><i class="fas fa-truck-fast"></i><span>Envío Gratis<br><small>+50€</small></span></div>
+                    <div class="benefit"><i class="fas fa-truck-fast"></i><span>Envío Gratis</span></div>
                     <div class="benefit"><i class="fas fa-rotate-left"></i><span>Devolución<br><small>14 días</small></span></div>
                     <div class="benefit"><i class="fas fa-shield-halved"></i><span>Garantía<br><small>1 año</small></span></div>
                     <div class="benefit"><i class="fas fa-lock"></i><span>Pago Seguro<br><small>SSL</small></span></div>
@@ -1147,11 +1133,6 @@ function changeMainImage(src, thumb) {
     if (main) main.src = src;
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
-}
-
-function selectColor(el) {
-    document.querySelectorAll('.color-dot').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
 }
 
 function changeDetailQty(change) {
