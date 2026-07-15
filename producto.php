@@ -159,7 +159,6 @@ function bb_product_to_js(array $p): array
         'image'       => $image,
         'gallery'     => $gallery,
         'tag'         => '',
-        'rating'      => 5,
         'stock'       => (int)($p['stock'] ?? 0),
         'isActive'    => ($p['is_active'] ?? true) !== false,
         'description' => $p['long_description'] ?: ($p['description'] ?? ''),

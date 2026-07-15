@@ -1037,18 +1037,7 @@ function renderProductDetails() {
                 </div>
                 <div id="tab-reviews" class="tab-pane">
                     <h3>Reseñas de Clientes</h3>
-                    <div class="review">
-                        <div class="review-header"><strong>María G.</strong><span class="stars">★★★★★</span></div>
-                        <p>"Excelente producto, llegó rápido y la calidad es increíble. ¡Súper recomendado!"</p>
-                    </div>
-                    <div class="review">
-                        <div class="review-header"><strong>Carlos M.</strong><span class="stars">★★★★★</span></div>
-                        <p>"Mejor de lo que esperaba. Relación calidad-precio inmejorable."</p>
-                    </div>
-                    <div class="review">
-                        <div class="review-header"><strong>Ana L.</strong><span class="stars">★★★★☆</span></div>
-                        <p>"Muy contenta con la compra, el servicio al cliente es muy bueno."</p>
-                    </div>
+                    <p>Todavía no hay reseñas para este producto. ¡Sé el primero en dejar tu opinión después de tu compra!</p>
                 </div>
             </div>
         </div>

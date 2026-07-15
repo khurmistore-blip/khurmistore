@@ -723,7 +723,6 @@ function render_category_slider_card(array $p, array $cfg): string
                 'weight'   => isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null,
                 'image'    => first_product_image($p['image_url'] ?? ''),
                 'tag'      => '',
-                'rating'   => 5,
             ];
         }, $featured), JSON_UNESCAPED_UNICODE) ?>;
 

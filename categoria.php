@@ -556,7 +556,6 @@ $breadcrumbSchema = [
                 'weight'   => isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null,
                 'image'    => first_product_image($p['image_url'] ?? ''),
                 'tag'      => '',
-                'rating'   => 5,
             ];
         }, $products), JSON_UNESCAPED_UNICODE) ?>;
         if (realProducts.length > 0) {
