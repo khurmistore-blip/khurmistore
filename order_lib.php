@@ -2,13 +2,19 @@
 declare(strict_types=1);
 
 /**
- * order_lib.php — Shared order-saving core, used by BOTH payment paths:
- * save_order.php (PayPal, called from the browser after capture) and
- * stripe_return.php (Stripe Checkout, called after verifying payment_status).
+ * order_lib.php — Shared order-saving core, used by THREE callers:
+ * save_order.php (PayPal, called from the browser after capture),
+ * stripe_return.php (Stripe Checkout success_url, browser-dependent), and
+ * stripe_webhook.php (Stripe checkout.session.completed, browser-independent
+ * backup — fires even if the customer's browser never returns to the site).
  * Persists to CSV + Supabase, then notifies via email + WhatsApp. Every side
  * effect except the CSV write is best-effort — failures are collected into
  * the returned 'errors' array instead of throwing, so one bad channel never
  * blocks the others or the customer-facing flow.
+ *
+ * saveOrder() is idempotent per paymentId (see order_number_exists()) so that
+ * stripe_return.php and stripe_webhook.php racing for the same payment never
+ * produce two orders or two notifications — whichever calls first wins.
  */
 
 require_once __DIR__ . '/config.php';
@@ -31,12 +37,45 @@ function log_order_event(string $line): void
 }
 
 /**
+ * Idempotency guard: true if an order with this exact order_number already
+ * exists in Supabase. Used so that stripe_return.php and stripe_webhook.php
+ * can both fire for the same payment (browser redirect + webhook race)
+ * without creating a duplicate order or duplicate email/WhatsApp notification.
+ * Fails OPEN (returns false) on a lookup error — we'd rather risk a rare
+ * duplicate than silently drop a legitimate order because Supabase hiccuped.
+ */
+function order_number_exists(string $orderId): bool
+{
+    $url = rtrim(SUPABASE_URL, '/') . '/rest/v1/orders?order_number=eq.' . rawurlencode($orderId) . '&select=id&limit=1';
+    $ch  = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER     => [
+            'apikey: ' . SUPABASE_SERVICE_KEY,
+            'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+        ],
+    ]);
+    $body   = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($status < 200 || $status >= 300 || $body === false) {
+        log_order_event("IDEMPOTENCY CHECK FAILED orderId=$orderId status=$status — proceeding as not-a-duplicate");
+        return false;
+    }
+    $rows = json_decode((string)$body, true);
+    return is_array($rows) && count($rows) > 0;
+}
+
+/**
  * @param array{
  *   paymentId?: string, name?: string, email?: string, phone?: string,
  *   address?: string, total?: float, products?: array, notes?: string,
  *   paymentMethod?: string
  * } $data
- * @return array{success: bool, orderId: string, csvOk: bool, errors: array}
+ * @return array{success: bool, orderId: string, csvOk: bool, errors: array, duplicate?: bool}
  */
 function saveOrder(array $data): array
 {
@@ -67,7 +106,25 @@ function saveOrder(array $data): array
     $productsText    = implode("\n", array_map(static fn($l) => "  • {$l}", $productLines));
 
     // ── ID de pedido (se usa en CSV-response y Supabase) ──────────────────
-    $orderId = 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paymentId . $datetime), 0, 6));
+    // Deterministic from paymentId alone (not paymentId+datetime like before)
+    // so the SAME Stripe payment always produces the SAME order_number,
+    // regardless of whether stripe_return.php or stripe_webhook.php computes
+    // it — that's what makes the duplicate check below possible. Falls back
+    // to a random suffix only when there's no real payment id to key off of.
+    $orderId = $paymentId !== ''
+        ? 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paymentId), 0, 6))
+        : 'KW' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid('', true)), 0, 6));
+
+    if ($paymentId !== '' && order_number_exists($orderId)) {
+        log_order_event("DUPLICATE orderId=$orderId paymentId=$paymentId — order already exists, skipping CSV/Supabase/notifications");
+        return [
+            'success'   => true,
+            'orderId'   => $orderId,
+            'csvOk'     => true,
+            'errors'    => [],
+            'duplicate' => true,
+        ];
+    }
 
     log_order_event("ATTEMPT orderId=$orderId paymentId=$paymentId method=$paymentMethod email=$email total=$total");
 

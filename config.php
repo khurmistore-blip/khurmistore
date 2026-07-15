@@ -21,6 +21,7 @@ define('SUPABASE_SERVICE_KEY', env('SUPABASE_SERVICE_KEY', ''));
 // ---- Stripe ----
 define('STRIPE_SECRET_KEY',      env('STRIPE_SECRET_KEY', ''));
 define('STRIPE_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY', ''));
+define('STRIPE_WEBHOOK_SECRET',  env('STRIPE_WEBHOOK_SECRET', ''));
 
 // ---- WhatsApp order confirmation (used by save_order.php) ----
 function send_whatsapp_order_confirmation($customerPhone, $name, $orderNumber, $total) {
