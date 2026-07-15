@@ -18,6 +18,17 @@ define('OWNER_PHONE', env('OWNER_PHONE', ''));
 define('CALLMEBOT_KEY', env('CALLMEBOT_KEY', ''));
 const CSV_DIR  = __DIR__ . '/orders';
 const CSV_FILE = CSV_DIR . '/orders.csv';
+const ORDER_ERROR_LOG = __DIR__ . '/order_errors.log';
+
+/**
+ * Appends one line to order_errors.log. Nothing in saveOrder() relied on
+ * this before — Supabase failures were only ever recorded in an in-memory
+ * $sideErrors array that most callers never inspected, so they vanished.
+ */
+function log_order_event(string $line): void
+{
+    @file_put_contents(ORDER_ERROR_LOG, '[' . date('c') . '] ' . $line . "\n", FILE_APPEND | LOCK_EX);
+}
 
 /**
  * @param array{
@@ -58,6 +69,8 @@ function saveOrder(array $data): array
     // ── ID de pedido (se usa en CSV-response y Supabase) ──────────────────
     $orderId = 'KW' . date('Ymd') . '-' . strtoupper(substr(md5($paymentId . $datetime), 0, 6));
 
+    log_order_event("ATTEMPT orderId=$orderId paymentId=$paymentId method=$paymentMethod email=$email total=$total");
+
     // ── 1. Guardar en CSV (siempre, es lo más importante) ─────────────────
     $csvErrors = [];
 
@@ -96,6 +109,9 @@ function saveOrder(array $data): array
 
     // Si el CSV falla es un error grave — lo devolvemos pero seguimos intentando notificar
     $sideErrors = $csvErrors;
+    if (!empty($csvErrors)) {
+        log_order_event("CSV FAIL orderId=$orderId errors=" . implode('; ', $csvErrors));
+    }
 
     // ── 2. Guardar en Supabase (Admin Dashboard) ──────────────────────────
     $supabaseOrder = [
@@ -134,6 +150,13 @@ function saveOrder(array $data): array
 
     if ($sbStatus < 200 || $sbStatus >= 300) {
         $sideErrors[] = "Supabase no guardado (HTTP {$sbStatus}" . ($sbErr ? ": {$sbErr}" : '') . ')';
+        log_order_event(
+            "SUPABASE FAIL orderId=$orderId status=$sbStatus curlErr=" . ($sbErr ?: 'none')
+            . " response=" . substr((string)$sbBody, 0, 1000)
+            . " payload=" . json_encode($supabaseOrder, JSON_UNESCAPED_UNICODE)
+        );
+    } else {
+        log_order_event("SUPABASE OK orderId=$orderId status=$sbStatus");
     }
 
     // ── 2b. Meta Conversions API — Purchase (server-side, deduplicated with ──

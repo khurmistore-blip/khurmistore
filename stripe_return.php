@@ -54,7 +54,7 @@ $total          = (float)(($session['amount_total'] ?? 0) / 100);
 $email          = (string)($metadata['email'] ?? ($session['customer_details']['email'] ?? ''));
 $shippingAmount = isset($metadata['shipping_amount']) ? (float)$metadata['shipping_amount'] : null;
 
-saveOrder([
+$result = saveOrder([
     'paymentId'      => $paymentId,
     'name'           => $metadata['name']  ?? '',
     'email'          => $email,
@@ -66,6 +66,9 @@ saveOrder([
     'notes'          => $metadata['notes'] ?? '',
     'paymentMethod'  => 'stripe',
 ]);
+if (!empty($result['errors'])) {
+    log_order_event("STRIPE RETURN sessionId=$sessionId orderId={$result['orderId']} had errors: " . implode('; ', $result['errors']));
+}
 
 header('Location: https://khurmistore.es/?pago=exitoso');
 exit;
