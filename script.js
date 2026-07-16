@@ -897,10 +897,10 @@ function renderProductDetails() {
     const stockBadgeIcon  = !inStock ? 'times-circle' : (lowStock ? 'exclamation-circle' : 'check-circle');
     const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? 'Últimas unidades' : 'En stock');
 
-    // Generic hook only — DB descriptions come from the supplier (e.g. InnovaGoods'
-    // own marketing copy) and aren't reliably accurate per-product, so we don't
-    // interpolate description/category text here.
-    const shortHook = 'Envío rápido desde España y garantía de 12 meses.';
+    // Top 2 selling points as a compact above-the-fold teaser — the full
+    // list still renders in the "Características" section below. Omitted
+    // entirely (not a generic sentence) when the product has no features.
+    const topFeatures = Array.isArray(p.features) ? p.features.slice(0, 2) : [];
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -917,7 +917,6 @@ function renderProductDetails() {
             <div class="product-gallery">
                 <div class="main-image">
                     ${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}
-                    <span class="product-tag detail-tag">${p.tag}</span>
                     <img id="mainProductImg" src="${p.gallery[0]}" alt="${p.name}">
                 </div>
                 ${p.gallery.length > 1 ? `
@@ -934,9 +933,6 @@ function renderProductDetails() {
             <div class="product-info-detail">
                 <span class="detail-brand">${p.brand}</span>
                 <h1>${p.name}</h1>
-                <div class="detail-rating">
-                    <span class="badge-nuevo">Nuevo</span>
-                </div>
 
                 <div class="price-section">
                     <span class="current-price">${formatPrice(p.price)}</span>
@@ -949,7 +945,11 @@ function renderProductDetails() {
                     ${stockBadgeText}
                 </span>
 
-                <p class="product-hook">${shortHook}</p>
+                ${topFeatures.length ? `
+                <ul class="product-hook-list">
+                    ${topFeatures.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
+                </ul>
+                ` : ''}
 
                 <div class="quantity-selector">
                     <h4>Cantidad:</h4>
@@ -970,74 +970,60 @@ function renderProductDetails() {
                     <button class="wishlist-btn" onclick="toggleWishlist(${p.id}, this)"><i class="far fa-heart"></i></button>
                 </div>
 
-                <div class="benefits-grid">
-                    <div class="benefit"><i class="fas fa-truck-fast"></i><span>Envío Gratis</span></div>
-                    <div class="benefit"><i class="fas fa-rotate-left"></i><span>Devolución<br><small>14 días</small></span></div>
-                    <div class="benefit"><i class="fas fa-shield-halved"></i><span>Garantía<br><small>1 año</small></span></div>
-                    <div class="benefit"><i class="fas fa-lock"></i><span>Pago Seguro<br><small>SSL</small></span></div>
+                <div class="trust-row">
+                    <span><i class="fas fa-truck-fast"></i> Envío gratis</span>
+                    <span><i class="fas fa-rotate-left"></i> 14 días devolución</span>
+                    <span><i class="fas fa-shield-halved"></i> Garantía 12 meses</span>
+                    <span><i class="fas fa-lock"></i> Pago seguro</span>
                 </div>
             </div>
         </div>
 
-        <div class="product-full-details">
-            <p style="color:var(--muted,#666);font-size:14px;margin:0 0 10px;"><i class="fas fa-truck-fast"></i> Envío GRATIS a toda España</p>
-
-            <p class="product-description">${p.description}</p>
-
-            <div class="faq-accordion">
-                <div class="faq-item" data-faq-index="0">
-                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
-                        <strong>¿Cuánto tarda el envío?</strong>
-                        <span class="toggle-icon">+</span>
-                    </button>
-                    <div class="faq-answer" id="faqAnswer0">
-                        El envío estándar llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra.
-                    </div>
-                </div>
-                <div class="faq-item" data-faq-index="1">
-                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
-                        <strong>¿Qué garantía ofrece este producto?</strong>
-                        <span class="toggle-icon">+</span>
-                    </button>
-                    <div class="faq-answer" id="faqAnswer1">
-                        Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
-                    </div>
-                </div>
-                <div class="faq-item" data-faq-index="2">
-                    <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
-                        <strong>¿Puedo cambiarlo o devolverlo?</strong>
-                        <span class="toggle-icon">+</span>
-                    </button>
-                    <div class="faq-answer" id="faqAnswer2">
-                        Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
-                    </div>
-                </div>
-            </div>
+        <div class="product-section">
+            <h2>Características</h2>
+            <ul class="feature-list">
+                ${p.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
+            </ul>
         </div>
 
-        <div class="product-tabs">
-            <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="features" onclick="switchTab('features', this)">Características</button>
-                <button class="tab-btn" data-tab="shipping" onclick="switchTab('shipping', this)">Envío & Devolución</button>
-                <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews', this)">Reseñas</button>
+        <div class="product-section">
+            <h2>Descripción</h2>
+            <div class="product-description">${p.description}</div>
+        </div>
+
+        <div class="product-section">
+            <h2>Envío y devoluciones</h2>
+            <p><i class="fas fa-truck"></i> <strong>Envío estándar:</strong> 2-4 días laborables — GRATIS, sin mínimo</p>
+            <p><i class="fas fa-rotate-left"></i> <strong>Devolución:</strong> 14 días (derecho de desistimiento)</p>
+            <p><i class="fas fa-globe"></i> <strong>Cobertura:</strong> España peninsular y Baleares</p>
+        </div>
+
+        <div class="faq-accordion">
+            <div class="faq-item" data-faq-index="0">
+                <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(0)">
+                    <strong>¿Cuánto tarda el envío?</strong>
+                    <span class="toggle-icon">+</span>
+                </button>
+                <div class="faq-answer" id="faqAnswer0">
+                    El envío estándar llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra.
+                </div>
             </div>
-            <div class="tab-content">
-                <div id="tab-features" class="tab-pane active">
-                    <h3>Características Principales</h3>
-                    <ul class="feature-list">
-                        ${p.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
-                    </ul>
+            <div class="faq-item" data-faq-index="1">
+                <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(1)">
+                    <strong>¿Qué garantía ofrece este producto?</strong>
+                    <span class="toggle-icon">+</span>
+                </button>
+                <div class="faq-answer" id="faqAnswer1">
+                    Incluye garantía oficial de 12 meses y soporte posventa de KhurmiStore para cualquier consulta.
                 </div>
-                <div id="tab-shipping" class="tab-pane">
-                    <h3>Información de Envío</h3>
-                    <p><i class="fas fa-truck"></i> <strong>Envío Estándar:</strong> 2-4 días laborables (Gratis siempre, sin mínimo)</p>
-                    <p><i class="fas fa-shipping-fast"></i> <strong>Envío Express:</strong> 24 horas (+9,99€)</p>
-                    <p><i class="fas fa-rotate-left"></i> <strong>Devolución:</strong> 14 días para cambios o devoluciones gratuitas</p>
-                    <p><i class="fas fa-globe"></i> <strong>Cobertura:</strong> Toda España peninsular y Baleares</p>
-                </div>
-                <div id="tab-reviews" class="tab-pane">
-                    <h3>Reseñas de Clientes</h3>
-                    <p>Todavía no hay reseñas para este producto. ¡Sé el primero en dejar tu opinión después de tu compra!</p>
+            </div>
+            <div class="faq-item" data-faq-index="2">
+                <button class="faq-question" type="button" aria-expanded="false" onclick="toggleFAQ(2)">
+                    <strong>¿Puedo cambiarlo o devolverlo?</strong>
+                    <span class="toggle-icon">+</span>
+                </button>
+                <div class="faq-answer" id="faqAnswer2">
+                    Sí, tienes 14 días para cambios o devoluciones gratuitas siempre que el producto llegue en buen estado.
                 </div>
             </div>
         </div>
@@ -1051,7 +1037,6 @@ function renderProductDetails() {
                 ${products.filter(rp => rp.category === p.category && rp.id !== p.id).slice(0, 4).map(rp => `
                     <div class="product-card" onclick="goToProduct(${rp.id})">
                         <div class="product-img">
-                            <span class="product-tag">${rp.tag}</span>
                             <img src="${rp.image}" alt="${rp.name}">
                         </div>
                         <div class="product-info">
@@ -1178,13 +1163,6 @@ function toggleWishlist(id, btn) {
         btn.classList.remove('active');
         showNotification('Eliminado de favoritos');
     }
-}
-
-function switchTab(tabId, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + tabId)?.classList.add('active');
 }
 
 // Renderizar detalles si estamos en la página de detalles
