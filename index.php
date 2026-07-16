@@ -231,8 +231,11 @@ function render_category_slider_card(array $p, array $cfg): string
   },
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "ES",
-    "addressLocality": "Madrid"
+    "streetAddress": "Calle Doctor Bellido, 46, Bajo",
+    "addressLocality": "Madrid",
+    "addressRegion": "Madrid",
+    "postalCode": "28018",
+    "addressCountry": "ES"
   },
   "sameAs": [
     "https://www.facebook.com/profile.php?id=61590018628529",

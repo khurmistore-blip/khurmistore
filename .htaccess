@@ -53,6 +53,13 @@ RewriteRule ^blog-auriculares-bluetooth-no-conectan/?$ https://khurmistore.es/bl
 # 301: founder-bio post removed (flagged as manufactured legitimacy) → blog index
 RewriteRule ^blog-khurram-shahzad-fundador-khurmistore\.html$ /blog.html [R=301,L]
 
+# 410: schema-markup.html deleted permanently (orphaned reference file, never
+# linked from any live page, contained fake address/reviews/FAQ data) — 410
+# tells Google to de-index it faster than a plain 404 would.
+<Files "schema-markup.html">
+    Redirect 410 /schema-markup.html
+</Files>
+
 # Regla para categorías amigables: /category/slug -> categoria.php?cat=slug
 # (categoria.html, la demo estática, fue eliminada; esto apunta a la página real)
 RewriteRule ^category/([^/]+)/?$ categoria.php?cat=$1 [L,QSA]
