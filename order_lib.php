@@ -89,6 +89,10 @@ function saveOrder(array $data): array
     $products       = is_array($data['products'] ?? null) ? $data['products'] : [];
     $notes          = trim((string)($data['notes']          ?? ''));
     $paymentMethod  = trim((string)($data['paymentMethod']  ?? 'paypal'));
+    // Test/diagnostic callers only (e.g. test_save_order.php) — real payment
+    // paths never set this, so live orders always send the Purchase event
+    // exactly as before. Default is false: unchanged behavior everywhere else.
+    $skipMetaCapi   = !empty($data['skipMetaCapi']);
     $datetime       = date('Y-m-d H:i:s');
 
     // ── Construir resumen de productos ────────────────────────────────────
@@ -219,26 +223,32 @@ function saveOrder(array $data): array
 
     // ── 2b. Meta Conversions API — Purchase (server-side, deduplicated with ──
     //        the browser Pixel Purchase event via event_id 'purchase_<paymentId>')
-    $nameParts = explode(' ', $name, 2);
-    $zip = '';
-    if (preg_match('/\b(\d{5})\b/', $address, $m)) { $zip = $m[1]; }
-    require_once __DIR__ . '/capi.php';
-    try {
-        MetaCAPI::purchase([
-            'order_id'   => $orderId,
-            'event_id'   => MetaCAPI::eventIdForOrder($paymentId),
-            'value'      => $total,
-            'currency'   => 'EUR',
-            'email'      => $email,
-            'phone'      => $phone,
-            'first_name' => $nameParts[0] ?? '',
-            'last_name'  => $nameParts[1] ?? '',
-            'city'       => '',
-            'zip'        => $zip,
-            'country'    => 'es',
-        ]);
-    } catch (Throwable $e) {
-        error_log('CAPI failed: ' . $e->getMessage());
+    //        Skipped entirely for test/diagnostic calls ($skipMetaCapi) — a
+    //        fake Purchase would poison the pixel's optimization signal.
+    if (!$skipMetaCapi) {
+        $nameParts = explode(' ', $name, 2);
+        $zip = '';
+        if (preg_match('/\b(\d{5})\b/', $address, $m)) { $zip = $m[1]; }
+        require_once __DIR__ . '/capi.php';
+        try {
+            MetaCAPI::purchase([
+                'order_id'   => $orderId,
+                'event_id'   => MetaCAPI::eventIdForOrder($paymentId),
+                'value'      => $total,
+                'currency'   => 'EUR',
+                'email'      => $email,
+                'phone'      => $phone,
+                'first_name' => $nameParts[0] ?? '',
+                'last_name'  => $nameParts[1] ?? '',
+                'city'       => '',
+                'zip'        => $zip,
+                'country'    => 'es',
+            ]);
+        } catch (Throwable $e) {
+            error_log('CAPI failed: ' . $e->getMessage());
+        }
+    } else {
+        log_order_event("CAPI SKIPPED orderId=$orderId (skipMetaCapi=true, test/diagnostic call)");
     }
 
     // ── 3. Enviar email al dueño ───────────────────────────────────────────
