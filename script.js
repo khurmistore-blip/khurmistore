@@ -898,9 +898,12 @@ function renderProductDetails() {
     const stockBadgeText  = !inStock ? 'Agotado' : (lowStock ? 'Últimas unidades' : 'En stock');
 
     // Top 2 selling points as a compact above-the-fold teaser — the full
-    // list still renders in the "Características" section below. Omitted
-    // entirely (not a generic sentence) when the product has no features.
-    const topFeatures = Array.isArray(p.features) ? p.features.slice(0, 2) : [];
+    // list still renders in the "Características" section below. Read from
+    // the RAW product object, not p (getProductDetails()'s enriched copy),
+    // since that always falls back to 4 generic bullets when a product has
+    // no real features — which would defeat the "omit if empty" rule below.
+    const rawFeatures = Array.isArray(product.features) && product.features.length > 0 ? product.features : [];
+    const topFeatures = rawFeatures.slice(0, 2);
 
     container.innerHTML = `
         <div class="breadcrumb">
@@ -979,12 +982,14 @@ function renderProductDetails() {
             </div>
         </div>
 
+        ${rawFeatures.length ? `
         <div class="product-section">
             <h2>Características</h2>
             <ul class="feature-list">
-                ${p.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
+                ${rawFeatures.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
             </ul>
         </div>
+        ` : ''}
 
         <div class="product-section">
             <h2>Descripción</h2>
