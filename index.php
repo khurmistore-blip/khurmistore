@@ -508,7 +508,7 @@ function render_category_slider_card(array $p, array $cfg): string
             </div>
             <div class="footer-col">
                 <h3>Contacto</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                <p><i class="fas fa-map-marker-alt"></i> Calle Doctor Bellido, 46, Bajo, 28018 Madrid, España</p>
                 <p><i class="fas fa-phone"></i> <a href="tel:+34662241860">+34 662 24 18 60</a></p>
                 <p><i class="fas fa-envelope"></i> info@khurmistore.es</p>
             </div>
@@ -597,7 +597,7 @@ function render_category_slider_card(array $p, array $cfg): string
                     <h3>Información de Envío</h3>
                     <div class="form-group"><label>Nombre Completo *</label><input type="text" id="custName" placeholder="Tu nombre"></div>
                     <div class="form-group"><label>Correo Electrónico *</label><input type="email" id="custEmail" placeholder="tu@email.com"></div>
-                    <div class="form-group"><label>Teléfono *</label><input type="tel" id="custPhone" placeholder="+34 607 35 80 33"></div>
+                    <div class="form-group"><label>Teléfono *</label><input type="tel" id="custPhone" placeholder="+34 662 24 18 60"></div>
                     <div class="form-group"><label>Dirección *</label><textarea id="custAddress" placeholder="Dirección completa"></textarea></div>
                     <div class="form-group"><label>Ciudad *</label><input type="text" id="custCity" placeholder="Tu ciudad"></div>
                     <div class="form-group"><label>Código Postal *</label><input type="text" id="custPostal" placeholder="Tu código postal"></div>
