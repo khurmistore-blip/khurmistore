@@ -1,3 +1,15 @@
+# Block direct HTTP access to server-side logs and order exports (PII) —
+# these must only be read via SSH/SFTP, never over the web.
+<FilesMatch "\.(log|csv)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 # Serve index.php as the homepage; index.html is legacy only
 DirectoryIndex index.php index.html
 
