@@ -614,7 +614,7 @@ if (heroEl) {
 const chatConfig = {
     welcomeText: '¡Hola! 👋 Soy el asistente de Khurmi Store. ¿En qué puedo ayudarte?',
     answers: {
-        envio: 'Envío gratis en pedidos superiores a 50€. Entrega en 24-72h en toda España.',
+        envio: 'Envío gratis en pedidos superiores a 50€. Entrega en 2-5 días laborables en toda España.',
         pagos: 'Aceptamos tarjeta, PayPal y transferencia. Pago 100% seguro con cifrado SSL.',
         devoluciones: 'Tienes 14 días para devolver cualquier producto. Reembolso completo tras recibir el artículo.',
         categorias: 'Tenemos muchas categorías: electrónica, informática, hogar, belleza, ropa y más. ¡Explóralas en el menú!',
@@ -998,7 +998,7 @@ function renderProductDetails() {
 
         <div class="product-section">
             <h2>Envío y devoluciones</h2>
-            <p><i class="fas fa-truck"></i> <strong>Envío estándar:</strong> 2-4 días laborables — GRATIS, sin mínimo</p>
+            <p><i class="fas fa-truck"></i> <strong>Envío estándar:</strong> 2-5 días laborables — GRATIS, sin mínimo</p>
             <p><i class="fas fa-rotate-left"></i> <strong>Devolución:</strong> 14 días (derecho de desistimiento)</p>
             <p><i class="fas fa-globe"></i> <strong>Cobertura:</strong> España peninsular y Baleares</p>
         </div>
@@ -1010,7 +1010,7 @@ function renderProductDetails() {
                     <span class="toggle-icon">+</span>
                 </button>
                 <div class="faq-answer" id="faqAnswer0">
-                    El envío estándar llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra.
+                    El envío estándar llega en 2-5 días laborables en España. Envío gratis siempre, sin mínimo de compra.
                 </div>
             </div>
             <div class="faq-item" data-faq-index="1">
@@ -1078,7 +1078,7 @@ function injectProductFAQSchema(p) {
                 "name": "¿Cuánto tarda el envío?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "El envío estándar para este producto llega en 2-4 días laborables en España. Envío gratis siempre, sin mínimo de compra."
+                    "text": "El envío estándar para este producto llega en 2-5 días laborables en España. Envío gratis siempre, sin mínimo de compra."
                 }
             },
             {
