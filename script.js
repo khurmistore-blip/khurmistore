@@ -454,7 +454,7 @@ function showOrderConfirmation(message) {
 const benefitDetails = {
     envio: {
         title: 'Envío Gratis',
-        text: 'Disfruta de envío gratuito en todos los pedidos superiores a 50€. Entrega en 2-5 días laborables en toda España. Para pedidos menores, se aplica una tarifa de envío estándar.'
+        text: 'Disfruta de envío gratuito en todos los pedidos, sin mínimo de compra. Entrega en 2-5 días laborables en toda España.'
     },
     pago: {
         title: 'Pago 100% Seguro',
