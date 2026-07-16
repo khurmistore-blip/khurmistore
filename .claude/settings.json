@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node --check script.js)"
+      "Bash(node --check script.js)",
+      "Bash(php -l categoria.php)"
     ]
   }
 }

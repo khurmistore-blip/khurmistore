@@ -343,7 +343,7 @@ $breadcrumbSchema = [
 
     <!-- Características -->
     <section class="features">
-        <div class="feature-box"><i class="fas fa-truck-fast"></i><h3>Envío Gratis</h3><p>En pedidos +50€</p></div>
+        <div class="feature-box"><i class="fas fa-truck-fast"></i><h3>Envío Gratis</h3><p>Sin mínimo, 2-5 días laborables</p></div>
         <div class="feature-box"><i class="fas fa-shield-halved"></i><h3>Pago Seguro</h3><p>100% Protegido</p></div>
         <div class="feature-box"><i class="fas fa-rotate-left"></i><h3>Devolución Fácil</h3><p>Política de 14 días</p></div>
         <div class="feature-box"><i class="fas fa-headset"></i><h3>Soporte 24/7</h3><p>Siempre disponibles</p></div>
