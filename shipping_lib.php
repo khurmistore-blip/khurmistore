@@ -14,12 +14,8 @@ const SHIPPING_RATES_ES = [
 ];
 const SHIPPING_DEFAULT_ES = 4.99;
 
-/**
- * Spain shipping cost for ONE product. STORE-WIDE FREE SHIPPING: always 0,
- * regardless of weight — the store absorbs the real BigBuy shipping cost.
- * Weight-tier table/default above kept in place (unused) rather than
- * deleted, in case free shipping is ever reverted.
- */
+// Shipping is free for all Spain orders (business decision, Jul 2026).
+// Kept as a function so call sites don't need changing.
 function calcShipping(?float $weightKg): float
 {
     return 0.0;
