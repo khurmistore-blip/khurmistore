@@ -181,6 +181,7 @@ function saveOrder(array $data): array
         'total_amount'    => $total,
         'shipping_amount' => $shippingAmount,
         'payment_method'  => $paymentMethod,
+        'payment_status'  => 'paid', // saveOrder() only ever runs after payment is already confirmed
         'source'         => 'website',
         'status'         => 'pending',
         'notes'          => $notes,
