@@ -10,10 +10,28 @@
     </IfModule>
 </FilesMatch>
 
+# Block all dotfiles (.env, .env.example, .gitignore, etc.) — secrets and
+# config that must never be served over HTTP. FilesMatch only sees the leaf
+# filename, so this does NOT cover .git/'s internal contents — that's handled
+# separately below via mod_rewrite, since those files don't start with a dot.
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 # Serve index.php as the homepage; index.html is legacy only
 DirectoryIndex index.php index.html
 
 RewriteEngine On
+
+# Block the .git directory entirely (source + full commit history) — must
+# come first (before other rules) so it always wins and short-circuits.
+RewriteRule "(^|/)\.git" - [F,L]
 
 # Redirect legacy index.html to real homepage (index.php)
 RewriteRule ^index\.html$ / [R=301,L]
