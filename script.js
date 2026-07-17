@@ -392,6 +392,20 @@ function openCheckout() {
     document.getElementById('checkoutForm')?.reset();
     updateSummary();
     document.getElementById('checkoutModal').classList.add('active');
+
+    // Meta Pixel: InitiateCheckout — fires once per modal open here, not
+    // inside updateSummary() (which also runs from goToPayment() and would
+    // otherwise double-fire this per checkout attempt).
+    if (typeof fbq === 'function') {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        fbq('track', 'InitiateCheckout', {
+            value: subtotal + calcCartShippingJS(cart),
+            currency: 'EUR',
+            num_items: cart.reduce((sum, item) => sum + item.qty, 0),
+            content_ids: cart.map(item => item.id),
+            content_type: 'product'
+        });
+    }
 }
 
 function closeCheckout() {
@@ -500,6 +514,12 @@ function goToPayment() {
     updateSummary();
     initPayPalButtons();
     initStripeButton();
+
+    // Meta Pixel: AddPaymentInfo — details step -> payment step transition.
+    if (typeof fbq === 'function') {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        fbq('track', 'AddPaymentInfo', { value: subtotal + calcCartShippingJS(cart), currency: 'EUR' });
+    }
 }
 
 function backToDetails() {
