@@ -79,17 +79,58 @@ if ($amountCents <= 0) {
     exit;
 }
 
-// Stash everything needed to rebuild the order after payment — Checkout
-// Session metadata is the only thing guaranteed to survive the redirect.
-$metadata = [
+// Full order data (name/phone/address/full product list) is staged
+// server-side, keyed by a short random token — NOT stuffed into Stripe
+// metadata. This matters specifically because stripe_webhook.php runs
+// server-to-server (Stripe calling us directly), so it has no browser
+// cookie and can't use PHP's $_SESSION — a file staged here is the only
+// thing both stripe_return.php (browser-dependent) and stripe_webhook.php
+// (browser-independent) can equally read back.
+const STRIPE_PENDING_DIR = __DIR__ . '/stripe_pending';
+
+$orderRef = bin2hex(random_bytes(16));
+$pendingData = [
     'name'            => $name,
     'email'           => $email,
     'phone'           => $phone,
     'address'         => $address,
     'city'            => $city,
     'notes'           => $notes,
-    'products'        => json_encode($productsClean, JSON_UNESCAPED_UNICODE),
-    'shipping_amount' => number_format($shippingAmount, 2, '.', ''),
+    'products'        => $productsClean,
+    'shipping_amount' => $shippingAmount,
+];
+// Best-effort — if this write fails, checkout must still proceed; the
+// short metadata fields below are still enough to save a usable order.
+if (!is_dir(STRIPE_PENDING_DIR)) {
+    @mkdir(STRIPE_PENDING_DIR, 0755, true);
+}
+@file_put_contents(
+    STRIPE_PENDING_DIR . '/' . $orderRef . '.json',
+    json_encode($pendingData, JSON_UNESCAPED_UNICODE)
+);
+
+// Short, human-glanceable summary only — well under Stripe's 500-char
+// per-value metadata limit regardless of cart size (previously the full
+// products JSON was stuffed in here, which risked silently breaking
+// metadata on larger carts).
+$firstProductName = $productsClean[0]['name'] ?? '';
+$itemCount        = count($productsClean);
+$productsSummary  = mb_substr($firstProductName, 0, 60)
+    . ($itemCount > 1 ? ' (+' . ($itemCount - 1) . ' más)' : '');
+
+// Stash everything needed to rebuild the order after payment. Only
+// order_ref is required to recover the FULL details (via the staged file
+// above) — the rest are a short fallback if that file is ever missing.
+$metadata = [
+    'order_ref'        => $orderRef,
+    'name'             => $name,
+    'email'            => $email,
+    'phone'            => $phone,
+    'address'          => $address,
+    'city'             => $city,
+    'notes'            => $notes,
+    'products_summary' => $productsSummary,
+    'shipping_amount'  => number_format($shippingAmount, 2, '.', ''),
 ];
 
 $params = [
@@ -106,12 +147,30 @@ $params = [
         'quantity' => 1,
     ]],
     'metadata' => $metadata,
+    // Mirrors the same fields onto the PaymentIntent — visible there too
+    // in the Stripe Dashboard, and a redundant read source for
+    // stripe_return.php/stripe_webhook.php if Session metadata is ever
+    // empty (which is the exact symptom this whole fix targets).
+    'payment_intent_data' => ['metadata' => $metadata],
 ];
 
 // http_build_query renders nested arrays as PHP-style brackets
 // (line_items[0][price_data][unit_amount]=..., metadata[name]=...),
 // which is exactly the form-encoding the Stripe API expects.
 $body = http_build_query($params);
+
+// DIAGNOSTIC (temporary): confirm metadata is actually present in the
+// outgoing request body before it ever reaches Stripe — direct answer to
+// "does metadata leave this server correctly." http_build_query percent-
+// encodes brackets, so metadata[name]= appears as metadata%5Bname%5D=.
+@file_put_contents(
+    __DIR__ . '/stripe_checkout_debug.log',
+    '[' . date('c') . '] order_ref=' . $orderRef
+        . ' metadata_in_body=' . (str_contains($body, 'metadata%5Bname%5D') ? 'YES' : 'NO')
+        . ' payment_intent_metadata_in_body=' . (str_contains($body, 'payment_intent_data%5Bmetadata%5D') ? 'YES' : 'NO')
+        . ' body_length=' . strlen($body) . "\n",
+    FILE_APPEND | LOCK_EX
+);
 
 $ch = curl_init('https://api.stripe.com/v1/checkout/sessions');
 curl_setopt_array($ch, [

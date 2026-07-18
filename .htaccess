@@ -33,6 +33,10 @@ RewriteEngine On
 # come first (before other rules) so it always wins and short-circuits.
 RewriteRule "(^|/)\.git" - [F,L]
 
+# Block the Stripe checkout staging directory — holds the same customer
+# PII (name/phone/address) as orders.csv, must never be web-servable.
+RewriteRule "(^|/)stripe_pending/" - [F,L]
+
 # Redirect legacy index.html to real homepage (index.php)
 RewriteRule ^index\.html$ / [R=301,L]
 

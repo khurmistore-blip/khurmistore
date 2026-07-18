@@ -115,24 +115,47 @@ if (!is_array($session) || ($session['payment_status'] ?? '') !== 'paid') {
 }
 
 $metadata = is_array($session['metadata'] ?? null) ? $session['metadata'] : [];
-$products = json_decode((string)($metadata['products'] ?? '[]'), true);
-if (!is_array($products)) {
-    $products = [];
+
+// Full product list lives in the staged file (see stripe_checkout.php),
+// referenced by the short order_ref token — metadata itself only ever
+// carries a short summary now. Fall back to an empty list if the staged
+// file is missing (e.g. cleaned up, or this session predates the change).
+$products = [];
+$orderRef = (string)($metadata['order_ref'] ?? '');
+if ($orderRef !== '') {
+    $pendingFile = __DIR__ . '/stripe_pending/' . $orderRef . '.json';
+    $pendingRaw  = @file_get_contents($pendingFile);
+    if ($pendingRaw !== false) {
+        $pending = json_decode($pendingRaw, true);
+        if (is_array($pending) && is_array($pending['products'] ?? null)) {
+            $products = $pending['products'];
+        }
+    }
 }
 
 $addressParts = array_filter([$metadata['address'] ?? '', $metadata['city'] ?? '']);
 $fullAddress  = implode(', ', $addressParts);
 
-$paymentId      = (string)($session['payment_intent'] ?? $session['id'] ?? '');
-$total          = (float)(($session['amount_total'] ?? 0) / 100);
-$email          = (string)($metadata['email'] ?? ($session['customer_details']['email'] ?? ''));
+$paymentId = (string)($session['payment_intent'] ?? $session['id'] ?? '');
+$total     = (float)(($session['amount_total'] ?? 0) / 100);
+
+// Never save an order with a NULL customer name — Stripe's own
+// customer_details (populated from the card/payment method) is a
+// guaranteed-present safety net if our metadata ever fails again.
+$customerDetails = is_array($session['customer_details'] ?? null) ? $session['customer_details'] : [];
+$name  = (string)($metadata['name']  ?? '');
+if ($name === '')  { $name  = (string)($customerDetails['name']  ?? ''); }
+$phone = (string)($metadata['phone'] ?? '');
+if ($phone === '') { $phone = (string)($customerDetails['phone'] ?? ''); }
+$email = (string)($metadata['email'] ?? ($customerDetails['email'] ?? ''));
+
 $shippingAmount = isset($metadata['shipping_amount']) ? (float)$metadata['shipping_amount'] : null;
 
 $result = saveOrder([
     'paymentId'      => $paymentId,
-    'name'           => $metadata['name']  ?? '',
+    'name'           => $name,
     'email'          => $email,
-    'phone'          => $metadata['phone'] ?? '',
+    'phone'          => $phone,
     'address'        => $fullAddress,
     'total'          => $total,
     'shippingAmount' => $shippingAmount,
