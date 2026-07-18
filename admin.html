@@ -510,16 +510,17 @@
           <tr>
             <th>Order #</th>
             <th>Customer</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
             <th>Products</th>
             <th>Total</th>
-            <th>Source</th>
             <th>Status</th>
             <th>Date</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="ordersBody">
-          <tr><td colspan="8" class="emptyState">Loading...</td></tr>
+          <tr><td colspan="9" class="emptyState">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -1025,24 +1026,38 @@
 
     const tbody = document.getElementById('ordersBody');
     if(filtered.length === 0){
-      tbody.innerHTML = '<tr><td colspan="8" class="emptyState">Koi order nahi mila</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="emptyState">Koi order nahi mila</td></tr>';
       return;
     }
 
     tbody.innerHTML = filtered.map(o=>{
       const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name} x${p.qty||1}`).join(', ') : '';
       const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
+
+      const phone = o.phone ? escHtml(o.phone) : '';
+      const phoneCell = phone
+        ? `<a href="tel:${phone}" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline">${phone}</a>`
+        : '—';
+
+      const addrRaw = o.address || '';
+      const addrFull = escAttr(addrRaw);
+      const addrShort = addrRaw.length > 40 ? escHtml(addrRaw.slice(0, 40)) + '…' : escHtml(addrRaw);
+      const addressCell = addrRaw
+        ? `<span title="${addrFull}">${addrShort}</span> <button class="iconBtn" onclick="event.stopPropagation(); copyShippingAddress('${o.id}', this)" title="Copiar dirección de envío">📋</button>`
+        : '—';
+
       return `
         <tr class="orderRow" data-oid="${o.id}" style="cursor:pointer">
           <td><a class="orderLink">${o.order_number}</a></td>
-          <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.phone||''}</span></td>
+          <td>${o.customer_name}</td>
+          <td>${phoneCell}</td>
+          <td>${addressCell}</td>
           <td class="productsCell">${products}</td>
           <td class="totalCell">€${parseFloat(o.total_amount).toFixed(2)}<br>
             <span class="payPill ${o.payment_status==='paid'?'paid':'unpaid'}" onclick="event.stopPropagation(); togglePaid('${o.id}')" title="Click to toggle">
               ${o.payment_status==='paid'?'✓ Paid':'• Unpaid'}
             </span>
           </td>
-          <td><span class="sourceTag">${o.source}</span></td>
           <td>
             <select class="statusSelect st-${o.status}" onclick="event.stopPropagation()" onchange="event.stopPropagation(); updateStatus('${o.id}', this.value)">
               <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
@@ -1222,6 +1237,31 @@
     if(error){ alert('Update fail hua: ' + error.message); return; }
     o.payment_status = newPay;
     renderOrders();
+  }
+
+  async function copyShippingAddress(id, btn){
+    const o = allOrders.find(x=>x.id===id);
+    if(!o) return;
+    const cityLine = [o.postal_code, o.city].filter(Boolean).join(' ');
+    const lines = [
+      o.customer_name || '',
+      o.address || '',
+      cityLine,
+      o.phone ? `Tel: ${o.phone}` : ''
+    ].filter(Boolean);
+    const text = lines.join('\n');
+    try{
+      await navigator.clipboard.writeText(text);
+      if(btn){
+        const original = btn.textContent;
+        btn.textContent = '✓';
+        btn.disabled = true;
+        setTimeout(()=>{ btn.textContent = original; btn.disabled = false; }, 1500);
+      }
+    }catch(e){
+      console.error('Clipboard write failed', e);
+      alert('No se pudo copiar al portapapeles:\n\n' + text);
+    }
   }
 
   async function deleteOrder(id){
