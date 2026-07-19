@@ -609,9 +609,6 @@ function render_category_slider_card(array $p, array $cfg): string
                 <div class="checkout-step" id="step2" style="display:none;">
                     <h3>Pago</h3>
                     <p style="color:#666;font-size:0.9rem;margin-bottom:15px;">Paga de forma segura con tu cuenta PayPal o con tarjeta de crédito/débito.</p>
-                    <div id="paypal-button-container"></div>
-                    <div style="text-align:center;color:#888;margin:14px 0;font-size:0.85rem;">— o —</div>
-                    <button type="button" class="btn-primary full-btn" id="stripeCheckoutBtn"><i class="fas fa-credit-card"></i> Finalizar Compra</button>
                     <div class="order-summary">
                         <h4>Resumen del Pedido</h4>
                         <div id="summaryShippingBreakdown"></div>
@@ -619,6 +616,10 @@ function render_category_slider_card(array $p, array $cfg): string
                         <div class="summary-row"><span>Envío:</span><span id="summaryShipping">Gratis</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
+                    <div id="paypal-button-container"></div>
+                    <div class="payment-divider"><span>— o paga con tarjeta —</span></div>
+                    <button type="button" class="btn-primary full-btn" id="stripeCheckoutBtn"><i class="fas fa-credit-card"></i> Pagar con Tarjeta</button>
+                    <p class="payment-trust-line"><i class="fas fa-lock"></i> Pago 100% seguro · Cifrado SSL</p>
                     <div style="margin-top:10px;">
                         <button class="btn-secondary full-btn" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
                     </div>

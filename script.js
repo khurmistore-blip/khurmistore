@@ -1517,6 +1517,7 @@ function initPayPalButtons() {
     if (!window.paypal || !document.getElementById('paypal-button-container')) return;
     paypalButtonsRendered = true;
     paypal.Buttons({
+        fundingSource: paypal.FUNDING.PAYPAL,
         style: { color: 'blue', shape: 'rect', label: 'pay', height: 45 },
         createOrder: function(data, actions) {
             const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
