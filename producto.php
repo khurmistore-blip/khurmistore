@@ -487,9 +487,9 @@ function bb_product_to_js(array $p): array
                         <div class="summary-row"><span>Envío:</span><span id="summaryShipping">Gratis</span></div>
                         <div class="summary-row total"><span>Total:</span><span id="summaryTotal">€0,00</span></div>
                     </div>
-                    <div id="paypal-button-container"></div>
-                    <div class="payment-divider"><span>— o paga con tarjeta —</span></div>
                     <button type="button" class="btn-primary full-btn" id="stripeCheckoutBtn"><i class="fas fa-credit-card"></i> Pagar con Tarjeta</button>
+                    <div class="payment-divider"><span>— o paga con PayPal —</span></div>
+                    <div id="paypal-button-container"></div>
                     <p class="payment-trust-line"><i class="fas fa-lock"></i> Pago 100% seguro · Cifrado SSL</p>
                     <div style="margin-top:10px;">
                         <button class="btn-secondary full-btn" onclick="backToDetails()"><i class="fas fa-arrow-left"></i> Volver</button>
