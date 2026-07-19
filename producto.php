@@ -158,6 +158,7 @@ function bb_product_to_js(array $p): array
         'shippingCost' => calcShipping(isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null),
         'image'       => $image,
         'gallery'     => $gallery,
+        'videoId'     => !empty($p['video_id']) ? trim((string)$p['video_id']) : null,
         'tag'         => '',
         'stock'       => (int)($p['stock'] ?? 0),
         'isActive'    => ($p['is_active'] ?? true) !== false,
@@ -212,6 +213,12 @@ function bb_product_to_js(array $p): array
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=optional" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
+    <style>
+    /* BigBuy video thumbnail + player in the product gallery (producto.php only) */
+    .thumb-video{position:relative}
+    .thumb-video .thumb-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,39,.35);color:#fff;font-size:20px;pointer-events:none}
+    .main-image.main-video-wrap iframe{width:100%;height:100%;border:0;display:block}
+    </style>
 
 <script src="/js/meta-pixel.js" defer></script>
 <body>

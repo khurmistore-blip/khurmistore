@@ -925,6 +925,24 @@ function renderProductDetails() {
     const rawFeatures = Array.isArray(product.features) && product.features.length > 0 ? product.features : [];
     const topFeatures = rawFeatures.slice(0, 2);
 
+    // Video thumbnail (from BigBuy's video_id, if any) — inserted as the 2nd
+    // thumbnail so it stays prominent without displacing the default main
+    // image (gallery[0], still shown/active first). No-op when videoId is
+    // null/empty — gallery behaves exactly as before in that case.
+    const galleryThumbs = p.gallery.map((img, i) => `
+        <div class="thumb ${i === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
+            <img src="${img}" alt="${p.name} vista ${i+1}">
+        </div>
+    `);
+    if (p.videoId) {
+        galleryThumbs.splice(1, 0, `
+            <div class="thumb thumb-video" onclick="playProductVideo('${p.videoId}', this)">
+                <img src="https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg" alt="${p.name} vídeo">
+                <span class="thumb-play-icon"><i class="fas fa-play"></i></span>
+            </div>
+        `);
+    }
+
     container.innerHTML = `
         <div class="breadcrumb">
             <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
@@ -938,17 +956,16 @@ function renderProductDetails() {
 
         <div class="product-detail-grid">
             <div class="product-gallery">
-                <div class="main-image">
+                <div class="main-image" id="mainImageWrap">
                     ${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}
                     <img id="mainProductImg" src="${p.gallery[0]}" alt="${p.name}">
                 </div>
-                ${p.gallery.length > 1 ? `
+                <div class="main-image main-video-wrap" id="mainProductVideoWrap" style="display:none;">
+                    <iframe id="mainProductVideoFrame" src="" title="${p.name} vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                ${(p.gallery.length > 1 || p.videoId) ? `
                 <div class="thumbnail-list">
-                    ${p.gallery.map((img, i) => `
-                        <div class="thumb ${i === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
-                            <img src="${img}" alt="${p.name} vista ${i+1}">
-                        </div>
-                    `).join('')}
+                    ${galleryThumbs.join('')}
                 </div>
                 ` : ''}
             </div>
@@ -1130,8 +1147,30 @@ function injectProductFAQSchema(p) {
 function changeMainImage(src, thumb) {
     const main = document.getElementById('mainProductImg');
     if (main) main.src = src;
+    hideProductVideo();
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
+}
+
+function playProductVideo(videoId, thumb) {
+    const imgWrap   = document.getElementById('mainImageWrap');
+    const videoWrap = document.getElementById('mainProductVideoWrap');
+    const frame     = document.getElementById('mainProductVideoFrame');
+    if (!imgWrap || !videoWrap || !frame) return;
+    frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    imgWrap.style.display = 'none';
+    videoWrap.style.display = 'block';
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+}
+
+function hideProductVideo() {
+    const imgWrap   = document.getElementById('mainImageWrap');
+    const videoWrap = document.getElementById('mainProductVideoWrap');
+    const frame     = document.getElementById('mainProductVideoFrame');
+    if (videoWrap) videoWrap.style.display = 'none';
+    if (frame) frame.src = ''; // stops playback when switching away
+    if (imgWrap) imgWrap.style.display = '';
 }
 
 function changeDetailQty(change) {
