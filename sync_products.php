@@ -89,6 +89,7 @@ foreach ($batch as $sku) {
 
     // price
     $cost = 0.0;
+    $videoId = null;
     $attempts = 0;
     do {
         $prodRes  = $bb->getProduct((int)$bbId, 'es');
@@ -104,6 +105,10 @@ foreach ($batch as $sku) {
         $pd = $prodRes['data'];
         $prec = (is_array($pd) && isset($pd[0]) && is_array($pd[0])) ? $pd[0] : $pd;
         $cost = (float)($prec['wholesalePrice'] ?? $prec['retailPrice'] ?? 0);
+        // BigBuy returns "0" (string) or null when a product has no video —
+        // both must become NULL here, never the literal string "0".
+        $videoRaw = trim((string)($prec['video'] ?? ''));
+        $videoId  = ($videoRaw !== '' && $videoRaw !== '0') ? $videoRaw : null;
     }
     sleep(2);
 
@@ -179,6 +184,7 @@ foreach ($batch as $sku) {
         'image_url'   => $mainImage,
         'stock'       => $stock,
         'status'      => 'active',
+        'video_id'    => $videoId,
     ];
 
     if (supabaseUpsert($cfg, 'products', $row, 'cj_pid')) {
