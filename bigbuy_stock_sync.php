@@ -190,6 +190,21 @@ if (empty($products)) {
 // in that case since it never gets reached.
 @file_put_contents(__DIR__ . '/stock_sync.log', "\n=== Run started $runStartedAt (" . ($isCli ? 'CLI/cron' : 'browser') . ") — fetched " . count($products) . " products total ===\n", FILE_APPEND | LOCK_EX);
 
+// Optional single-product filter — position-independent, unlike &start=/
+// &count= (which shift if the product list ever changes). When set, this
+// narrows $products to just the matching cj_pid BEFORE the existing
+// batch/pagination logic below runs — completely untouched otherwise.
+if (isset($_GET['cj_pid']) && trim((string)$_GET['cj_pid']) !== '') {
+    $filterCjPid = trim((string)$_GET['cj_pid']);
+    $products    = array_values(array_filter(
+        $products,
+        static fn($p) => (string)($p['cj_pid'] ?? '') === $filterCjPid
+    ));
+    if (empty($products)) {
+        exit("No product found with cj_pid=$filterCjPid.\n");
+    }
+}
+
 if ($processAll) {
     $start = 0;
     $batch = $products;
