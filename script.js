@@ -936,7 +936,7 @@ function renderProductDetails() {
     `);
     if (p.videoId) {
         galleryThumbs.splice(1, 0, `
-            <div class="thumb thumb-video" onclick="playProductVideo('${p.videoId}', this)">
+            <div class="thumb thumb-video" id="thumbVideo" onclick="playProductVideo('${p.videoId}', this)">
                 <img src="https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg" alt="${p.name} vídeo">
                 <span class="thumb-play-icon"><i class="fas fa-play"></i></span>
             </div>
@@ -959,6 +959,11 @@ function renderProductDetails() {
                 <div class="main-image" id="mainImageWrap">
                     ${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}
                     <img id="mainProductImg" src="${p.gallery[0]}" alt="${p.name}">
+                    ${p.videoId ? `
+                    <button type="button" class="watch-video-btn" onclick="playProductVideo('${p.videoId}', document.getElementById('thumbVideo'))">
+                        <i class="fas fa-play"></i> Ver vídeo
+                    </button>
+                    ` : ''}
                 </div>
                 <div class="main-image main-video-wrap" id="mainProductVideoWrap" style="display:none;">
                     <iframe id="mainProductVideoFrame" src="" title="${p.name} vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
@@ -1161,7 +1166,7 @@ function playProductVideo(videoId, thumb) {
     imgWrap.style.display = 'none';
     videoWrap.style.display = 'block';
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-    thumb.classList.add('active');
+    if (thumb) thumb.classList.add('active');
 }
 
 function hideProductVideo() {

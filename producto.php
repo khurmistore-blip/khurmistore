@@ -218,6 +218,10 @@ function bb_product_to_js(array $p): array
     .thumb-video{position:relative}
     .thumb-video .thumb-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,39,.35);color:#fff;font-size:20px;pointer-events:none}
     .main-image.main-video-wrap iframe{width:100%;height:100%;border:0;display:block}
+    .watch-video-btn{position:absolute;left:16px;bottom:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:none;border-radius:999px;background:rgba(10,14,39,.72);color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+    .watch-video-btn:hover{background:rgba(10,14,39,.88)}
+    .watch-video-btn i{color:var(--primary)}
+    @media (max-width:480px){.watch-video-btn{left:10px;bottom:10px;padding:8px 14px;font-size:13px}}
     </style>
 
 <script src="/js/meta-pixel.js" defer></script>
