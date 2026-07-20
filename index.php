@@ -522,6 +522,7 @@ function render_category_slider_card(array $p, array $cfg): string
                 <span><i class="fas fa-lock"></i> Pago 100% seguro</span>
                 <span><i class="fas fa-truck-fast"></i> Envío gratis desde España</span>
                 <span><i class="fas fa-rotate-left"></i> Devoluciones en 14 días</span>
+                <span><i class="fas fa-shield-halved"></i> Garantía 12 meses</span>
                 <span><i class="fas fa-headset"></i> Atención al cliente en España</span>
             </div>
             <div class="footer-seo-grid">
