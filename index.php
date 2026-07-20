@@ -459,6 +459,7 @@ function render_category_slider_card(array $p, array $cfg): string
         <div class="feature-box benefit-card" data-benefit="envio" role="button" tabindex="0"><i class="fas fa-truck-fast"></i><h3>Envío Gratis</h3><p>Sin mínimo, 2-5 días laborables</p></div>
         <div class="feature-box benefit-card" data-benefit="pago" role="button" tabindex="0"><i class="fas fa-shield-halved"></i><h3>Pago Seguro</h3><p>100% Protegido</p></div>
         <div class="feature-box benefit-card" data-benefit="devolucion" role="button" tabindex="0"><i class="fas fa-rotate-left"></i><h3>Devolución Fácil</h3><p>Política de 14 días</p></div>
+        <div class="feature-box benefit-card" data-benefit="garantia" role="button" tabindex="0"><i class="fas fa-award"></i><h3>Garantía 12 meses</h3><p>En todos los productos</p></div>
         <a class="feature-box support-link" href="https://wa.me/34662241860?text=Hola,%20necesito%20ayuda" target="_blank" rel="noopener noreferrer"><i class="fas fa-headset"></i><h3>Soporte 24/7</h3><p>Siempre disponibles</p></a>
     </section>
 

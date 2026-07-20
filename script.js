@@ -477,6 +477,10 @@ const benefitDetails = {
     devolucion: {
         title: 'Devolución Fácil',
         text: 'Dispones de 14 días para devolver cualquier producto sin complicaciones. Reembolso completo una vez recibido el artículo en buen estado.'
+    },
+    garantia: {
+        title: 'Garantía 12 meses',
+        text: 'Todos nuestros productos incluyen 12 meses de garantía frente a defectos de fabricación. Si tienes cualquier problema, contáctanos y te ayudamos.'
     }
 };
 
