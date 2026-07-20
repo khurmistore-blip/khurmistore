@@ -362,7 +362,7 @@ function bb_product_to_js(array $p): array
             <div class="footer-col">
                 <div class="logo"><i class="fas fa-wave-square"></i><div class="logo-text"><span class="letter">K</span><span class="letter">h</span><span class="letter">u</span><span class="letter">r</span><span class="letter">m</span><span class="letter">i</span><span class="letter">S</span><span class="letter">t</span><span class="letter">o</span><span class="letter">r</span><span class="letter">e</span></div></div>
                 <p>Tu tienda online de belleza, accesorios para móvil, relojes y electrónica en España.</p>
-                <p class="footer-legal-info">Khurmi Store &mdash; Calle Doctor Bellido, 46, Bajo, 28018 Madrid, España<br>NIF: Y5243613H &middot; Tel: +34 662 24 18 60 &middot; info@khurmistore.es</p>
+                <p class="footer-legal-info">KhurmiStore &mdash; Calle Doctor Bellido, 46, Bajo, 28018 Madrid, España<br>NIF: Y5243613H &middot; Tel: +34 662 24 18 60 &middot; info@khurmistore.es</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Facebook"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/khurmistore.es/" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
@@ -443,7 +443,7 @@ function bb_product_to_js(array $p): array
                     </ul>
                 </nav>
             </div>
-            <p class="footer-copyright">&copy; 2025 Khurmi Store España. Todos los derechos reservados.</p>
+            <p class="footer-copyright">&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p>
         </div>
     </footer>
 
@@ -532,13 +532,13 @@ function bb_product_to_js(array $p): array
 
     <!-- Chatbot Widget -->
     <div class="chat-widget">
-        <button class="chat-widget-button" id="chatWidgetToggle" aria-label="Abrir chat de Khurmi Store">
+        <button class="chat-widget-button" id="chatWidgetToggle" aria-label="Abrir chat de KhurmiStore">
             <i class="fas fa-comments"></i>
         </button>
         <div class="chat-widget-panel" id="chatWidgetPanel" aria-hidden="true">
             <div class="chat-header">
                 <div>
-                    <div class="chat-title">Khurmi Store</div>
+                    <div class="chat-title">KhurmiStore</div>
                     <div class="chat-subtitle">Asistente en línea</div>
                 </div>
                 <button class="chat-close-button" id="chatWidgetClose" aria-label="Cerrar chat">

@@ -442,7 +442,7 @@ function submitWhatsappOrder(event) {
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const itemsText = cart.map(item => `• ${item.name} x${item.qty} - ${formatPrice(item.price * item.qty)}`).join('\n');
-    const message = `🛒 NUEVO PEDIDO - Khurmi Store\n\nPedido:\n${itemsText}\n\nTOTAL: ${formatPrice(total)}\n\nDatos del cliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo postal: ${postal}\nNotas: ${notes || 'Ninguna'}`;
+    const message = `🛒 NUEVO PEDIDO - KhurmiStore\n\nPedido:\n${itemsText}\n\nTOTAL: ${formatPrice(total)}\n\nDatos del cliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo postal: ${postal}\nNotas: ${notes || 'Ninguna'}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/34662241860?text=${encodedMessage}`;
 
@@ -632,7 +632,7 @@ if (heroEl) {
 
 // Chatbot Widget
 const chatConfig = {
-    welcomeText: '¡Hola! 👋 Soy el asistente de Khurmi Store. ¿En qué puedo ayudarte?',
+    welcomeText: '¡Hola! 👋 Soy el asistente de KhurmiStore. ¿En qué puedo ayudarte?',
     answers: {
         envio: 'Envío gratis en todos los pedidos, sin mínimo de compra. Entrega en 2-5 días laborables en toda España.',
         pagos: 'Aceptamos tarjeta, PayPal y transferencia. Pago 100% seguro con cifrado SSL.',
@@ -1591,7 +1591,7 @@ function initPayPalButtons() {
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
             const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
-            const msg   = `✅ PEDIDO PAGADO con PayPal - Khurmi Store\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: ${formatPrice(shippingCost)}\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
+            const msg   = `✅ PEDIDO PAGADO con PayPal - KhurmiStore\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: ${formatPrice(shippingCost)}\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
             window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
 
             // 4. Pantalla de confirmación
