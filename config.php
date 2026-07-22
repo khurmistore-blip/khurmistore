@@ -23,6 +23,10 @@ define('STRIPE_SECRET_KEY',      env('STRIPE_SECRET_KEY', ''));
 define('STRIPE_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY', ''));
 define('STRIPE_WEBHOOK_SECRET',  env('STRIPE_WEBHOOK_SECRET', ''));
 
+// ---- Resend (transactional email) ----
+define('RESEND_API_KEY',    env('RESEND_API_KEY', ''));
+define('RESEND_FROM_EMAIL', env('RESEND_FROM_EMAIL', 'KhurmiStore <pedidos@khurmistore.es>'));
+
 // ---- WhatsApp order confirmation (used by save_order.php) ----
 function send_whatsapp_order_confirmation($customerPhone, $name, $orderNumber, $total) {
     $customerPhone = preg_replace('/[^0-9]/', '', $customerPhone);
