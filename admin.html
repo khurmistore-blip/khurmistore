@@ -637,6 +637,7 @@
     <div class="modalActions" style="flex-wrap:wrap;gap:8px;">
       <button class="btnWa" id="d_waBtn" onclick="waCustomer()">💬 WhatsApp</button>
       <button class="btnShip" onclick="notifyShippedFromDetail()">📦 Notify Shipped</button>
+      <button class="btnShip" onclick="sendTrackingFromDetail()">🔗 Send Tracking</button>
       <button class="btnEdit" onclick="editCurrentOrder()">✎ Edit</button>
       <button class="btnCancel" onclick="closeDetail()">Close</button>
     </div>
@@ -672,6 +673,8 @@
 
   // Shipping notification endpoint (notify_shipped.php in same folder)
   const NOTIFY_SHIPPED_URL = "notify_shipped.php";
+  // Tracking-number endpoint (send_tracking.php in same folder)
+  const SEND_TRACKING_URL = "send_tracking.php";
   // ======================================================
 
   let allOrders = [];
@@ -1383,6 +1386,13 @@
       row('Created', created) +
       row('Updated', updated);
 
+    document.getElementById('detailBody').innerHTML += `
+      <div class="detailRow" style="flex-direction:column;align-items:stretch;">
+        <div class="dKey" style="margin-bottom:8px;">Tracking</div>
+        <input type="text" id="d_trackingNumber" placeholder="Número de seguimiento" value="${escAttr(o.tracking_number||'')}" style="margin-bottom:8px;padding:10px 12px;background:var(--navy3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;">
+        <input type="text" id="d_trackingUrl" placeholder="URL de seguimiento (opcional)" value="${escAttr(o.tracking_url||'')}" style="padding:10px 12px;background:var(--navy3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;">
+      </div>`;
+
     // WhatsApp button enable/disable based on phone
     const waBtn = document.getElementById('d_waBtn');
     if(o.phone && o.phone.replace(/[^0-9]/g,'').length >= 9){
@@ -1406,6 +1416,35 @@
     if(!o.phone){ alert('Is order mein phone number nahi hai'); return; }
     if(confirm(`Notify ${o.customer_name} on WhatsApp that order is shipped?`)){
       notifyShipped(currentDetailId);
+    }
+  }
+
+  async function sendTrackingFromDetail(){
+    if(!currentDetailId) return;
+    const o = allOrders.find(x=>x.id===currentDetailId);
+    if(!o) return;
+    const trackingNumber = document.getElementById('d_trackingNumber').value.trim();
+    const trackingUrl = document.getElementById('d_trackingUrl').value.trim();
+    if(!trackingNumber){ alert('Ingresa un número de seguimiento'); return; }
+    if(!o.email){ alert('Este pedido no tiene email — el cliente no podrá recibir el tracking'); return; }
+    if(!confirm(`Send tracking info to ${o.customer_name}?`)) return;
+
+    try{
+      const r = await fetch(SEND_TRACKING_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ order_id: currentDetailId, tracking_number: trackingNumber, tracking_url: trackingUrl })
+      });
+      const res = await r.json();
+      if(res.success){
+        o.tracking_number = trackingNumber;
+        o.tracking_url = trackingUrl;
+        alert(`✅ Tracking sent — Email: ${res.emailSent?'sent':'FAILED'}, WhatsApp: ${res.waSent?'sent':'failed/no phone'}`);
+      } else {
+        alert('⚠️ Error: ' + (res.error || 'unknown'));
+      }
+    }catch(e){
+      alert('⚠️ Could not reach send_tracking.php — make sure it is uploaded');
     }
   }
 

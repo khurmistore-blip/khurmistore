@@ -18,6 +18,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/email_lib.php';
 
 define('OWNER_EMAIL', env('OWNER_EMAIL', ''));
 define('OWNER_PHONE', env('OWNER_PHONE', ''));
@@ -67,6 +68,47 @@ function order_number_exists(string $orderId): bool
     }
     $rows = json_decode((string)$body, true);
     return is_array($rows) && count($rows) > 0;
+}
+
+/**
+ * Builds the branded HTML for the customer order-confirmation email.
+ * $productsJson is the same structured array saveOrder() already builds
+ * for the Supabase 'products' column — reused here instead of the
+ * plain-text $productLines so each name gets properly HTML-escaped.
+ */
+function build_order_confirmation_email_html(string $orderId, string $name, array $productsJson, float $total): string
+{
+    $rows = '';
+    foreach ($productsJson as $p) {
+        $lineTotal = number_format(((float)$p['price']) * ((int)$p['qty']), 2, ',', '.');
+        $rows .= '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#444;">'
+            . '<span>' . htmlspecialchars((string)$p['name']) . ' x' . (int)$p['qty'] . '</span>'
+            . '<span>' . $lineTotal . ' &euro;</span></div>';
+    }
+    $totalFormatted = number_format($total, 2, ',', '.');
+    $safeName       = htmlspecialchars($name !== '' ? $name : 'cliente');
+
+    return '<div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;background:#fff;">'
+        . '<div style="background:#0A0E27;padding:24px;text-align:center;">'
+        . '<span style="color:#FF6B35;font-size:22px;font-weight:800;">KhurmiStore</span></div>'
+        . '<div style="padding:28px 24px;color:#1a1a2e;">'
+        . '<h1 style="color:#FF6B35;font-size:22px;margin:0 0 12px;">&iexcl;Gracias por tu pedido, ' . $safeName . '!</h1>'
+        . '<p style="font-size:14px;line-height:1.6;color:#444;">Hemos recibido tu pedido correctamente. Aqu&iacute; tienes el resumen:</p>'
+        . '<table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;">'
+        . '<tr><td style="padding:8px 0;color:#888;">N&uacute;mero de pedido</td>'
+        . '<td style="padding:8px 0;text-align:right;font-weight:700;">' . htmlspecialchars($orderId) . '</td></tr></table>'
+        . '<div style="background:#f8f9fa;border-radius:8px;padding:16px 18px;margin:16px 0;">'
+        . '<strong style="display:block;margin-bottom:10px;color:#0A0E27;">Productos</strong>' . $rows . '</div>'
+        . '<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:15px;border-top:1px solid #eee;padding-top:10px;">'
+        . '<tr><td style="padding:10px 0;font-weight:700;">TOTAL</td>'
+        . '<td style="padding:10px 0;text-align:right;font-weight:700;color:#FF6B35;">' . $totalFormatted . ' &euro;</td></tr></table>'
+        . '<p style="font-size:14px;color:#444;">&#128666; <strong>Env&iacute;o gratis</strong> &mdash; te avisaremos por email cuando tu pedido salga de nuestro almac&eacute;n, junto con el n&uacute;mero de seguimiento.</p>'
+        . '<hr style="border:none;border-top:1px solid #eee;margin:24px 0;">'
+        . '<p style="font-size:13px;color:#888;">&iquest;Dudas sobre tu pedido? Escr&iacute;benos:<br>'
+        . '&#128231; <a href="mailto:info@khurmistore.es" style="color:#FF6B35;">info@khurmistore.es</a><br>'
+        . '&#128172; <a href="https://wa.me/34662241860" style="color:#FF6B35;">WhatsApp: +34 662 24 18 60</a></p></div>'
+        . '<div style="background:#0A0E27;padding:16px;text-align:center;">'
+        . '<span style="color:#8B92B5;font-size:11px;">&copy; 2025 KhurmiStore Espa&ntilde;a</span></div></div>';
 }
 
 /**
@@ -322,6 +364,14 @@ function saveOrder(array $data): array
     if (substr($waPhone, 0, 2) === '00') { $waPhone = substr($waPhone, 2); }
     if (strlen($waPhone) === 9) { $waPhone = '34' . $waPhone; }
     send_whatsapp_order_confirmation($waPhone, $name, $orderId, $total);
+
+    // ── 6. Enviar email de confirmación al cliente (Resend) ───────────────
+    if ($email !== '') {
+        $confirmationHtml = build_order_confirmation_email_html($orderId, $name, $productsJson, $total);
+        if (!send_email($email, "¡Gracias por tu pedido! - {$orderId}", $confirmationHtml)) {
+            $sideErrors[] = 'Email de confirmación al cliente no enviado';
+        }
+    }
 
     return [
         'success' => true,        // true incluso si email/WhatsApp fallan; el CSV es lo que cuenta
