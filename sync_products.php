@@ -149,13 +149,13 @@ foreach ($batch as $sku) {
             }
         }
     }
-    sleep(2);
+    sleep(5);
 
     // stock
     $stock = 1;
     $attempts = 0;
     do {
-        $stockRes = $bb->getProductStock((int)$bbId);
+        $stockRes = $bb->getProductStockByHandlingDays((int)$bbId);
         $httpCode = $stockRes['status'] ?? null;
         if ($httpCode == 429) {
             $attempts++;
