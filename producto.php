@@ -28,7 +28,7 @@ if (!$p) {
 // Excludes refurbished/"Reacondicionado" listings — see categoria.php/index.php for the same filter.
 $related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&name=not.ilike.*Reacondicionado*&limit=5") : [];
 
-$pageTitle = $p ? ($p['seo_title'] ?: $p['name']) : 'Producto no encontrado';
+$pageTitle = $p ? ($p['meta_title'] ?: $p['name']) : 'Producto no encontrado';
 
 // <title>: "<name> | KhurmiStore", truncated so the total stays ~60 chars
 // (Google truncates longer titles in search results).
@@ -91,11 +91,14 @@ function build_product_meta_description(?array $p): string
     return $desc;
 }
 
-// Respect a manually-curated seo_description if the store owner set one and
-// it already meets the length target; otherwise build one from real data.
-$pageDesc = ($p && !empty($p['seo_description']) && mb_strlen(trim($p['seo_description'])) >= 120)
-    ? $p['seo_description']
-    : build_product_meta_description($p);
+// Priority: meta_description (new dedicated SEO column) > manually-curated
+// seo_description (legacy, if long enough) > auto-built fallback — so
+// products without any SEO data still get a solid generated description.
+$pageDesc = $p && !empty($p['meta_description'])
+    ? $p['meta_description']
+    : (($p && !empty($p['seo_description']) && mb_strlen(trim($p['seo_description'])) >= 120)
+        ? $p['seo_description']
+        : build_product_meta_description($p));
 
 $canonicalUrl = $p ? "https://khurmistore.es/producto.php?id={$p['id']}" : 'https://khurmistore.es/producto.php';
 
@@ -135,6 +138,12 @@ if ($p) {
     ];
 }
 
+// AEO (Answer Engine Optimization) content — pre-built JSON-LD stored
+// directly in Supabase's aeo_content jsonb column. PostgREST/sb_get()
+// already decodes jsonb into a plain PHP array, so it's just re-encoded
+// as-is here, no rebuilding.
+$aeoSchema = ($p && !empty($p['aeo_content']) && is_array($p['aeo_content'])) ? $p['aeo_content'] : null;
+
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
 function bb_product_to_js(array $p): array
 {
@@ -162,7 +171,7 @@ function bb_product_to_js(array $p): array
         'tag'         => '',
         'stock'       => (int)($p['stock'] ?? 0),
         'isActive'    => ($p['is_active'] ?? true) !== false,
-        'description' => $p['long_description'] ?: ($p['description'] ?? ''),
+        'description' => $p['description_optimized'] ?: ($p['long_description'] ?: ($p['description'] ?? '')),
         'features'    => $features ?: null, // null lets getProductDetails() fall back to its generic defaults
     ];
 }
@@ -200,6 +209,9 @@ function bb_product_to_js(array $p): array
     <?php endif; ?>
     <?php if ($productSchema): ?>
     <script type="application/ld+json"><?= json_encode($productSchema, JSON_UNESCAPED_UNICODE) ?></script>
+    <?php endif; ?>
+    <?php if ($aeoSchema): ?>
+    <script type="application/ld+json"><?= json_encode($aeoSchema, JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.min.css">
