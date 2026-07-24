@@ -150,7 +150,7 @@ function renderProducts(filter = 'all') {
 // categoryDescription/productsGrid ids this used, so it was 100% dead code.
 // Navegar a la página de detalles del producto
 function goToProduct(id) {
-    window.location.href = `producto.php?id=${id}`;
+    window.location.href = `/producto.php?id=${id}`;
 }
 
 function getCategoryName(cat) {
@@ -385,7 +385,7 @@ function openCheckout() {
         return;
     }
     if (!document.getElementById('checkoutModal')) {
-        window.location.href = 'index.php?checkout=1';
+        window.location.href = '/index.php?checkout=1';
         return;
     }
     closeCart();
@@ -611,7 +611,7 @@ function scrollToProducts() {
     if (el) {
         el.scrollIntoView({behavior: 'smooth'});
     } else {
-        window.location.href = 'index.html#products';
+        window.location.href = '/index.html#products';
     }
 }
 

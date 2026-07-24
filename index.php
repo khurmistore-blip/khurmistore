@@ -93,13 +93,13 @@ function render_category_slider_card(array $p, array $cfg): string
 {
     ob_start();
     ?>
-    <div class="product-card category-slider-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
-        <a href="producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
+    <div class="product-card category-slider-card" onclick="window.location.href='/producto.php?id=<?= (int)$p['id'] ?>'">
+        <a href="/producto.php?id=<?= (int)$p['id'] ?>" class="product-img" style="display:block">
             <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
         </a>
         <div class="product-info">
-            <a href="producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
+            <a href="/producto.php?id=<?= (int)$p['id'] ?>" style="color:inherit;text-decoration:none;display:block"><h3><?= htmlspecialchars($p['name']) ?></h3></a>
             <span class="badge-nuevo">Nuevo</span>
             <div class="product-price">
                 <span class="price"><?= price_es((float)$p['price'], $cfg['currency_symbol']) ?></span>
@@ -166,7 +166,7 @@ function render_category_slider_card(array $p, array $cfg): string
     <meta name="revisit-after" content="7 days">
     
     <!-- CSS and Fonts -->
-    <link rel="stylesheet" href="style.min.css">
+    <link rel="stylesheet" href="/style.min.css">
     <!-- Inline CSS for the homepage's per-category product sliders (Change 3).
          Reuses existing design tokens (--primary, --gradient2, .product-card, .slider-btn)
          so it stays visually consistent with the rest of the site. -->
@@ -290,8 +290,8 @@ function render_category_slider_card(array $p, array $cfg): string
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
                     <!-- Inicio (Home) Link -->
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categoria.php">Tienda</a></li>
+                    <li><a href="/index.php">Inicio</a></li>
+                    <li><a href="/categoria.php">Tienda</a></li>
                     
                     <!-- Categorías Dropdown - Contains product categories (stays intact) -->
                     <li class="nav-item dropdown">
@@ -299,22 +299,22 @@ function render_category_slider_card(array $p, array $cfg): string
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=belleza">Belleza</a></li>
-                            <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
+                            <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                            <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
+                            <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
+                            <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
+                            <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
                         </ul>
                     </li>
                     
                     <!-- Blog Link -->
-                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="/blog.html">Blog</a></li>
                     
                     <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
                     
                     <!-- Contacto (Contact) Link -->
-                    <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
                 </ul>
             </nav>
 
@@ -351,9 +351,9 @@ function render_category_slider_card(array $p, array $cfg): string
             </li>
             <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
             <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
-            <li><a href="blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
-            <li><a href="sobre-nosotros.html"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
-            <li><a href="preguntas-frecuentes.html"><i class="fas fa-question-circle"></i> Preguntas Frecuentes</a></li>
+            <li><a href="/blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
+            <li><a href="/sobre-nosotros.html"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
+            <li><a href="/preguntas-frecuentes.html"><i class="fas fa-question-circle"></i> Preguntas Frecuentes</a></li>
             <li class="divider"></li>
             <li><a href="#"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
         </ul>
@@ -370,7 +370,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <h1>Limpieza <span class="highlight">Facial</span><br>Profunda</h1>
                         <p>Hidrolimpiador facial recargable para una piel radiante</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="<?= $heroSlide1Id ? "window.location.href='producto.php?id=" . (int)$heroSlide1Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide1Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide1Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
@@ -387,7 +387,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <h2>Perfumería y <span class="highlight">Belleza</span><br>Para Ti</h2>
                         <p>Descubre nuestra selección de perfumería y cuidado personal</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="<?= $heroSlide2Id ? "window.location.href='producto.php?id=" . (int)$heroSlide2Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide2Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide2Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
@@ -404,7 +404,7 @@ function render_category_slider_card(array $p, array $cfg): string
                         <h2>Electrónica y <span class="highlight">Gadgets</span><br>Para tu Día a Día</h2>
                         <p>Tecnología de calidad al mejor precio, envío rápido a toda España</p>
                         <div class="hero-buttons">
-                            <button class="btn-primary" onclick="<?= $heroSlide3Id ? "window.location.href='producto.php?id=" . (int)$heroSlide3Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
+                            <button class="btn-primary" onclick="<?= $heroSlide3Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide3Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
@@ -432,7 +432,7 @@ function render_category_slider_card(array $p, array $cfg): string
                     <span class="subtitle">CATEGORÍA</span>
                     <h2><?= htmlspecialchars($slider['label']) ?></h2>
                 </div>
-                <a href="categoria.php?cat=<?= htmlspecialchars($slider['slug']) ?>" class="category-slider-viewall">Ver Todo <i class="fas fa-arrow-right"></i></a>
+                <a href="/categoria.php?cat=<?= htmlspecialchars($slider['slug']) ?>" class="category-slider-viewall">Ver Todo <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="category-slider-wrap">
                 <button type="button" class="slider-btn category-slider-arrow prev" aria-label="Desplazar a la izquierda"><i class="fas fa-chevron-left"></i></button>
@@ -491,34 +491,34 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="footer-col">
                 <h3>Información</h3>
                 <ul>
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categoria.php">Tienda</a></li>
-                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
-                    <li><a href="contacto.html">Contacto</a></li>
-                    <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
+                    <li><a href="/index.php">Inicio</a></li>
+                    <li><a href="/categoria.php">Tienda</a></li>
+                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Categorías</h3>
                 <ul>
-                    <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                    <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                    <li><a href="categoria.php?cat=belleza">Belleza</a></li>
-                    <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="categoria.php">Ver todas las categorías</a></li>
-                    <li><a href="categoria.php">Todos los productos</a></li>
+                    <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                    <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
+                    <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
+                    <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
+                    <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
+                    <li><a href="/categoria.php">Ver todas las categorías</a></li>
+                    <li><a href="/categoria.php">Todos los productos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Legal</h3>
                 <ul>
-                    <li><a href="aviso-legal.html">Aviso Legal</a></li>
-                    <li><a href="politica-de-privacidad.html">Política de Privacidad</a></li>
-                    <li><a href="politica-de-cookies.html">Política de Cookies</a></li>
-                    <li><a href="terminos-y-condiciones.html">Términos y Condiciones</a></li>
-                    <li><a href="politica-de-envios.html">Política de Envíos</a></li>
-                    <li><a href="politica-de-devoluciones.html">Política de Devoluciones</a></li>
+                    <li><a href="/aviso-legal.html">Aviso Legal</a></li>
+                    <li><a href="/politica-de-privacidad.html">Política de Privacidad</a></li>
+                    <li><a href="/politica-de-cookies.html">Política de Cookies</a></li>
+                    <li><a href="/terminos-y-condiciones.html">Términos y Condiciones</a></li>
+                    <li><a href="/politica-de-envios.html">Política de Envíos</a></li>
+                    <li><a href="/politica-de-devoluciones.html">Política de Devoluciones</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -650,7 +650,7 @@ function render_category_slider_card(array $p, array $cfg): string
         <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
         <div class="cookie-text">
             <h4>Usamos Cookies</h4>
-            <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
+            <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="/politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
         </div>
         <div class="cookie-buttons">
             <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar</button>
@@ -690,7 +690,7 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
     </div>
     <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES" defer></script>
-    <script src="script.js" defer></script>
+    <script src="/script.js" defer></script>
     <script>
     // The "Destacados" grid above is now server-rendered by PHP when real Supabase
     // products exist (see #featuredProductsGrid). We still seed script.js's global

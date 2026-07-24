@@ -155,8 +155,8 @@ $breadcrumbSchema = [
 <meta property="og:locale" content="es_ES">
 <script type="application/ld+json"><?= json_encode($collectionSchema, JSON_UNESCAPED_UNICODE) ?></script>
 <script type="application/ld+json"><?= json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE) ?></script>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="stylesheet" href="style.min.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.min.css">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23ff6b35'>K</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,8 +208,8 @@ $breadcrumbSchema = [
             <nav class="nav-menu desktop-nav" id="desktopNav">
                 <ul>
                     <!-- Inicio (Home) Link -->
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categoria.php">Tienda</a></li>
+                    <li><a href="/index.php">Inicio</a></li>
+                    <li><a href="/categoria.php">Tienda</a></li>
 
                     <!-- Categorías Dropdown - Contains product categories (stays intact) -->
                     <li class="nav-item dropdown">
@@ -217,23 +217,23 @@ $breadcrumbSchema = [
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=belleza">Belleza</a></li>
-                            <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                            <li><a href="categoria.php">Ver Todo</a></li>
+                            <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                            <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
+                            <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
+                            <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
+                            <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
+                            <li><a href="/categoria.php">Ver Todo</a></li>
                         </ul>
                     </li>
 
                     <!-- Blog Link -->
-                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="/blog.html">Blog</a></li>
 
                     <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
 
                     <!-- Contacto (Contact) Link -->
-                    <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
                 </ul>
             </nav>
 
@@ -259,8 +259,8 @@ $breadcrumbSchema = [
             <nav class="nav-menu mobile-nav-menu" id="mobileNavMenu">
                 <ul>
                     <!-- Inicio (Home) Link -->
-                    <li><a href="index.php" onclick="closeMobileMenu()">Inicio</a></li>
-                    <li><a href="categoria.php" onclick="closeMobileMenu()">Tienda</a></li>
+                    <li><a href="/index.php" onclick="closeMobileMenu()">Inicio</a></li>
+                    <li><a href="/categoria.php" onclick="closeMobileMenu()">Tienda</a></li>
 
                     <!-- Categorías Dropdown for Mobile -->
                     <li class="nav-item dropdown">
@@ -268,23 +268,23 @@ $breadcrumbSchema = [
                             Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
                         </button>
                         <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
-                            <li><a href="categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
-                            <li><a href="categoria.php?cat=accesorios-movil" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
-                            <li><a href="categoria.php?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="categoria.php" onclick="closeMobileMenu()">Ver Todo</a></li>
+                            <li><a href="/categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
+                            <li><a href="/categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
+                            <li><a href="/categoria.php?cat=accesorios-movil" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
+                            <li><a href="/categoria.php?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
+                            <li><a href="/categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
+                            <li><a href="/categoria.php" onclick="closeMobileMenu()">Ver Todo</a></li>
                         </ul>
                     </li>
 
                     <!-- Blog Link -->
-                    <li><a href="blog.html" onclick="closeMobileMenu()">Blog</a></li>
+                    <li><a href="/blog.html" onclick="closeMobileMenu()">Blog</a></li>
 
                     <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
+                    <li><a href="/sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
 
                     <!-- Contacto (Contact) Link -->
-                    <li><a href="contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
+                    <li><a href="/contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
                 </ul>
             </nav>
         </div>
@@ -292,7 +292,7 @@ $breadcrumbSchema = [
 
     <!-- Breadcrumb -->
     <div class="wrap" style="max-width:1180px;margin:0 auto;padding:18px 20px;color:#9AA0BC;font-size:13px;">
-        <a href="index.php" style="color:inherit;text-decoration:none;">Inicio</a>
+        <a href="/index.php" style="color:inherit;text-decoration:none;">Inicio</a>
         <i class="fas fa-chevron-right" style="font-size:10px;margin:0 6px;"></i>
         <span><?= htmlspecialchars($catLabel) ?></span>
     </div>
@@ -314,12 +314,12 @@ $breadcrumbSchema = [
         <?php if (empty($products)): ?>
             <div style="padding:60px 20px;text-align:center;color:#9AA0BC;">
                 Todavía no hay productos en esta categoría. Vuelve pronto.
-                <br><a href="categoria.php" class="btn-primary" style="display:inline-block;margin-top:16px;">Ver todos los productos</a>
+                <br><a href="/categoria.php" class="btn-primary" style="display:inline-block;margin-top:16px;">Ver todos los productos</a>
             </div>
         <?php else: ?>
             <div class="products-grid" id="categoryProductsGrid">
                 <?php foreach ($products as $p): ?>
-                    <div class="product-card" onclick="window.location.href='producto.php?id=<?= (int)$p['id'] ?>'">
+                    <div class="product-card" onclick="window.location.href='/producto.php?id=<?= (int)$p['id'] ?>'">
                         <div class="product-img">
                             <img src="<?= htmlspecialchars(first_product_image($p['image_url'] ?? '')) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
                             <div class="quick-view"><i class="fas fa-eye"></i> Ver Detalles</div>
@@ -368,34 +368,34 @@ $breadcrumbSchema = [
             <div class="footer-col">
                 <h3>Información</h3>
                 <ul>
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="categoria.php">Tienda</a></li>
-                    <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
-                    <li><a href="contacto.html">Contacto</a></li>
-                    <li><a href="preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
+                    <li><a href="/index.php">Inicio</a></li>
+                    <li><a href="/categoria.php">Tienda</a></li>
+                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/preguntas-frecuentes.html">Preguntas Frecuentes</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Categorías</h3>
                 <ul>
-                    <li><a href="categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="categoria.php?cat=relojes">Relojes</a></li>
-                    <li><a href="categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                    <li><a href="categoria.php?cat=belleza">Belleza</a></li>
-                    <li><a href="categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="categoria.php">Ver todas las categorías</a></li>
-                    <li><a href="categoria.php">Todos los productos</a></li>
+                    <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
+                    <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
+                    <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
+                    <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
+                    <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
+                    <li><a href="/categoria.php">Ver todas las categorías</a></li>
+                    <li><a href="/categoria.php">Todos los productos</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Legal</h3>
                 <ul>
-                    <li><a href="aviso-legal.html">Aviso Legal</a></li>
-                    <li><a href="politica-de-privacidad.html">Política de Privacidad</a></li>
-                    <li><a href="politica-de-cookies.html">Política de Cookies</a></li>
-                    <li><a href="terminos-y-condiciones.html">Términos y Condiciones</a></li>
-                    <li><a href="politica-de-envios.html">Política de Envíos</a></li>
-                    <li><a href="politica-de-devoluciones.html">Política de Devoluciones</a></li>
+                    <li><a href="/aviso-legal.html">Aviso Legal</a></li>
+                    <li><a href="/politica-de-privacidad.html">Política de Privacidad</a></li>
+                    <li><a href="/politica-de-cookies.html">Política de Cookies</a></li>
+                    <li><a href="/terminos-y-condiciones.html">Términos y Condiciones</a></li>
+                    <li><a href="/politica-de-envios.html">Política de Envíos</a></li>
+                    <li><a href="/politica-de-devoluciones.html">Política de Devoluciones</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -484,7 +484,7 @@ $breadcrumbSchema = [
         <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
         <div class="cookie-text">
             <h4>Usamos Cookies</h4>
-            <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
+            <p>Usamos cookies de an&#225;lisis. Consulta nuestra <a href="/politica-de-cookies.html" style="color:#ff6b35;">Pol&#237;tica de Cookies</a>.</p>
         </div>
         <div class="cookie-buttons">
             <button class="btn-cookie-accept" onclick="acceptCookies()">Aceptar</button>
@@ -519,7 +519,7 @@ $breadcrumbSchema = [
         </div>
     </div>
     <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES" defer></script>
-    <script src="script.js" defer></script>
+    <script src="/script.js" defer></script>
     <script>
     // Seed script.js's global `products` array with this category's real Supabase
     // products, so "Añadir al carrito" (if used elsewhere) and the cart drawer can
