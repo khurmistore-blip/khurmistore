@@ -24,7 +24,7 @@ $today = date('Y-m-d');
 $categorySlugs = ['auriculares', 'relojes', 'accesorios-movil', 'belleza', 'electronica'];
 
 // All active products, for individual producto.php?id=X pages.
-$products = sb_get($cfg, 'products?status=eq.active&select=id');
+$products = sb_get($cfg, 'products?status=eq.approved&select=id');
 
 $urls = [];
 

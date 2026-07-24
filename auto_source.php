@@ -17,7 +17,10 @@ set_time_limit(0);
  *   khurmistore.es/auto_source.php?key=khurmi2026&count=5           (auto-rotate)
  *   khurmistore.es/auto_source.php?key=khurmi2026&cat=gaming&count=5
  *
- * APPROVE: Supabase -> products -> status='pending' -> set 'active'
+ * APPROVE: Supabase -> products -> status='pending' -> set 'approved'
+ * New rows insert with NO status field, so they pick up the DB column's
+ * default ('pending') — never hardcoded here, so this script can never
+ * clobber an existing product's status.
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -156,7 +159,7 @@ foreach ($candidates as $i => $p) {
         'cj_pid' => (string)$bbId, 'cj_price' => number_format($cost, 2, '.', ''),
         'name' => $name, 'category' => $cat, 'price' => round($sell, 2),
         'description' => $desc, 'image_url' => $mainImage, 'stock' => $stock,
-        'status' => 'pending', 'is_visible' => false, 'video_id' => $videoId,
+        'is_visible' => false, 'video_id' => $videoId,
     ];
     if (supabaseUpsert($cfg, 'products', $row, 'cj_pid')) {
         echo "PENDING OK (" . mb_substr($name, 0, 26) . " | EUR " . number_format($sell, 2) . " | stk $stock)\n";
@@ -177,7 +180,7 @@ if ($lastScannedIndex >= count($candidates) - 1 || $ok < $COUNT) {
 echo "\n==========================================\n";
 echo "cat=$cat  new pending=$ok  scanned=$scanned\n";
 echo "next page for $cat: " . $state['pages'][$cat] . "\n";
-echo "APPROVE in Supabase: status='pending' -> 'active'\n";
+echo "APPROVE in Supabase: status='pending' -> 'approved'\n";
 echo "==========================================\n";
 
 

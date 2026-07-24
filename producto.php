@@ -17,8 +17,16 @@ require_once __DIR__ . '/shipping_lib.php';
 $cfg = require __DIR__ . '/config.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$rows = $id ? sb_get($cfg, "products?id=eq.$id&status=eq.active&limit=1") : [];
+$rows = $id ? sb_get($cfg, "products?id=eq.$id&status=eq.approved&limit=1") : [];
 $p = $rows[0] ?? null;
+
+// Belt-and-suspenders: even though the query above already filters on
+// status=eq.approved (so a pending/rejected product simply won't be
+// fetched), explicitly re-check the fetched row's own status too, so a
+// direct link to a non-approved product can never render.
+if ($p && ($p['status'] ?? '') !== 'approved') {
+    $p = null;
+}
 
 if (!$p) {
     http_response_code(404);
@@ -27,7 +35,7 @@ if (!$p) {
 // 4 products in the SAME category (excluding this one) for the "Productos
 // Relacionados" grid — real internal links for SEO. Excludes refurbished/
 // "Reacondicionado" listings — see categoria.php/index.php for the same filter.
-$related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&category=eq." . rawurlencode((string)($p['category'] ?? '')) . "&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=4") : [];
+$related = $p ? sb_get($cfg, "products?status=eq.approved&id=neq.$id&category=eq." . rawurlencode((string)($p['category'] ?? '')) . "&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=4") : [];
 
 $pageTitle = $p ? ($p['meta_title'] ?: $p['name']) : 'Producto no encontrado';
 

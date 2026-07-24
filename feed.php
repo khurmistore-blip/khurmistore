@@ -28,7 +28,7 @@ header('Content-Type: application/xml; charset=utf-8');
 // `is_active` boolean column; `status` is a text column, filtered here the
 // same way. Using the real existing convention instead of a column that
 // doesn't exist.
-$products = sb_get($cfg, 'products?status=eq.active&order=id.asc');
+$products = sb_get($cfg, 'products?status=eq.approved&order=id.asc');
 
 // Manual exclusion list by product id — add more ids here as needed.
 $excluded_ids = [176, 178, 183, 185]; // CBD products
