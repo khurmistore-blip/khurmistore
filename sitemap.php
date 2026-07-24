@@ -11,20 +11,43 @@ declare(strict_types=1);
  * listed here — those legacy static demo pages (fake Unsplash catalog) have
  * been deleted, superseded by the real category/product pages (categoria.php /
  * producto.php) that pull live Supabase data.
+ *
+ * IMPORTANT: this endpoint must output ONLY valid XML — no shared header/
+ * footer/nav includes, nothing echoed before the <?xml declaration. Google
+ * Search Console reports "Couldn't fetch / Unknown" type the moment even one
+ * stray byte (a PHP warning, a deprecation notice, whitespace) precedes it —
+ * that's why display_errors is forced off and the header is sent before any
+ * require/fetch runs, rather than after.
  */
+
+// Must run before ANY require/echo — nothing may be sent to the browser
+// ahead of the XML content-type header.
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
+ini_set('log_errors', '1');
+header('Content-Type: application/xml; charset=utf-8');
+http_response_code(200);
 
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
-
-header('Content-Type: application/xml; charset=utf-8');
 
 $today = date('Y-m-d');
 
 // Real category slugs — same list used by the header "Categorías" dropdown.
 $categorySlugs = ['auriculares', 'relojes', 'accesorios-movil', 'belleza', 'electronica'];
 
-// All active products, for individual producto.php?id=X pages.
-$products = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&select=id');
+// All active, approved products, for individual producto.php?id=X pages.
+// Wrapped defensively so a Supabase error/warning can never leak text into
+// the XML body — worst case the sitemap just omits product URLs this run.
+$products = [];
+try {
+    $fetched = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&select=id');
+    if (is_array($fetched)) {
+        $products = $fetched;
+    }
+} catch (Throwable $e) {
+    error_log('sitemap.php: product fetch failed - ' . $e->getMessage());
+}
 
 $urls = [];
 
