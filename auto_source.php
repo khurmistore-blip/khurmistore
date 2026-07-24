@@ -18,10 +18,12 @@ set_time_limit(0);
  *   khurmistore.es/auto_source.php?key=khurmi2026&cat=gaming&count=5
  *
  * APPROVE: Supabase -> products -> approval_status='pending' -> set 'approved'
- * status='active' is set here (stock-state field, managed day-to-day by
- * bigbuy_stock_sync.php's is_active column). approval_status is NEVER set
- * by this script — new rows insert with no approval_status field at all,
- * so they pick up the DB column's default ('pending').
+ * is_active is set here from the just-confirmed stock check (the same
+ * boolean column bigbuy_stock_sync.php keeps updated day-to-day).
+ * approval_status is NEVER set by this script — new rows insert with no
+ * approval_status field at all, so they pick up the DB column's default
+ * ('pending'). The old text `status` column is no longer filtered/written
+ * anywhere — is_active is the single source of truth for stock-state now.
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -160,7 +162,7 @@ foreach ($candidates as $i => $p) {
         'cj_pid' => (string)$bbId, 'cj_price' => number_format($cost, 2, '.', ''),
         'name' => $name, 'category' => $cat, 'price' => round($sell, 2),
         'description' => $desc, 'image_url' => $mainImage, 'stock' => $stock,
-        'status' => 'active', 'is_visible' => false, 'video_id' => $videoId,
+        'is_active' => $stock > 0, 'is_visible' => false, 'video_id' => $videoId,
     ];
     if (supabaseUpsert($cfg, 'products', $row, 'cj_pid')) {
         echo "PENDING OK (" . mb_substr($name, 0, 26) . " | EUR " . number_format($sell, 2) . " | stk $stock)\n";
