@@ -32,9 +32,11 @@ $urls = [];
 $urls[] = ['loc' => 'https://khurmistore.es/', 'changefreq' => 'weekly', 'priority' => '1.0'];
 $urls[] = ['loc' => 'https://khurmistore.es/categoria.php', 'changefreq' => 'weekly', 'priority' => '0.9'];
 
-// ── Categorías (contenido real, vía categoria.php) ──────────────────────
+// ── Categorías (contenido real, vía categoria.php, URL amigable sin query
+// string — /category/slug ya reescribe internamente a categoria.php?cat=slug
+// según .htaccess) ────────────────────────────────────────────────────────
 foreach ($categorySlugs as $slug) {
-    $urls[] = ['loc' => 'https://khurmistore.es/categoria.php?cat=' . $slug, 'changefreq' => 'daily', 'priority' => '0.9'];
+    $urls[] = ['loc' => 'https://khurmistore.es/category/' . $slug, 'changefreq' => 'daily', 'priority' => '0.9'];
 }
 
 // ── Fichas de producto reales (vía producto.php) ────────────────────────
