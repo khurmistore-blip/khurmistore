@@ -183,6 +183,7 @@ foreach ($batch as $sku) {
         'description' => $desc,
         'image_url'   => $mainImage,
         'stock'       => $stock,
+        'status'      => 'active',
         'video_id'    => $videoId,
     ];
 

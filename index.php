@@ -4,7 +4,7 @@
 // looking out of place; hidden from display only, never deleted from the DB.
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
-$featured = sb_get($cfg, 'products?status=eq.approved&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=8');
+$featured = sb_get($cfg, 'products?status=eq.active&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=8');
 
 // Per-category homepage sliders — one row per header "Categorías" dropdown entry.
 // Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
@@ -17,7 +17,7 @@ $categorySliderDefs = [
 ];
 $categorySliders = [];
 foreach ($categorySliderDefs as $def) {
-    $catProducts = sb_get($cfg, 'products?status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
+    $catProducts = sb_get($cfg, 'products?status=eq.active&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
     if (!empty($catProducts)) {
         $categorySliders[] = ['slug' => $def['slug'], 'label' => $def['label'], 'products' => $catProducts];
     }
@@ -48,7 +48,7 @@ function hero_product_image(?array $p): string
  */
 function hero_find_product(array $cfg, string $category, string $nameLike = ''): ?array
 {
-    $base = 'products?status=eq.approved&image_url=not.is.null&stock=gt.0'
+    $base = 'products?status=eq.active&approval_status=eq.approved&image_url=not.is.null&stock=gt.0'
         . '&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($category)
         . '&order=created_at.desc&limit=1';
 
@@ -64,7 +64,7 @@ function hero_find_product(array $cfg, string $category, string $nameLike = ''):
 }
 
 // Slide 1 — pinned to a specific product: id=179, Hidrolimpiador Facial Hyser.
-$heroP1Rows = sb_get($cfg, 'products?id=eq.179&status=eq.approved&limit=1');
+$heroP1Rows = sb_get($cfg, 'products?id=eq.179&status=eq.active&approval_status=eq.approved&limit=1');
 $heroP1     = $heroP1Rows[0] ?? null;
 
 // Slide 2 — belleza, prefer a named perfume/L'Occitane product, else any
