@@ -949,11 +949,11 @@ function renderProductDetails() {
 
     container.innerHTML = `
         <div class="breadcrumb">
-            <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+            <a href="/"><i class="fas fa-home"></i> Inicio</a>
             <i class="fas fa-chevron-right"></i>
-            <a href="index.html#products">Productos</a>
+            <a href="/categoria.php">Productos</a>
             <i class="fas fa-chevron-right"></i>
-            <span>${getCategoryName(p.category)}</span>
+            <a href="/categoria.php?cat=${encodeURIComponent(p.category)}">${p.category.charAt(0).toUpperCase() + p.category.slice(1)}</a>
             <i class="fas fa-chevron-right"></i>
             <span class="current">${p.name}</span>
         </div>
