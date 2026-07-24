@@ -1,166 +1,138 @@
 <?php
 set_time_limit(0);
 /**
- * auto_source.php — Auto-discover NEW BigBuy products for KhurmiStore.
+ * auto_source.php - Auto-discover NEW in-stock BigBuy products (OPTIMIZED).
  * ---------------------------------------------------------------------------
- * WHAT IT DOES:
- *   1. Fetches BigBuy products for a given taxonomy (category).
- *   2. Skips products already in Supabase (matched by cj_pid).
- *   3. For up to N new candidates: fetches info, price, images, video, REAL
- *      stock (via the WORKING getProductStockByHandlingDays endpoint).
- *   4. Inserts them into Supabase with status='pending' — they will NOT show
- *      on the site until you approve them (change status to 'active').
+ * KEY OPTIMIZATION: checks STOCK FIRST (cheap), skips out-of-stock immediately.
+ * Only fetches info/price/images/video for products that ARE in stock.
+ * This avoids wasting 6+ seconds on out-of-stock products.
  *
- * HOW TO RUN (browser):
- *   khurmistore.es/auto_source.php?key=khurmi2026&taxonomy=TAXONOMY_ID&cat=CATEGORY_SLUG&count=3
+ * Also caps how many candidates it will stock-check per run (scan_limit),
+ * so the script always finishes before the server timeout.
  *
- *   Example:
- *   ...?key=khurmi2026&taxonomy=2507&cat=belleza&count=3
+ * 3 CATEGORIES (auto-rotate, remembers page per category):
+ *   belleza 19650 | electronica 19653 | gaming 19685
  *
- * FIND TAXONOMY IDs (run once, pick the IDs you want):
- *   khurmistore.es/auto_source.php?key=khurmi2026&list_taxonomies=1
+ * RUN:
+ *   khurmistore.es/auto_source.php?key=khurmi2026&count=5           (auto-rotate)
+ *   khurmistore.es/auto_source.php?key=khurmi2026&cat=gaming&count=5
  *
- * CRON (daily auto, Hostinger):
- *   php /home/USER/public_html/auto_source.php key=khurmi2026 taxonomy=2507 cat=belleza count=3
- *   (or use the browser URL with wget/curl in Hostinger cron)
- *
- * APPROVE PRODUCTS:
- *   Supabase -> products -> filter status='pending' -> change to 'active'.
- *
- * DELETE or protect this file when not in use.
+ * APPROVE: Supabase -> products -> status='pending' -> set 'active'
  */
 
 if (php_sapi_name() !== 'cli') {
     if (($_GET['key'] ?? '') !== 'khurmi2026') { http_response_code(403); exit('Forbidden'); }
     header('Content-Type: text/plain; charset=utf-8');
 } else {
-    // allow CLI: php auto_source.php key=khurmi2026 taxonomy=123 cat=belleza count=3
     parse_str(implode('&', array_slice($argv, 1)), $_GET);
     if (($_GET['key'] ?? '') !== 'khurmi2026') { exit("Forbidden\n"); }
 }
+
+@ini_set('output_buffering', 'off');
+while (ob_get_level() > 0) { ob_end_flush(); }
+ob_implicit_flush(true);
+function flush2() { @ob_flush(); @flush(); }
 
 require_once __DIR__ . '/bigbuy.php';
 $cfg = require __DIR__ . '/config.php';
 $bb  = new BigBuy($cfg['bigbuy_api_key'], $cfg['bigbuy_sandbox']);
 
-/* ------------------------------------------------------------------ *
- *  MODE 1: list taxonomies (run once to find your category IDs)
- * ------------------------------------------------------------------ */
-if (isset($_GET['list_taxonomies'])) {
-    echo "Fetching BigBuy taxonomies (categories)...\n\n";
-    $res = bbRequestRaw($cfg, '/rest/catalog/taxonomies.json?isoCode=es&firstLevel');
-    if (!($res['success'] ?? false)) {
-        // fallback: full tree
-        $res = bbRequestRaw($cfg, '/rest/catalog/taxonomies.json?isoCode=es');
-    }
-    if (!($res['success'] ?? false)) {
-        exit("FAILED to fetch taxonomies (HTTP " . ($res['status'] ?? '?') . ")\n");
-    }
-    $taxos = $res['data'];
-    if (!is_array($taxos)) exit("Unexpected response.\n");
-    foreach ($taxos as $t) {
-        if (!is_array($t)) continue;
-        $id   = $t['id'] ?? '?';
-        $name = $t['name'] ?? '?';
-        $parent = $t['parentTaxonomy'] ?? ($t['parent'] ?? '');
-        echo str_pad($id, 8) . " | " . $name . ($parent ? "  (parent: $parent)" : "") . "\n";
-    }
-    echo "\nPick a taxonomy ID and run:\n";
-    echo "auto_source.php?key=khurmi2026&taxonomy=ID&cat=CATEGORY_SLUG&count=3\n";
-    exit;
-}
+$CATS  = ['belleza' => 19650, 'electronica' => 19653, 'gaming' => 19685];
+$ORDER = array_keys($CATS);
 
-/* ------------------------------------------------------------------ *
- *  MODE 2: discover + import (main mode)
- * ------------------------------------------------------------------ */
-$TAXONOMY = trim($_GET['taxonomy'] ?? '');
-$CATEGORY = trim($_GET['cat'] ?? '');
-$COUNT    = max(1, min(5, (int)($_GET['count'] ?? 3)));   // 1..5 per run (rate-limit safe)
+$STATE_FILE = __DIR__ . '/.auto_source_state.json';
+$state = @json_decode(@file_get_contents($STATE_FILE), true);
+if (!is_array($state)) $state = ['pages' => [], 'last_cat_index' => -1];
 
-if ($TAXONOMY === '' || $CATEGORY === '') {
-    exit("Usage: auto_source.php?key=khurmi2026&taxonomy=TAXONOMY_ID&cat=CATEGORY_SLUG&count=3\n" .
-         "First run ...&list_taxonomies=1 to find taxonomy IDs.\n");
+$cat = trim($_GET['cat'] ?? '');
+if ($cat === '') {
+    $idx = ((int)($state['last_cat_index'] ?? -1) + 1) % count($ORDER);
+    $cat = $ORDER[$idx];
+    $state['last_cat_index'] = $idx;
 }
+if (!isset($CATS[$cat])) exit("Unknown cat '$cat'.\n");
+$TAXONOMY = $CATS[$cat];
+$COUNT      = max(1, min(10, (int)($_GET['count'] ?? 5)));
+$SCAN_LIMIT = max(5, min(40, (int)($_GET['scan'] ?? 25)));  // max products to stock-check per run
+
+$PAGE = isset($_GET['page']) ? max(1, (int)$_GET['page']) : (int)($state['pages'][$cat] ?? 1);
+$PAGESIZE = 100;
 
 echo "==========================================\n";
-echo " KhurmiStore AUTO SOURCE (BigBuy -> pending)\n";
-echo " Taxonomy: $TAXONOMY  ->  site category: $CATEGORY\n";
-echo " Max new products this run: $COUNT\n";
-echo " Sandbox: " . ($cfg['bigbuy_sandbox'] ? 'TRUE' : 'FALSE') . "\n";
-echo "==========================================\n\n";
+echo " AUTO SOURCE (optimized) | cat=$cat page=$PAGE\n";
+echo " want=$COUNT  scan_limit=$SCAN_LIMIT\n";
+echo "==========================================\n\n"; flush2();
 
-/* ---- 1) Get product list for this taxonomy ----------------------- */
-echo "[1/4] Fetching product list for taxonomy $TAXONOMY ...\n";
-$listRes = bbRetry($cfg, "/rest/catalog/products.json?isoCode=es&parentTaxonomy=$TAXONOMY");
-if (!($listRes['success'] ?? false)) {
-    exit("FAILED product list (HTTP " . ($listRes['status'] ?? '?') . "). " .
-         "If 404/400, taxonomy filter may not be supported on your plan — tell Claude, we'll switch strategy.\n");
-}
+echo "[1/4] Product list ...\n"; flush2();
+$listRes = bbRetry($cfg, "/rest/catalog/products.json?isoCode=es&parentTaxonomy=$TAXONOMY&page=$PAGE&pageSize=$PAGESIZE");
+if (!($listRes['success'] ?? false)) $listRes = bbRetry($cfg, "/rest/catalog/products.json?isoCode=es&page=$PAGE&pageSize=$PAGESIZE");
+if (!($listRes['success'] ?? false)) exit("FAILED list (HTTP " . ($listRes['status'] ?? '?') . ").\n");
 $list = $listRes['data'];
 if (!is_array($list) || empty($list)) {
-    exit("No products returned for taxonomy $TAXONOMY.\n");
+    $state['pages'][$cat] = 1; @file_put_contents($STATE_FILE, json_encode($state));
+    exit("No products page $PAGE. Reset to 1.\n");
 }
-echo "   BigBuy returned " . count($list) . " products in this taxonomy.\n\n";
+echo "   " . count($list) . " products.\n\n"; flush2();
 
-/* ---- 2) Get existing cj_pids from Supabase ------------------------ */
-echo "[2/4] Fetching existing products from Supabase ...\n";
+echo "[2/4] Existing pids ...\n"; flush2();
 $existing = supabaseGetAllPids($cfg);
-if ($existing === null) {
-    exit("FAILED to read existing products from Supabase.\n");
-}
-echo "   Store already has " . count($existing) . " products.\n\n";
+if ($existing === null) exit("FAILED Supabase read.\n");
+echo "   store has " . count($existing) . ".\n\n"; flush2();
 
-/* ---- 3) Pick new candidates --------------------------------------- */
-echo "[3/4] Selecting up to $COUNT NEW products (not in store, in stock per catalog)...\n";
+echo "[3/4] New candidates ...\n"; flush2();
 $candidates = [];
 foreach ($list as $p) {
     if (!is_array($p)) continue;
     $pid = (string)($p['id'] ?? '');
-    if ($pid === '' || isset($existing[$pid])) continue;      // already in store
-    // prefer items the catalog itself marks as having stock, if field present
-    if (isset($p['stock']) && (int)$p['stock'] <= 0) continue;
+    if ($pid === '' || isset($existing[$pid])) continue;
     $candidates[] = $p;
-    if (count($candidates) >= $COUNT * 3) break;              // small buffer; final stock check below
 }
-if (empty($candidates)) {
-    exit("No NEW products found in this taxonomy — everything is already in your store (or out of stock).\n");
-}
-echo "   Candidates found: " . count($candidates) . "\n\n";
+echo "   " . count($candidates) . " new (not in store).\n\n"; flush2();
 
-/* ---- 4) Import each candidate as PENDING -------------------------- */
-echo "[4/4] Importing (max $COUNT) as status='pending' ...\n\n";
-$ok = 0; $fail = 0;
+echo "[4/4] Stock-check first, import in-stock as pending ...\n\n"; flush2();
+$ok = 0; $scanned = 0; $lastScannedIndex = -1;
 
-foreach ($candidates as $p) {
+foreach ($candidates as $i => $p) {
     if ($ok >= $COUNT) break;
+    if ($scanned >= $SCAN_LIMIT) { echo "\n(scan limit $SCAN_LIMIT reached)\n"; break; }
+    $scanned++; $lastScannedIndex = $i;
     $bbId = (int)$p['id'];
-    $sku  = (string)($p['sku'] ?? '');
-    echo "-> BigBuy ID $bbId (SKU $sku) ... ";
+    echo "-> $bbId stock? "; flush2();
 
-    // -- info (name/description) --
+    // STOCK FIRST (cheap gate)
+    $stock = 0;
+    $sRes = bbCall($bb, 'getProductStockByHandlingDays', [$bbId]);
+    if ($sRes['success'] ?? false) {
+        $sd = $sRes['data'];
+        $srec = (is_array($sd) && isset($sd[0]) && is_array($sd[0])) ? $sd[0] : $sd;
+        if (is_array($srec)) $stock = (int)($srec['stocks'][0]['quantity'] ?? ($srec['quantity'] ?? 0));
+    }
+    if ($stock <= 0) { echo "0 skip\n"; flush2(); sleep(5); continue; }
+    echo "$stock OK, fetching... "; flush2();
+    sleep(5);
+
+    // info
     $infoRes = bbCall($bb, 'getProductInfo', [$bbId, 'es']);
-    if (!($infoRes['success'] ?? false)) { echo "SKIP (no info)\n"; $fail++; sleep(3); continue; }
-    $info = $infoRes['data'];
+    $info = ($infoRes['success'] ?? false) ? $infoRes['data'] : null;
     $rec  = (is_array($info) && isset($info[0]) && is_array($info[0])) ? $info[0] : $info;
-    $name = $rec['name'] ?? ($rec['title'] ?? "Product $bbId");
-    $desc = $rec['description'] ?? '';
+    $name = is_array($rec) ? ($rec['name'] ?? "Product $bbId") : "Product $bbId";
+    $desc = is_array($rec) ? ($rec['description'] ?? '') : '';
     sleep(2);
 
-    // -- price + video --
+    // price + video
     $cost = 0.0; $videoId = null;
     $prodRes = bbCall($bb, 'getProduct', [$bbId, 'es']);
     if ($prodRes['success'] ?? false) {
-        $pd   = $prodRes['data'];
+        $pd = $prodRes['data'];
         $prec = (is_array($pd) && isset($pd[0]) && is_array($pd[0])) ? $pd[0] : $pd;
         $cost = (float)($prec['wholesalePrice'] ?? $prec['retailPrice'] ?? 0);
-        $videoRaw = trim((string)($prec['video'] ?? ''));
-        $videoId  = ($videoRaw !== '' && $videoRaw !== '0') ? $videoRaw : null;
-        if ($sku === '') $sku = (string)($prec['sku'] ?? '');
+        $vr = trim((string)($prec['video'] ?? ''));
+        $videoId = ($vr !== '' && $vr !== '0') ? $vr : null;
     }
-    if ($cost <= 0) { echo "SKIP (no price)\n"; $fail++; sleep(3); continue; }
+    if ($cost <= 0) { echo "no price, skip\n"; flush2(); sleep(2); continue; }
     sleep(2);
 
-    // -- images (up to 7, comma separated) --
+    // images
     $mainImage = null;
     $imgRes = bbCall($bb, 'getProductImages', [$bbId]);
     if ($imgRes['success'] ?? false) {
@@ -170,166 +142,88 @@ foreach ($candidates as $p) {
         if (is_array($imgList)) {
             $urls = [];
             foreach ($imgList as $img) {
-                $url = is_array($img)
-                    ? ($img['urlMkt'] ?? $img['largeUrl'] ?? $img['url'] ?? $img['image'] ?? null)
-                    : $img;
-                if ($url) { $urls[] = $url; if (count($urls) >= 7) break; }
+                $u = is_array($img) ? ($img['urlMkt'] ?? $img['largeUrl'] ?? $img['url'] ?? $img['image'] ?? null) : $img;
+                if ($u) { $urls[] = $u; if (count($urls) >= 7) break; }
             }
             if (!empty($urls)) $mainImage = implode(',', $urls);
         }
     }
-    if (!$mainImage) { echo "SKIP (no images)\n"; $fail++; sleep(3); continue; }
+    if (!$mainImage) { echo "no images, skip\n"; flush2(); sleep(2); continue; }
     sleep(2);
 
-    // -- REAL stock via the WORKING endpoint (5s pacing required) --
-    $stock = 0;
-    $stockRes = bbCall($bb, 'getProductStockByHandlingDays', [$bbId]);
-    if ($stockRes['success'] ?? false) {
-        $sd   = $stockRes['data'];
-        $srec = (is_array($sd) && isset($sd[0]) && is_array($sd[0])) ? $sd[0] : $sd;
-        if (is_array($srec)) {
-            $stock = (int)($srec['stocks'][0]['quantity'] ?? ($srec['quantity'] ?? 0));
-        }
-    }
-    if ($stock <= 0) { echo "SKIP (no stock: $stock)\n"; $fail++; sleep(5); continue; }
-    sleep(5); // rate limit: 1 req / 5 sec on this endpoint
-
-    // -- price formula (same as sync_products.php) --
     $sell = ceil($cost * $cfg['price_multiplier']) - (1 - $cfg['price_ending']);
-
     $row = [
-        'cj_pid'      => (string)$bbId,
-        'cj_price'    => number_format($cost, 2, '.', ''),
-        'name'        => $name,
-        'category'    => $CATEGORY,
-        'price'       => round($sell, 2),
-        'description' => $desc,
-        'image_url'   => $mainImage,
-        'stock'       => $stock,
-        'status'      => 'pending',          // <-- NOT live until you approve
-        'video_id'    => $videoId,
+        'cj_pid' => (string)$bbId, 'cj_price' => number_format($cost, 2, '.', ''),
+        'name' => $name, 'category' => $cat, 'price' => round($sell, 2),
+        'description' => $desc, 'image_url' => $mainImage, 'stock' => $stock,
+        'status' => 'pending', 'is_visible' => false, 'video_id' => $videoId,
     ];
-
     if (supabaseUpsert($cfg, 'products', $row, 'cj_pid')) {
-        echo "PENDING OK  (" . mb_substr($name, 0, 30) . " | EUR " . number_format($sell, 2) . " | stock $stock)\n";
+        echo "PENDING OK (" . mb_substr($name, 0, 26) . " | EUR " . number_format($sell, 2) . " | stk $stock)\n";
         $ok++;
-    } else {
-        echo "FAIL (Supabase upsert)\n"; $fail++;
-    }
+    } else { echo "upsert FAIL\n"; }
+    flush2();
     sleep(3);
 }
 
+// advance page: if we scanned near the end of candidates, go next page
+if ($lastScannedIndex >= count($candidates) - 1 || $ok < $COUNT) {
+    $state['pages'][$cat] = $PAGE + 1;
+} else {
+    $state['pages'][$cat] = $PAGE;
+}
+@file_put_contents($STATE_FILE, json_encode($state));
+
 echo "\n==========================================\n";
-echo "New PENDING products: $ok\n";
-echo "Skipped/failed:       $fail\n";
-echo "\nAPPROVE: Supabase -> products -> status='pending' -> set to 'active'\n";
+echo "cat=$cat  new pending=$ok  scanned=$scanned\n";
+echo "next page for $cat: " . $state['pages'][$cat] . "\n";
+echo "APPROVE in Supabase: status='pending' -> 'active'\n";
 echo "==========================================\n";
 
 
-/* =================================================================== *
- *  Helpers
- * =================================================================== */
-
-/** Call a BigBuy method with 429 retry (up to 5x, 20s wait). */
-function bbCall(BigBuy $bb, string $method, array $args): array
-{
-    $attempts = 0;
-    do {
-        $res  = $bb->$method(...$args);
-        $http = $res['status'] ?? null;
-        if ($http == 429) {
-            $attempts++;
-            echo "   429 rate-limited ($method), waiting 20s (retry $attempts/5)...\n";
-            @ob_flush(); @flush();
-            sleep(20);
-        }
-    } while ($http == 429 && $attempts < 5);
+function bbCall(BigBuy $bb, string $method, array $args): array {
+    $a = 0;
+    do { $res = $bb->$method(...$args); $h = $res['status'] ?? null;
+        if ($h == 429) { $a++; echo "[429 20s] "; flush2(); sleep(20); }
+    } while ($h == 429 && $a < 5);
     return $res;
 }
-
-/** Raw BigBuy GET with 429 retry (for endpoints not in the class). */
-function bbRetry(array $cfg, string $endpoint): array
-{
-    $attempts = 0;
-    do {
-        $res  = bbRequestRaw($cfg, $endpoint);
-        $http = $res['status'] ?? null;
-        if ($http == 429) {
-            $attempts++;
-            echo "   429 rate-limited, waiting 20s (retry $attempts/5)...\n";
-            @ob_flush(); @flush();
-            sleep(20);
-        }
-    } while ($http == 429 && $attempts < 5);
+function bbRetry(array $cfg, string $endpoint): array {
+    $a = 0;
+    do { $res = bbRequestRaw($cfg, $endpoint); $h = $res['status'] ?? null;
+        if ($h == 429) { $a++; echo "[429 20s] "; flush2(); sleep(20); }
+    } while ($h == 429 && $a < 5);
     return $res;
 }
-
-function bbRequestRaw(array $cfg, string $endpoint): array
-{
+function bbRequestRaw(array $cfg, string $endpoint): array {
     $base = $cfg['bigbuy_sandbox'] ? 'https://api.sandbox.bigbuy.eu' : 'https://api.bigbuy.eu';
     $ch = curl_init($base . $endpoint);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => [
-            'Authorization: Bearer ' . $cfg['bigbuy_api_key'],
-            'Content-Type: application/json',
-        ],
-        CURLOPT_TIMEOUT        => 120,
-    ]);
-    $response = curl_exec($ch);
-    $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error    = curl_error($ch);
-    curl_close($ch);
-    if ($error) return ['success' => false, 'status' => 0, 'error' => $error];
-    return [
-        'success' => $status >= 200 && $status < 300,
-        'status'  => $status,
-        'data'    => json_decode($response, true) ?? $response,
-    ];
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $cfg['bigbuy_api_key'], 'Content-Type: application/json'],
+        CURLOPT_TIMEOUT => 60]);
+    $r = curl_exec($ch); $s = curl_getinfo($ch, CURLINFO_HTTP_CODE); $e = curl_error($ch); curl_close($ch);
+    if ($e) return ['success' => false, 'status' => 0, 'error' => $e];
+    return ['success' => $s >= 200 && $s < 300, 'status' => $s, 'data' => json_decode($r, true) ?? $r];
 }
-
-/** All existing cj_pids from Supabase as a lookup map [pid => true]. */
-function supabaseGetAllPids(array $cfg): ?array
-{
+function supabaseGetAllPids(array $cfg): ?array {
     $url = rtrim($cfg['supabase_url'], '/') . "/rest/v1/products?select=cj_pid&limit=10000";
     $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => [
-            'apikey: ' . $cfg['supabase_service_key'],
-            'Authorization: Bearer ' . $cfg['supabase_service_key'],
-        ],
-    ]);
-    $resp   = curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($status < 200 || $status >= 300) return null;
-    $rows = json_decode($resp, true);
-    if (!is_array($rows)) return null;
-    $map = [];
-    foreach ($rows as $r) {
-        if (isset($r['cj_pid'])) $map[(string)$r['cj_pid']] = true;
-    }
-    return $map;
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['apikey: ' . $cfg['supabase_service_key'], 'Authorization: Bearer ' . $cfg['supabase_service_key']]]);
+    $r = curl_exec($ch); $s = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
+    if ($s < 200 || $s >= 300) return null;
+    $rows = json_decode($r, true); if (!is_array($rows)) return null;
+    $m = []; foreach ($rows as $x) if (isset($x['cj_pid'])) $m[(string)$x['cj_pid']] = true;
+    return $m;
 }
-
-function supabaseUpsert(array $cfg, string $table, array $row, string $conflictCol): bool
-{
+function supabaseUpsert(array $cfg, string $table, array $row, string $conflictCol): bool {
     $url = rtrim($cfg['supabase_url'], '/') . "/rest/v1/$table?on_conflict=$conflictCol";
     $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST  => 'POST',
-        CURLOPT_POSTFIELDS     => json_encode($row),
-        CURLOPT_HTTPHEADER     => [
-            'apikey: ' . $cfg['supabase_service_key'],
-            'Authorization: Bearer ' . $cfg['supabase_service_key'],
-            'Content-Type: application/json',
-            'Prefer: resolution=merge-duplicates,return=minimal',
-        ],
-    ]);
-    curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return $status >= 200 && $status < 300;
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => json_encode($row),
+        CURLOPT_HTTPHEADER => ['apikey: ' . $cfg['supabase_service_key'],
+            'Authorization: Bearer ' . $cfg['supabase_service_key'], 'Content-Type: application/json',
+            'Prefer: resolution=merge-duplicates,return=minimal']]);
+    curl_exec($ch); $s = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
+    return $s >= 200 && $s < 300;
 }

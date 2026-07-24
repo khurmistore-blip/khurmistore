@@ -24,9 +24,10 @@ if (!$p) {
     http_response_code(404);
 }
 
-// A few more active products (excluding this one) so the "Productos Relacionados" grid has real data too.
-// Excludes refurbished/"Reacondicionado" listings — see categoria.php/index.php for the same filter.
-$related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&name=not.ilike.*Reacondicionado*&limit=5") : [];
+// 4 products in the SAME category (excluding this one) for the "Productos
+// Relacionados" grid — real internal links for SEO. Excludes refurbished/
+// "Reacondicionado" listings — see categoria.php/index.php for the same filter.
+$related = $p ? sb_get($cfg, "products?status=eq.active&id=neq.$id&category=eq." . rawurlencode((string)($p['category'] ?? '')) . "&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=4") : [];
 
 $pageTitle = $p ? ($p['meta_title'] ?: $p['name']) : 'Producto no encontrado';
 
@@ -121,7 +122,7 @@ if ($p) {
         'name'        => $p['name'],
         'description' => $pageDesc,
         'image'       => $socialImage,
-        'sku'         => (string)$p['id'],
+        'sku'         => !empty($p['cj_pid']) ? (string)$p['cj_pid'] : (string)$p['id'],
         'brand'       => [
             '@type' => 'Brand',
             'name'  => 'KhurmiStore',
@@ -143,6 +144,22 @@ if ($p) {
 // already decodes jsonb into a plain PHP array, so it's just re-encoded
 // as-is here, no rebuilding.
 $aeoSchema = ($p && !empty($p['aeo_content']) && is_array($p['aeo_content'])) ? $p['aeo_content'] : null;
+
+// BreadcrumbList JSON-LD (schema.org): Inicio > {category} > {product name}.
+$breadcrumbSchema = null;
+if ($p) {
+    $categorySlug  = (string)($p['category'] ?? '');
+    $categoryLabel = $categorySlug !== '' ? ucfirst(str_replace('-', ' ', $categorySlug)) : 'Productos';
+    $breadcrumbSchema = [
+        '@context'        => 'https://schema.org',
+        '@type'           => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => 'https://khurmistore.es/'],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $categoryLabel, 'item' => 'https://khurmistore.es/categoria.php?cat=' . rawurlencode($categorySlug)],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $p['name'], 'item' => $canonicalUrl],
+        ],
+    ];
+}
 
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
 function bb_product_to_js(array $p): array
@@ -212,6 +229,9 @@ function bb_product_to_js(array $p): array
     <?php endif; ?>
     <?php if ($aeoSchema): ?>
     <script type="application/ld+json"><?= json_encode($aeoSchema, JSON_UNESCAPED_UNICODE) ?></script>
+    <?php endif; ?>
+    <?php if ($breadcrumbSchema): ?>
+    <script type="application/ld+json"><?= json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.min.css">
