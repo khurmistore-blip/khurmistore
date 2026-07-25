@@ -1,10 +1,15 @@
 ﻿<?php
-// Fetch featured products for the "Destacados" homepage grid (real Supabase data).
-// Excludes refurbished/"Reacondicionado" listings — a reviewer flagged one as
-// looking out of place; hidden from display only, never deleted from the DB.
+// Fetch homepage product data in as few Supabase round-trips as possible.
+// Previously: 5 separate per-category slider queries + up to 4 more for the
+// hero slides' "prefer a named product" lookups (7-9 requests total) — that
+// request count, not row count, was the actual bottleneck behind the ~5-6s
+// homepage load. Now: ONE combined query covers every category slider, and
+// the two name-preference hero slides (belleza/electronica) search that
+// same in-memory result instead of making their own request. Only the
+// pinned hero slide 1 (fixed id=179) still does its own request — a
+// trivial single-row primary-key lookup, not part of the bottleneck.
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
-$featured = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=id.desc&limit=12');
 
 // Per-category homepage sliders — one row per header "Categorías" dropdown entry.
 // Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
@@ -15,13 +20,37 @@ $categorySliderDefs = [
     ['slug' => 'belleza',            'label' => 'Belleza'],
     ['slug' => 'electronica',        'label' => 'Electrónica'],
 ];
+$categorySlugs = array_column($categorySliderDefs, 'slug');
+
+// Single request for ALL 5 categories at once. order=category.asc,created_at.desc
+// keeps each category's rows contiguous and newest-first, so grouping/slicing
+// to "top 12 per category" below is correct without a per-group LIMIT (which
+// PostgREST doesn't support in a plain REST query). limit=300 is a generous
+// safety cap, not a real constraint at this catalog's size. Excludes
+// refurbished/"Reacondicionado" listings — a reviewer flagged one as looking
+// out of place; hidden from display only, never deleted from the DB.
+$allCatProducts = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=in.(' . implode(',', array_map('rawurlencode', $categorySlugs)) . ')&order=category.asc,created_at.desc&limit=300');
+
+// Group by category, preserving the already-sorted (newest-first) order.
+$productsByCategory = [];
+foreach ($allCatProducts as $p) {
+    $productsByCategory[$p['category'] ?? ''][] = $p;
+}
+
 $categorySliders = [];
 foreach ($categorySliderDefs as $def) {
-    $catProducts = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc&limit=12');
+    $catProducts = array_slice($productsByCategory[$def['slug']] ?? [], 0, 12);
     if (!empty($catProducts)) {
         $categorySliders[] = ['slug' => $def['slug'], 'label' => $def['label'], 'products' => $catProducts];
     }
 }
+
+// Products actually rendered as cards on the homepage (every category-slider
+// card) — seeds script.js's global `products` array below so "Añadir al
+// carrito" on those cards can find them by id, without a separate query.
+$featured = !empty($categorySliders)
+    ? array_merge(...array_map(fn($s) => $s['products'], $categorySliders))
+    : [];
 
 // Hero slider — 3 PINNED real products (not a random/latest category pick,
 // which is what kept breaking: a category query could land on a product
@@ -40,27 +69,25 @@ function hero_product_image(?array $p): string
 }
 
 /**
- * Finds ONE active, photographed, in-stock product in $category whose name
- * matches $nameLike (case-insensitive substring) — used to prefer a
- * specific well-known product (e.g. "L'Occitane", "Xiaomi") without hard-
- * coding its id. Falls back to any active photographed product in that
- * category if no name match exists, so the slide is never empty.
+ * Picks ONE photographed product from an already-fetched in-memory list
+ * (newest-first) whose name matches $nameLike (case-insensitive substring)
+ * — used to prefer a specific well-known product (e.g. "L'Occitane",
+ * "Xiaomi") without hard-coding its id. Falls back to the first photographed
+ * product in the list if no name match exists, so the slide is never empty.
+ * Searches data already fetched above instead of hitting Supabase directly
+ * (that used to cost up to 2 requests per hero slide).
  */
-function hero_find_product(array $cfg, string $category, string $nameLike = ''): ?array
+function hero_pick_from_group(array $group, string $nameLike = ''): ?array
 {
-    $base = 'products?is_active=is.true&approval_status=eq.approved&image_url=not.is.null&stock=gt.0'
-        . '&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($category)
-        . '&order=created_at.desc&limit=1';
-
+    $photographed = array_values(array_filter($group, fn($p) => !empty($p['image_url'])));
     if ($nameLike !== '') {
-        $rows = sb_get($cfg, $base . '&name=ilike.*' . rawurlencode($nameLike) . '*');
-        if (!empty($rows)) {
-            return $rows[0];
+        foreach ($photographed as $p) {
+            if (stripos((string)($p['name'] ?? ''), $nameLike) !== false) {
+                return $p;
+            }
         }
     }
-
-    $rows = sb_get($cfg, $base);
-    return $rows[0] ?? null;
+    return $photographed[0] ?? null;
 }
 
 // Slide 1 — pinned to a specific product: id=179, Hidrolimpiador Facial Hyser.
@@ -68,16 +95,18 @@ $heroP1Rows = sb_get($cfg, 'products?id=eq.179&is_active=is.true&approval_status
 $heroP1     = $heroP1Rows[0] ?? null;
 
 // Slide 2 — belleza, prefer a named perfume/L'Occitane product, else any
-// active photographed belleza product.
-$heroP2 = hero_find_product($cfg, 'belleza', "Occitane")
-    ?? hero_find_product($cfg, 'belleza', 'Perfume')
-    ?? hero_find_product($cfg, 'belleza');
+// photographed belleza product — searched from the combined fetch above.
+$belleza = $productsByCategory['belleza'] ?? [];
+$heroP2  = hero_pick_from_group($belleza, 'Occitane')
+    ?? hero_pick_from_group($belleza, 'Perfume')
+    ?? hero_pick_from_group($belleza);
 
 // Slide 3 — electronica, prefer the Xiaomi router or a Startech cable, else
-// any active photographed electronica product.
-$heroP3 = hero_find_product($cfg, 'electronica', 'Xiaomi')
-    ?? hero_find_product($cfg, 'electronica', 'Startech')
-    ?? hero_find_product($cfg, 'electronica');
+// any photographed electronica product — searched from the combined fetch above.
+$electronica = $productsByCategory['electronica'] ?? [];
+$heroP3      = hero_pick_from_group($electronica, 'Xiaomi')
+    ?? hero_pick_from_group($electronica, 'Startech')
+    ?? hero_pick_from_group($electronica);
 
 $heroSlide1Image = hero_product_image($heroP1);
 $heroSlide1Id    = $heroP1['id'] ?? null;
