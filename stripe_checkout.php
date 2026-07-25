@@ -135,6 +135,7 @@ $metadata = [
 
 $params = [
     'mode'           => 'payment',
+    'locale'         => 'es',
     'customer_email' => $email,
     'success_url'    => 'https://khurmistore.es/stripe_return.php?session_id={CHECKOUT_SESSION_ID}',
     'cancel_url'     => 'https://khurmistore.es/?pago=cancelado',
