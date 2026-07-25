@@ -4,7 +4,7 @@
 // looking out of place; hidden from display only, never deleted from the DB.
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
-$featured = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=8');
+$featured = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=id.desc&limit=12');
 
 // Per-category homepage sliders — one row per header "Categorías" dropdown entry.
 // Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
@@ -17,7 +17,7 @@ $categorySliderDefs = [
 ];
 $categorySliders = [];
 foreach ($categorySliderDefs as $def) {
-    $catProducts = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc');
+    $catProducts = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=eq.' . rawurlencode($def['slug']) . '&order=created_at.desc&limit=12');
     if (!empty($catProducts)) {
         $categorySliders[] = ['slug' => $def['slug'], 'label' => $def['label'], 'products' => $catProducts];
     }
