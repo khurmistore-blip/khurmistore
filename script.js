@@ -331,14 +331,175 @@ function toggleMobileMenu() {
     button.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
 }
 
-// Toggle the categories dropdown on mobile
+/**
+ * Click/tap toggle for a dropdown/accordion caret at ANY nesting level —
+ * used by both the desktop top-level category carets and the desktop
+ * subcategory-flyout carets (mobile has its own toggleMobileCatPanel below).
+ * Needed because CSS :hover doesn't fire reliably on touch-capable devices
+ * at desktop width (e.g. a tablet in landscape) — real mouse users never
+ * trigger this, CSS :hover handles them directly. Closes any other open
+ * sibling at the same level first so only one dropdown is ever open at a
+ * time, matching mouse-hover behavior.
+ */
 function toggleCategoryDropdown(event) {
     const button = event.currentTarget;
-    const dropdown = button.closest('.nav-item.dropdown');
-    if (!dropdown) return;
-    const isOpen = dropdown.classList.toggle('dropdown-open');
-    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    const container = button.closest('.dropdown, .has-children');
+    if (!container) return;
+    const willOpen = !container.classList.contains('dropdown-open');
+    const siblingList = container.parentElement;
+    if (siblingList) {
+        Array.from(siblingList.children).forEach(function (sibling) {
+            if (sibling === container || !sibling.classList || !sibling.classList.contains('dropdown-open')) return;
+            sibling.classList.remove('dropdown-open');
+            const sibBtn = sibling.querySelector(':scope > .nav-cat-row > .dropdown-toggle-caret, :scope > .submenu-row > .dropdown-toggle-caret');
+            if (sibBtn) sibBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+    container.classList.toggle('dropdown-open', willOpen);
+    button.setAttribute('aria-expanded', String(willOpen));
 }
+
+// ===== Category nav: each main category is its own top-level nav item =====
+// Single source of truth for the on-page menu across all 29 pages (most are
+// static .html and can't run PHP, so rendering happens here in shared JS
+// instead of server-side). categories_config.php is the PARALLEL PHP-side
+// source of truth for categoria.php's server-side filtering/breadcrumb — if
+// you add/change a category, update BOTH this tree and categories_config.php.
+// There is NO single "Categorías" wrapper — each top-level node below
+// renders as its own <li>, inserted directly into the main nav <ul>
+// alongside Inicio/Tienda/Blog/etc via the #categoryNavSlot placeholder.
+const CATEGORY_TREE = [{"slug":"relojes","name":"Relojes","children":[{"slug":"analogicos","name":"Analógicos","children":[]},{"slug":"digitales","name":"Digitales / Smartwatch","children":[]}]},{"slug":"belleza","name":"Belleza","children":[{"slug":"unas-y-herramientas","name":"Uñas y Herramientas","children":[]},{"slug":"alimentacion-y-salud","name":"Alimentación y Salud","children":[{"slug":"cuidado-de-la-salud","name":"Cuidado de la Salud","children":[]}]},{"slug":"cabello-y-accesorios","name":"Cabello y Accesorios","children":[{"slug":"diademas-y-cintas","name":"Diademas y Cintas para el Pelo","children":[]},{"slug":"horquillas","name":"Horquillas para el Pelo","children":[]},{"slug":"cabello-humano","name":"Cabello Humano","children":[]}]},{"slug":"cabello-sintetico","name":"Cabello Sintético","children":[{"slug":"cabello-para-cosplay","name":"Cabello para Cosplay","children":[]}]},{"slug":"cuidado-de-la-piel","name":"Cuidado de la Piel","children":[{"slug":"maquinillas-de-afeitar","name":"Maquinillas de Afeitar","children":[]},{"slug":"mascarillas-faciales","name":"Mascarillas Faciales","children":[]},{"slug":"proteccion-solar","name":"Protección Solar","children":[]},{"slug":"aceites-esenciales","name":"Aceites Esenciales","children":[]},{"slug":"cuidado-corporal","name":"Cuidado Corporal","children":[]},{"slug":"cuidado-facial","name":"Cuidado Facial","children":[]}]},{"slug":"mechones-de-cabello","name":"Mechones de Cabello","children":[{"slug":"paquete-pre-coloreado","name":"Paquete Pre-Coloreado","children":[]},{"slug":"tejido-de-cabello","name":"Tejido de Cabello","children":[]},{"slug":"estilismo-de-cabello","name":"Estilismo de Cabello","children":[]},{"slug":"mechones-de-salon","name":"Mechones de Salón","children":[]},{"slug":"mechon-pre-coloreado","name":"Mechón Pre-Coloreado","children":[]}]},{"slug":"maquillaje","name":"Maquillaje","children":[{"slug":"lapiz-de-cejas","name":"Lápiz de Cejas","children":[]},{"slug":"set-de-maquillaje","name":"Set de Maquillaje","children":[]},{"slug":"sombra-de-ojos","name":"Sombra de Ojos","children":[]},{"slug":"brochas-de-maquillaje","name":"Brochas de Maquillaje","children":[]},{"slug":"pestanas-postizas","name":"Pestañas Postizas","children":[]},{"slug":"pintalabios","name":"Pintalabios","children":[]}]},{"slug":"pelucas-y-extensiones","name":"Pelucas y Extensiones","children":[{"slug":"peluca-cabello-humano","name":"Peluca de Cabello Humano","children":[]},{"slug":"postizo-sintetico","name":"Postizo Sintético","children":[]},{"slug":"peluca-encaje-sintetica","name":"Peluca de Encaje Sintética","children":[]},{"slug":"peluca-encaje-cabello-humano","name":"Peluca de Encaje de Cabello Humano","children":[]},{"slug":"trenzas","name":"Trenzas","children":[]},{"slug":"pelucas-sinteticas","name":"Pelucas Sintéticas","children":[]}]},{"slug":"herramientas-de-belleza","name":"Herramientas de Belleza","children":[{"slug":"espejo","name":"Espejo","children":[]},{"slug":"planchas-de-pelo","name":"Planchas de Pelo","children":[]},{"slug":"limpiador-facial-electrico","name":"Limpiador Facial Eléctrico","children":[]},{"slug":"herramientas-cuidado-facial","name":"Herramientas de Cuidado Facial","children":[]},{"slug":"rizador-de-pelo","name":"Rizador de Pelo","children":[]},{"slug":"vaporizador-facial","name":"Vaporizador Facial","children":[]}]}]},{"slug":"electronica","name":"Electrónica","children":[]},{"slug":"auriculares","name":"Auriculares y Audio","children":[]},{"slug":"accesorios-movil","name":"Accesorios para Móvil","children":[]}];
+
+function catHref(catSlug, subSlug, sub2Slug) {
+    let href = '/categoria.php?cat=' + encodeURIComponent(catSlug);
+    if (subSlug) href += '&sub=' + encodeURIComponent(subSlug);
+    if (sub2Slug) href += '&sub2=' + encodeURIComponent(sub2Slug);
+    return href;
+}
+
+/**
+ * Builds the top-level category <li>s that sit DIRECTLY in the main desktop
+ * nav <ul>, as siblings of Inicio/Tienda/Blog/etc — never wrapped in a
+ * single shared "Categorías" container. A leaf category (no children, e.g.
+ * Electrónica) is a plain link. A category with children gets its own
+ * independent <ul class="submenu"> shown only on hovering/tapping THAT
+ * category — hovering "Relojes" never affects "Belleza"'s submenu, since
+ * each lives inside its own <li>. A subcategory with children (e.g.
+ * "Alimentación y Salud") gets its own nested <ul class="submenu-flyout">
+ * shown only on hovering/tapping that specific subcategory.
+ */
+function renderCategoryNavItems(tree) {
+    return tree.map(function (node) {
+        if (!node.children || node.children.length === 0) {
+            return `<li><a href="${catHref(node.slug)}">${node.name}</a></li>`;
+        }
+        const subItems = node.children.map(function (sub) {
+            if (!sub.children || sub.children.length === 0) {
+                return `<li><a class="submenu-link" href="${catHref(node.slug, sub.slug)}">${sub.name}</a></li>`;
+            }
+            const subSubItems = sub.children.map(function (sub2) {
+                return `<li><a class="submenu-link submenu-link-flyout" href="${catHref(node.slug, sub.slug, sub2.slug)}">${sub2.name}</a></li>`;
+            }).join('');
+            return `<li class="has-children">`
+                + `<div class="submenu-row"><a class="submenu-link" href="${catHref(node.slug, sub.slug)}">${sub.name}</a>`
+                + `<button type="button" class="dropdown-toggle-caret dropdown-toggle-caret-sm" aria-expanded="false" aria-label="Mostrar más de ${sub.name}" onclick="toggleCategoryDropdown(event)"><i class="fas fa-chevron-right"></i></button></div>`
+                + `<ul class="submenu-flyout">${subSubItems}</ul>`
+                + `</li>`;
+        }).join('');
+        return `<li class="nav-item dropdown" data-slug="${node.slug}">`
+            + `<div class="nav-cat-row"><a href="${catHref(node.slug)}">${node.name}</a>`
+            + `<button type="button" class="dropdown-toggle-caret" aria-expanded="false" aria-label="Mostrar subcategorías de ${node.name}" onclick="toggleCategoryDropdown(event)"><i class="fas fa-chevron-down"></i></button></div>`
+            + `<ul class="submenu">${subItems}</ul>`
+            + `</li>`;
+    }).join('');
+}
+
+/**
+ * Builds the mobile accordion rows for the SAME categories — one
+ * independent <li> per category, no shared wrapper, inserted directly into
+ * the mobile nav <ul> alongside Inicio/Tienda/Blog/etc. Tapping a category's
+ * own caret expands ONLY its own subcategory panel; tapping a subcategory's
+ * caret expands ONLY its own sub-subcategory panel. toggleMobileCatPanel()
+ * closes any other open sibling panel at the same level first.
+ */
+function renderMobileCategoryNavItems(tree) {
+    let counter = 0;
+    return tree.map(function (node) {
+        if (!node.children || node.children.length === 0) {
+            return `<li class="mobile-cat-item"><a href="${catHref(node.slug)}" onclick="closeMobileMenu()">${node.name}</a></li>`;
+        }
+        counter++;
+        const panelId = 'mobileCat-' + counter;
+        const subItems = node.children.map(function (sub) {
+            if (!sub.children || sub.children.length === 0) {
+                return `<li class="mobile-cat-subitem"><a class="mobile-cat-link mobile-cat-link-sub" href="${catHref(node.slug, sub.slug)}" onclick="closeMobileMenu()">${sub.name}</a></li>`;
+            }
+            counter++;
+            const subPanelId = 'mobileCat-' + counter;
+            const subSubItems = sub.children.map(function (sub2) {
+                return `<li><a class="mobile-cat-link mobile-cat-link-subsub" href="${catHref(node.slug, sub.slug, sub2.slug)}" onclick="closeMobileMenu()">${sub2.name}</a></li>`;
+            }).join('');
+            return `<li class="mobile-cat-subitem has-children">`
+                + `<div class="mobile-cat-row"><a class="mobile-cat-link mobile-cat-link-sub" href="${catHref(node.slug, sub.slug)}" onclick="closeMobileMenu()">${sub.name}</a>`
+                + `<button type="button" class="mobile-cat-toggle" aria-expanded="false" aria-controls="${subPanelId}" onclick="toggleMobileCatPanel(this)"><i class="fas fa-chevron-down"></i></button></div>`
+                + `<ul class="mobile-cat-subsub" id="${subPanelId}">${subSubItems}</ul>`
+                + `</li>`;
+        }).join('');
+        return `<li class="mobile-cat-item has-children">`
+            + `<div class="mobile-cat-row"><a href="${catHref(node.slug)}" onclick="closeMobileMenu()">${node.name}</a>`
+            + `<button type="button" class="mobile-cat-toggle" aria-expanded="false" aria-controls="${panelId}" onclick="toggleMobileCatPanel(this)"><i class="fas fa-chevron-down"></i></button></div>`
+            + `<ul class="mobile-cat-sub" id="${panelId}">${subItems}</ul>`
+            + `</li>`;
+    }).join('');
+}
+
+/**
+ * Tap-to-expand/collapse for one level of the mobile category accordion.
+ * Closes any other open sibling panel AT THE SAME NESTING LEVEL first, so
+ * only one panel is ever open at a time (matches the desktop hover
+ * behavior) — e.g. expanding "Belleza" auto-collapses "Relojes" if it was
+ * open, and expanding one of Belleza's subcategories auto-collapses any
+ * other open subcategory within Belleza, without touching other categories.
+ */
+function toggleMobileCatPanel(btn) {
+    const targetId = btn.getAttribute('aria-controls');
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const currentLi = target.closest('li');
+    const siblingList = currentLi ? currentLi.parentElement : null;
+    if (siblingList) {
+        Array.from(siblingList.children).forEach(function (siblingLi) {
+            if (siblingLi === currentLi) return;
+            const openPanel = siblingLi.querySelector(':scope > .mobile-cat-sub.open, :scope > .mobile-cat-subsub.open');
+            if (!openPanel) return;
+            openPanel.classList.remove('open');
+            const openBtn = siblingLi.querySelector(':scope > .mobile-cat-row > .mobile-cat-toggle');
+            if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+    const willOpen = !target.classList.contains('open');
+    target.classList.toggle('open', willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
+}
+
+/**
+ * Replaces the #categoryNavSlot / #mobileCategoryNavSlot placeholder <li>s
+ * (present in every page's shared header markup, positioned between Tienda
+ * and Blog) with the real per-category <li>s built from CATEGORY_TREE. Runs
+ * on every page since most of this site's 29 pages are static .html and
+ * can't render this server-side.
+ */
+function initCategoryMenus() {
+    const desktopSlot = document.getElementById('categoryNavSlot');
+    if (desktopSlot) {
+        desktopSlot.outerHTML = renderCategoryNavItems(CATEGORY_TREE);
+    }
+    const mobileSlot = document.getElementById('mobileCategoryNavSlot');
+    if (mobileSlot) {
+        mobileSlot.outerHTML = renderMobileCategoryNavItems(CATEGORY_TREE);
+    }
+}
+document.addEventListener('DOMContentLoaded', initCategoryMenus);
 
 // Close mobile menu - used when a link is clicked
 function closeMobileMenu() {
@@ -1249,26 +1410,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuDrawer = document.getElementById('mobileNavDrawer');
     const menuOverlay = document.getElementById('mobileNavOverlay');
 
-    // Mobile "Categorías" accordion: cloned from the desktop #categoryDropdown
-    // list (not a hand-maintained duplicate) so the two can never drift apart.
-    const mobileCategoriesToggle = document.getElementById('mobileCategoriesToggle');
-    const mobileCategoriesSubmenu = document.getElementById('mobileCategoriesSubmenu');
-    const desktopCategoryList = document.getElementById('categoryDropdown');
-    if (mobileCategoriesSubmenu && desktopCategoryList) {
-        desktopCategoryList.querySelectorAll('li').forEach(li => {
-            mobileCategoriesSubmenu.appendChild(li.cloneNode(true));
-        });
-    }
-    if (mobileCategoriesToggle) {
-        mobileCategoriesToggle.addEventListener('click', () => {
-            const dropdown = mobileCategoriesToggle.closest('.mobile-nav-dropdown');
-            const isOpen = dropdown.classList.toggle('mobile-nav-dropdown-open');
-            mobileCategoriesToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-    }
-
-    // menuLinks is queried after the clone above so the cloned category links
-    // are included and get the same close-menu-on-click behavior for free.
+    // The "Categorías" rows themselves (one independent accordion row per
+    // top-level category, inserted by initCategoryMenus() — see
+    // CATEGORY_TREE above) are populated into #mobileCategoryNavSlot; each
+    // row's own toggleMobileCatPanel() handles its own expand/collapse, so
+    // no extra wiring is needed here.
     const menuLinks = document.querySelectorAll('.mobile-nav-links a');
 
     function openMenu() {
@@ -1285,10 +1431,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.classList.remove('active');
         menuToggle.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
-        if (mobileCategoriesToggle) {
-            mobileCategoriesToggle.closest('.mobile-nav-dropdown').classList.remove('mobile-nav-dropdown-open');
-            mobileCategoriesToggle.setAttribute('aria-expanded', 'false');
-        }
     }
 
     if (menuToggle) menuToggle.addEventListener('click', openMenu);

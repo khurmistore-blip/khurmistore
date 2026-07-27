@@ -307,29 +307,9 @@ function bb_product_to_js(array $p): array
                     <li><a href="/index.php">Inicio</a></li>
                     <li><a href="/categoria.php">Tienda</a></li>
 
-                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                            <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
-                            <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
-                            <li><a href="/categoria.php">Ver Todo</a></li>
-                        </ul>
-                    </li>
+                    <!-- Categorías: each main category is its own independent nav item, rendered by initCategoryMenus() in script.js -->
+                    <li id="categoryNavSlot"></li>
 
-                    <!-- Blog Link -->
-                    <li><a href="/blog.html">Blog</a></li>
-
-                    <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
-
-                    <!-- Contacto (Contact) Link -->
-                    <li><a href="/contacto.html">Contacto</a></li>
                 </ul>
             </nav>
 
@@ -358,29 +338,9 @@ function bb_product_to_js(array $p): array
                     <li><a href="/index.php" onclick="closeMobileMenu()">Inicio</a></li>
                     <li><a href="/categoria.php" onclick="closeMobileMenu()">Tienda</a></li>
 
-                    <!-- Categorías Dropdown for Mobile -->
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="/categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
-                            <li><a href="/categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
-                            <li><a href="/categoria.php?cat=accesorios-movil" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
-                            <li><a href="/categoria.php?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="/categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="/categoria.php" onclick="closeMobileMenu()">Ver Todo</a></li>
-                        </ul>
-                    </li>
+                    <!-- Categorías: each main category is its own independent accordion row, rendered by initCategoryMenus() in script.js -->
+                    <li id="mobileCategoryNavSlot"></li>
 
-                    <!-- Blog Link -->
-                    <li><a href="/blog.html" onclick="closeMobileMenu()">Blog</a></li>
-
-                    <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="/sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
-
-                    <!-- Contacto (Contact) Link -->
-                    <li><a href="/contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
                 </ul>
             </nav>
         </div>

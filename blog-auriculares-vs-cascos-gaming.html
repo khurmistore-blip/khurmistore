@@ -155,21 +155,7 @@
                 <ul>
                     <li><a href="/index.php">Inicio</a></li>
                     <li><a href="/categoria.php">Tienda</a></li>
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                            <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
-                            <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="/blog.html">Blog</a></li>
-                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
-                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li id="categoryNavSlot"></li>
                 </ul>
             </nav>
 
@@ -197,11 +183,8 @@
         </div>
         <ul class="mobile-nav-links">
             <li><a href="#home"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="#categories"><i class="fas fa-th-large"></i> Categorías</a></li>
+            <li id="mobileCategoryNavSlot"></li>
             <li><a href="#products"><i class="fas fa-box"></i> Productos</a></li>
-            <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
-            <li><a href="/blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
-            <li><a href="/sobre-nosotros.html"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
             <li><a href="/preguntas-frecuentes.html"><i class="fas fa-question-circle"></i> Preguntas Frecuentes</a></li>
             <li class="divider"></li>
             <li><a href="#"><i class="fas fa-shopping-cart"></i> Carrito</a></li>

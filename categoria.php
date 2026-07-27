@@ -15,15 +15,36 @@
 
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
+$categoryTree = require __DIR__ . '/categories_config.php';
 
-$cat   = isset($_GET['cat']) ? trim($_GET['cat']) : '';
+$cat  = isset($_GET['cat']) ? trim($_GET['cat']) : '';
+$sub  = isset($_GET['sub']) ? trim($_GET['sub']) : '';
+$sub2 = isset($_GET['sub2']) ? trim($_GET['sub2']) : '';
+// sub/sub2 are meaningless without their parent — an orphaned ?sub2= with no
+// ?sub= (or ?sub= with no ?cat=) is treated as if it weren't passed at all.
+if ($cat === '') { $sub = ''; }
+if ($sub === '') { $sub2 = ''; }
+
 // Excludes refurbished/"Reacondicionado" listings — a reviewer flagged one as
 // looking out of place; hidden from display only, never deleted from the DB.
 $query = 'products?is_active=is.true&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=created_at.desc';
 if ($cat !== '') {
     $query .= '&category=eq.' . rawurlencode($cat);
 }
+if ($sub !== '') {
+    $query .= '&subcategoria=eq.' . rawurlencode($sub);
+}
+if ($sub2 !== '') {
+    $query .= '&sub_subcategoria=eq.' . rawurlencode($sub2);
+}
 $products = sb_get($cfg, $query);
+
+// Resolves sub/sub2 display names from the same tree the header nav renders
+// from — an unknown/stale slug just yields '', which every use below treats
+// as "not set" rather than erroring.
+$catPath   = find_category_path($categoryTree, $cat, $sub, $sub2);
+$subLabel  = $catPath[1]['name'] ?? '';
+$sub2Label = $catPath[2]['name'] ?? '';
 
 // Per-category SEO config: display label, <title>, meta description
 // (120-155 chars), and a short keyword-rich intro paragraph shown under the
@@ -84,19 +105,36 @@ if ($cat !== '' && isset($categoryConfig[$cat])) {
 }
 $catLabel = $catConfig['label'];
 
+// Most specific known level (sub2 -> sub -> category) drives the H1 and
+// <title> — falls back up the chain so an unrecognized sub/sub2 slug still
+// shows a sensible heading instead of a blank one.
+$displayLabel = $sub2Label !== '' ? $sub2Label : ($subLabel !== '' ? $subLabel : $catLabel);
+
 // Slug -> label map for the product cards' category tag, derived from the
 // same config above (previously a separate, incomplete list missing
 // "electronica" entirely).
 $categoryLabels = array_combine(array_keys($categoryConfig), array_column($categoryConfig, 'label'));
 
 // <title>: cap at ~60 chars (Google truncates longer titles), same
-// truncate-with-ellipsis approach used on producto.php.
-$pageTitle = $catConfig['title'];
+// truncate-with-ellipsis approach used on producto.php. When a sub/sub2 is
+// selected, lead with its name so it's the part Google actually shows.
+$pageTitle = $displayLabel !== $catLabel
+    ? $displayLabel . ' | ' . $catLabel . ' | KhurmiStore'
+    : $catConfig['title'];
 if (mb_strlen($pageTitle) > 60) {
     $pageTitle = rtrim(mb_substr($pageTitle, 0, 59)) . '…';
 }
 
-$canonicalUrl = 'https://khurmistore.es/categoria.php' . ($cat !== '' ? '?cat=' . rawurlencode($cat) : '');
+$canonicalUrl = 'https://khurmistore.es/categoria.php';
+if ($cat !== '') {
+    $canonicalUrl .= '?cat=' . rawurlencode($cat);
+    if ($sub !== '') {
+        $canonicalUrl .= '&sub=' . rawurlencode($sub);
+        if ($sub2 !== '') {
+            $canonicalUrl .= '&sub2=' . rawurlencode($sub2);
+        }
+    }
+}
 
 // og:image: first image of the first product already fetched above for this
 // category — zero extra Supabase queries. Falls back to the site's default
@@ -118,13 +156,28 @@ $collectionSchema = [
     'description' => $catConfig['description'],
     'url'         => $canonicalUrl,
 ];
+$breadcrumbItems = [
+    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => 'https://khurmistore.es/'],
+    ['@type' => 'ListItem', 'position' => 2, 'name' => $catLabel, 'item' => 'https://khurmistore.es/categoria.php' . ($cat !== '' ? '?cat=' . rawurlencode($cat) : '')],
+];
+$breadcrumbPosition = 3;
+if ($subLabel !== '') {
+    $breadcrumbItems[] = [
+        '@type'    => 'ListItem',
+        'position' => $breadcrumbPosition++,
+        'name'     => $subLabel,
+        'item'     => 'https://khurmistore.es/categoria.php?cat=' . rawurlencode($cat) . '&sub=' . rawurlencode($sub),
+    ];
+}
+if ($sub2Label !== '') {
+    // Sub2 is always the deepest selected level, so its breadcrumb URL is
+    // exactly the canonical URL already built above.
+    $breadcrumbItems[] = ['@type' => 'ListItem', 'position' => $breadcrumbPosition++, 'name' => $sub2Label, 'item' => $canonicalUrl];
+}
 $breadcrumbSchema = [
     '@context'        => 'https://schema.org',
     '@type'           => 'BreadcrumbList',
-    'itemListElement' => [
-        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => 'https://khurmistore.es/'],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => $catLabel, 'item' => $canonicalUrl],
-    ],
+    'itemListElement' => $breadcrumbItems,
 ];
 ?>
 <!DOCTYPE html>
@@ -211,29 +264,9 @@ $breadcrumbSchema = [
                     <li><a href="/index.php">Inicio</a></li>
                     <li><a href="/categoria.php">Tienda</a></li>
 
-                    <!-- Categorías Dropdown - Contains product categories (stays intact) -->
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdown" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="categoryDropdown" role="menu" aria-label="Categorías">
-                            <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                            <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
-                            <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                            <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
-                            <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
-                            <li><a href="/categoria.php">Ver Todo</a></li>
-                        </ul>
-                    </li>
+                    <!-- Categorías: each main category is its own independent nav item, rendered by initCategoryMenus() in script.js -->
+                    <li id="categoryNavSlot"></li>
 
-                    <!-- Blog Link -->
-                    <li><a href="/blog.html">Blog</a></li>
-
-                    <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="/sobre-nosotros.html">Sobre Nosotros</a></li>
-
-                    <!-- Contacto (Contact) Link -->
-                    <li><a href="/contacto.html">Contacto</a></li>
                 </ul>
             </nav>
 
@@ -262,29 +295,9 @@ $breadcrumbSchema = [
                     <li><a href="/index.php" onclick="closeMobileMenu()">Inicio</a></li>
                     <li><a href="/categoria.php" onclick="closeMobileMenu()">Tienda</a></li>
 
-                    <!-- Categorías Dropdown for Mobile -->
-                    <li class="nav-item dropdown">
-                        <button class="dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="mobileCategories" onclick="toggleCategoryDropdown(event)">
-                            Categorías <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </button>
-                        <ul class="dropdown-menu" id="mobileCategories" role="menu" aria-label="Categorías">
-                            <li><a href="/categoria.php?cat=auriculares" onclick="closeMobileMenu()">Auriculares y Audio</a></li>
-                            <li><a href="/categoria.php?cat=relojes" onclick="closeMobileMenu()">Relojes</a></li>
-                            <li><a href="/categoria.php?cat=accesorios-movil" onclick="closeMobileMenu()">Accesorios para Móvil</a></li>
-                            <li><a href="/categoria.php?cat=belleza" onclick="closeMobileMenu()">Belleza</a></li>
-                            <li><a href="/categoria.php?cat=electronica" onclick="closeMobileMenu()">Electrónica</a></li>
-                            <li><a href="/categoria.php" onclick="closeMobileMenu()">Ver Todo</a></li>
-                        </ul>
-                    </li>
+                    <!-- Categorías: each main category is its own independent accordion row, rendered by initCategoryMenus() in script.js -->
+                    <li id="mobileCategoryNavSlot"></li>
 
-                    <!-- Blog Link -->
-                    <li><a href="/blog.html" onclick="closeMobileMenu()">Blog</a></li>
-
-                    <!-- Sobre Nosotros (About Us) Link -->
-                    <li><a href="/sobre-nosotros.html" onclick="closeMobileMenu()">Sobre Nosotros</a></li>
-
-                    <!-- Contacto (Contact) Link -->
-                    <li><a href="/contacto.html" onclick="closeMobileMenu()">Contacto</a></li>
                 </ul>
             </nav>
         </div>
@@ -294,14 +307,31 @@ $breadcrumbSchema = [
     <div class="wrap" style="max-width:1180px;margin:0 auto;padding:18px 20px;color:#9AA0BC;font-size:13px;">
         <a href="/index.php" style="color:inherit;text-decoration:none;">Inicio</a>
         <i class="fas fa-chevron-right" style="font-size:10px;margin:0 6px;"></i>
-        <span><?= htmlspecialchars($catLabel) ?></span>
+        <?php if ($subLabel === ''): ?>
+            <span><?= htmlspecialchars($catLabel) ?></span>
+        <?php else: ?>
+            <a href="/categoria.php?cat=<?= rawurlencode($cat) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($catLabel) ?></a>
+            <i class="fas fa-chevron-right" style="font-size:10px;margin:0 6px;"></i>
+            <?php if ($sub2Label === ''): ?>
+                <span><?= htmlspecialchars($subLabel) ?></span>
+            <?php else: ?>
+                <a href="/categoria.php?cat=<?= rawurlencode($cat) ?>&amp;sub=<?= rawurlencode($sub) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($subLabel) ?></a>
+                <i class="fas fa-chevron-right" style="font-size:10px;margin:0 6px;"></i>
+                <span><?= htmlspecialchars($sub2Label) ?></span>
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
 
     <!-- Productos de la Categoría -->
     <section class="products" id="products">
         <div class="section-header">
-            <span class="subtitle"><?= $cat ? 'CATEGORÍA' : 'CATÁLOGO COMPLETO' ?></span>
-            <h1><?= htmlspecialchars($catLabel) ?></h1>
+            <span class="subtitle"><?php
+                if ($sub2Label !== '') { echo 'SUB-SUBCATEGORÍA'; }
+                elseif ($subLabel !== '') { echo 'SUBCATEGORÍA'; }
+                elseif ($cat !== '') { echo 'CATEGORÍA'; }
+                else { echo 'CATÁLOGO COMPLETO'; }
+            ?></span>
+            <h1><?= htmlspecialchars($displayLabel) ?></h1>
             <!-- Indexable intro copy — the grid alone is thin content for SEO. -->
             <p style="color:#9AA0BC;font-size:14px;line-height:1.7;max-width:720px;margin:14px auto 0;">
                 <?= htmlspecialchars($catConfig['intro']) ?>
