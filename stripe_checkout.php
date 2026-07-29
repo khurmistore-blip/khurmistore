@@ -61,12 +61,22 @@ $subtotal      = 0.0;
 $productsClean = [];
 $weightItems   = [];
 foreach ($products as $p) {
-    $pName   = trim((string)($p['name']   ?? '?'));
-    $pQty    = max(1, (int)($p['qty']     ?? 1));
-    $pPrice  = (float)($p['price']        ?? 0.0);
-    $pWeight = isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null;
+    $pName       = trim((string)($p['name']   ?? '?'));
+    $pQty        = max(1, (int)($p['qty']     ?? 1));
+    $pPrice      = (float)($p['price']        ?? 0.0);
+    $pWeight     = isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null;
+    $pProductId  = isset($p['product_id']) && $p['product_id'] !== null ? (int)$p['product_id'] : null;
+    $pVariantId  = isset($p['variant_id']) && $p['variant_id'] !== null ? (int)$p['variant_id'] : null;
+    $pVariantName = trim((string)($p['variant_name'] ?? ''));
     $subtotal += $pPrice * $pQty;
-    $productsClean[] = ['name' => $pName, 'qty' => $pQty, 'price' => $pPrice];
+    $productsClean[] = [
+        'product_id'   => $pProductId,
+        'variant_id'   => $pVariantId,
+        'variant_name' => $pVariantName,
+        'name'         => $pName,
+        'qty'          => $pQty,
+        'price'        => $pPrice,
+    ];
     $weightItems[]   = ['weight' => $pWeight];
 }
 $shippingAmount = calcCartShipping($weightItems);

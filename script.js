@@ -192,29 +192,65 @@ function loadCart() {
         const saved = localStorage.getItem('kw_cart');
         cart = saved ? JSON.parse(saved) : [];
     } catch (e) { cart = []; }
+    // Migrate carts saved before variant support existed: backfill the
+    // fields addToCart()/updateCart() now rely on, so pre-existing
+    // localStorage carts keep working instead of rendering "undefined".
+    cart.forEach(item => {
+        if (item.variantId === undefined) item.variantId = null;
+        if (item.variantName === undefined) item.variantName = '';
+        if (!item.product_id) item.product_id = item.id;
+        if (!item.cartKey) item.cartKey = `${item.id}_${item.variantId ?? 0}`;
+    });
 }
 
 function saveCart() {
     localStorage.setItem('kw_cart', JSON.stringify(cart));
 }
 
-function addToCart(id, qty = 1) {
+function addToCart(id, qty = 1, variantId = null) {
     const product = products.find(p => p.id === id);
     if (!product) return;
-    if ((product.stock ?? 1) <= 0 || product.isActive === false) {
+
+    const variants = Array.isArray(product.variants) ? product.variants : [];
+    // A product that HAS variants must have one selected before it can be
+    // added — reached from contexts with no selector (grid quick-add,
+    // related-product mini-cards) when no variantId was passed; send the
+    // shopper to the product page to pick one instead of silently adding a
+    // colour-less line item.
+    if (variants.length > 0 && variantId === null) {
+        window.location.href = `/producto.php?id=${id}`;
+        return;
+    }
+
+    let variant = null;
+    if (variantId !== null) {
+        variant = variants.find(v => v.id === variantId);
+        if (!variant) return;
+        if ((variant.stock ?? 0) <= 0 || variant.isActive === false) {
+            showNotification('Lo sentimos, esta opción está agotada.');
+            return;
+        }
+    } else if ((product.stock ?? 1) <= 0 || product.isActive === false) {
         showNotification('Lo sentimos, este producto está agotado.');
         return;
     }
-    const existing = cart.find(item => item.id === id);
+
+    const price       = variant?.price ?? product.price;
+    const image       = variant?.image ?? product.image;
+    const variantName = variant ? variant.name : '';
+    const cartKey      = `${id}_${variantId ?? 0}`;
+
+    const existing = cart.find(item => item.cartKey === cartKey);
     if (existing) {
         existing.qty += qty;
     } else {
-        cart.push({...product, qty: qty});
+        const { variants: _variants, ...productRest } = product;
+        cart.push({ ...productRest, price, image, qty, product_id: id, variantId, variantName, cartKey });
     }
     saveCart();
     updateCart();
-    showNotification(`¡${product.name} añadido al carrito!`);
-    fbq('track','AddToCart',{value: product.price, currency:'EUR'});
+    showNotification(`¡${product.name}${variantName ? ' - ' + variantName : ''} añadido al carrito!`);
+    fbq('track','AddToCart',{value: price, currency:'EUR'});
 
     // Best-effort analytics only — never let this affect the cart above.
     try {
@@ -226,17 +262,17 @@ function addToCart(id, qty = 1) {
     } catch (e) {}
 }
 
-function removeFromCart(id) {
-    cart = cart.filter(item => item.id !== id);
+function removeFromCart(cartKey) {
+    cart = cart.filter(item => item.cartKey !== cartKey);
     saveCart();
     updateCart();
 }
 
-function changeQty(id, change) {
-    const item = cart.find(i => i.id === id);
+function changeQty(cartKey, change) {
+    const item = cart.find(i => i.cartKey === cartKey);
     if (item) {
         item.qty += change;
-        if (item.qty <= 0) removeFromCart(id);
+        if (item.qty <= 0) removeFromCart(cartKey);
         else { saveCart(); updateCart(); }
     }
 }
@@ -265,7 +301,8 @@ function updateCart() {
     if (cartSummaryItemsEl) {
         cartSummaryItemsEl.innerHTML = cart.length ? cart.map(item => `
             <div class="cart-summary-item">
-                <span>${item.name}</span>
+                <img class="cart-summary-item-img" src="${item.image}" alt="">
+                <span>${item.name}${item.variantName ? ` <span class="cart-item-variant">— ${item.variantName}</span>` : ''}</span>
                 <span>${item.qty} x ${formatPrice(item.price)}</span>
             </div>
             <div class="cart-summary-item cart-summary-shipping">
@@ -287,15 +324,16 @@ function updateCart() {
                 <img src="${item.image}" alt="${item.name}">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
+                    ${item.variantName ? `<span class="cart-item-variant">Opción: ${item.variantName}</span>` : ''}
                     <span class="price">${formatPrice(item.price)}</span>
                     <span class="cart-item-shipping" style="display:block;font-size:12px;color:var(--muted,#888);"><i class="fas fa-truck-fast"></i> Envío: GRATIS</span>
                     <div class="qty-controls">
-                        <button type="button" onclick="changeQty(${item.id}, -1)">-</button>
+                        <button type="button" onclick="changeQty('${item.cartKey}', -1)">-</button>
                         <span>${item.qty}</span>
-                        <button type="button" onclick="changeQty(${item.id}, 1)">+</button>
+                        <button type="button" onclick="changeQty('${item.cartKey}', 1)">+</button>
                     </div>
                 </div>
-                <button type="button" class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>
+                <button type="button" class="remove-btn" onclick="removeFromCart('${item.cartKey}')"><i class="fas fa-trash"></i></button>
             </div>
         `).join('');
     }
@@ -1034,6 +1072,97 @@ function declineCookies() {
 }
 
 // ===== PÁGINA DE DETALLES DEL PRODUCTO =====
+
+// Variant-selection state for the CURRENTLY rendered product detail page.
+// Reset at the top of every renderProductDetails() call so navigating
+// between products (or re-rendering the same one) never leaks a stale
+// selection. null = nothing chosen yet; addToCartFromDetails()/buyNow()
+// refuse to add a product that HAS variants until this is set.
+let selectedVariantId = null;
+let currentProductVariants = [];
+
+/**
+ * Builds the colour/option selector shown above the quantity box. Renders a
+ * photo swatch when the variant has its own image, otherwise a labelled
+ * pill button — either way large enough to be a comfortable touch target.
+ * Out-of-stock/inactive variants render disabled with a visible "Agotado"
+ * cue instead of being hidden, so the customer can see the full range.
+ * Returns '' for a product with no variants — renderProductDetails() then
+ * skips the whole block, so a non-variant product's markup is byte-for-byte
+ * what it was before this feature existed.
+ */
+function buildVariantSelectorHtml(variants) {
+    if (!Array.isArray(variants) || variants.length === 0) return '';
+    const swatches = variants.map(v => {
+        const disabled = (v.stock ?? 0) <= 0 || v.isActive === false;
+        // Image is the primary selector (AliExpress-style thumbnail), with the
+        // variant name as a caption underneath AND a hover tooltip. Only falls
+        // back to a plain text pill when the variant has no image_url at all.
+        const content = v.image
+            ? `<span class="variant-swatch-img-wrap">
+                    <img src="${v.image}" alt="${v.name}">
+                    ${disabled ? '<span class="variant-swatch-oos">Agotado</span>' : ''}
+               </span>
+               <span class="variant-swatch-caption">${v.name}</span>`
+            : `<span class="variant-swatch-label">${v.name}${disabled ? ' <small>(agotado)</small>' : ''}</span>`;
+        return `
+            <button type="button" class="variant-swatch${disabled ? ' variant-swatch-disabled' : ''}"
+                data-variant-id="${v.id}" onclick="selectVariant(${v.id})"
+                ${disabled ? 'disabled' : ''} title="${v.name}${disabled ? ' (agotado)' : ''}"
+                aria-label="${v.name}${disabled ? ' (agotado)' : ''}">
+                ${content}
+            </button>`;
+    }).join('');
+    return `
+        <div class="variant-selector" id="variantSelector">
+            <h4>Color: <span id="selectedVariantLabel">Selecciona una opción</span></h4>
+            <div class="variant-swatches">${swatches}</div>
+            <p class="variant-prompt" id="variantPrompt" style="display:none;">
+                <i class="fas fa-circle-exclamation"></i> Por favor, selecciona una opción antes de continuar.
+            </p>
+        </div>`;
+}
+
+/**
+ * Fires when a swatch/pill is clicked. Updates the active swatch, the main
+ * gallery image (only if THIS variant has its own image — otherwise the
+ * product's default gallery stays as-is), the displayed price (only if the
+ * variant has its own price), and enables the Add to Cart/Comprar Ahora
+ * buttons. Silently no-ops for a disabled (out-of-stock) swatch — the
+ * button element itself is already `disabled`, this is just defense in depth.
+ */
+function selectVariant(variantId) {
+    const variant = currentProductVariants.find(v => v.id === variantId);
+    if (!variant || (variant.stock ?? 0) <= 0 || variant.isActive === false) return;
+
+    selectedVariantId = variantId;
+
+    document.querySelectorAll('.variant-swatch').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.variantId) === variantId);
+    });
+
+    const labelEl = document.getElementById('selectedVariantLabel');
+    if (labelEl) labelEl.textContent = variant.name;
+
+    const promptEl = document.getElementById('variantPrompt');
+    if (promptEl) promptEl.style.display = 'none';
+
+    if (variant.image) {
+        const mainImg = document.getElementById('mainProductImg');
+        if (mainImg) mainImg.src = variant.image;
+    }
+
+    if (variant.price !== null && variant.price !== undefined) {
+        const priceEl = document.getElementById('detailCurrentPrice');
+        if (priceEl) priceEl.textContent = formatPrice(variant.price);
+    }
+
+    const addBtn = document.getElementById('addToCartBtn');
+    const buyBtn = document.getElementById('buyNowBtn');
+    if (addBtn) { addBtn.disabled = false; addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> Añadir al Carrito'; }
+    if (buyBtn) { buyBtn.disabled = false; buyBtn.innerHTML = '<i class="fas fa-bolt"></i> Comprar Ahora'; }
+}
+
 function getProductDetails(p) {
     // Devuelve detalles enriquecidos para cualquier producto
     const defaults = {
@@ -1046,7 +1175,8 @@ function getProductDetails(p) {
         ],
         gallery: [p.image, p.image.replace('w=500', 'w=800'), p.image, p.image],
         stock: Math.floor(Math.random() * 40) + 10,
-        brand: "KhurmiStore"
+        brand: "KhurmiStore",
+        variants: []
     };
     return {
         ...defaults,
@@ -1055,7 +1185,8 @@ function getProductDetails(p) {
         features: p.features || defaults.features,
         description: p.description || defaults.description,
         stock: p.stock !== undefined ? p.stock : defaults.stock,
-        brand: p.brand || defaults.brand
+        brand: p.brand || defaults.brand,
+        variants: Array.isArray(p.variants) ? p.variants : defaults.variants
     };
 }
 
@@ -1081,6 +1212,16 @@ function renderProductDetails() {
     const p = getProductDetails(product);
     const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
     const inStock  = p.stock > 0 && p.isActive !== false; // unchanged — still drives the add-to-cart/button-disable logic below
+
+    // Reset variant-selection state for THIS render — a product with no
+    // variants (variants: []) means hasVariants is false and every branch
+    // below behaves exactly as it did before this feature existed.
+    currentProductVariants = p.variants;
+    selectedVariantId = null;
+    const hasVariants = currentProductVariants.length > 0;
+    // Add to Cart/Comprar Ahora start disabled when a variant choice is
+    // required — selectVariant() re-enables them once one is picked.
+    const actionsDisabled = !inStock || hasVariants;
     // Never show the raw stock count to the visitor — only a 3-tier status.
     const lowStock = inStock && p.stock <= 5;
     const stockBadgeClass = !inStock ? 'low-stock' : (lowStock ? 'low-stock' : 'in-stock');
@@ -1150,7 +1291,7 @@ function renderProductDetails() {
                 <h1>${p.name}</h1>
 
                 <div class="price-section">
-                    <span class="current-price">${formatPrice(p.price)}</span>
+                    <span class="current-price" id="detailCurrentPrice">${formatPrice(p.price)}</span>
                     ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ''}
                     ${discount ? `<span class="discount-tag">Ahorras ${formatPrice(p.oldPrice - p.price)}</span>` : ''}
                 </div>
@@ -1166,6 +1307,8 @@ function renderProductDetails() {
                 </ul>
                 ` : ''}
 
+                ${buildVariantSelectorHtml(currentProductVariants)}
+
                 <div class="quantity-selector">
                     <h4>Cantidad:</h4>
                     <div class="qty-box">
@@ -1176,11 +1319,11 @@ function renderProductDetails() {
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn-primary big-btn" onclick="addToCartFromDetails(${p.id})" ${inStock ? '' : 'disabled'}>
-                        <i class="fas fa-cart-plus"></i> ${inStock ? 'Añadir al Carrito' : 'Agotado'}
+                    <button class="btn-primary big-btn" id="addToCartBtn" onclick="addToCartFromDetails(${p.id})" ${actionsDisabled ? 'disabled' : ''}>
+                        <i class="fas fa-cart-plus"></i> ${!inStock ? 'Agotado' : (hasVariants ? 'Selecciona una opción' : 'Añadir al Carrito')}
                     </button>
-                    <button class="btn-secondary big-btn" onclick="buyNow(${p.id})" ${inStock ? '' : 'disabled'}>
-                        <i class="fas fa-bolt"></i> ${inStock ? 'Comprar Ahora' : 'No disponible'}
+                    <button class="btn-secondary big-btn" id="buyNowBtn" onclick="buyNow(${p.id})" ${actionsDisabled ? 'disabled' : ''}>
+                        <i class="fas fa-bolt"></i> ${!inStock ? 'No disponible' : (hasVariants ? 'Selecciona una opción' : 'Comprar Ahora')}
                     </button>
                     <button class="wishlist-btn" onclick="toggleWishlist(${p.id}, this)"><i class="far fa-heart"></i></button>
                 </div>
@@ -1379,14 +1522,24 @@ function toggleFAQ(index) {
     }
 }
 
+function requireVariantSelection() {
+    if (currentProductVariants.length === 0 || selectedVariantId !== null) return true;
+    const promptEl = document.getElementById('variantPrompt');
+    if (promptEl) promptEl.style.display = 'block';
+    showNotification('Por favor, selecciona una opción antes de continuar.');
+    return false;
+}
+
 function addToCartFromDetails(id) {
+    if (!requireVariantSelection()) return;
     const qty = parseInt(document.getElementById('detailQty').value) || 1;
-    addToCart(id, qty);
+    addToCart(id, qty, selectedVariantId);
 }
 
 function buyNow(id) {
+    if (!requireVariantSelection()) return;
     const qty = parseInt(document.getElementById('detailQty').value) || 1;
-    addToCart(id, qty);
+    addToCart(id, qty, selectedVariantId);
     setTimeout(() => openCart(), 400);
 }
 
@@ -1726,7 +1879,14 @@ function initPayPalButtons() {
                         address  : fullAddress,
                         total,
                         shippingAmount: shippingCost,
-                        products : cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                        products : cart.map(i => ({
+                            product_id   : i.product_id ?? i.id,
+                            variant_id   : i.variantId ?? null,
+                            variant_name : i.variantName || '',
+                            name         : i.name,
+                            qty          : i.qty,
+                            price        : i.price,
+                        })),
                         notes,
                     }),
                 });
@@ -1741,7 +1901,7 @@ function initPayPalButtons() {
             fbq('track', 'Purchase', { value: total, currency: 'EUR' }, { eventID: 'purchase_' + details.id });
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
-            const items = cart.map(i => `• ${i.name} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
+            const items = cart.map(i => `• ${i.name}${i.variantName ? ' - ' + i.variantName : ''} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
             const msg   = `✅ PEDIDO PAGADO con PayPal - KhurmiStore\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: ${formatPrice(shippingCost)}\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
             window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
 
@@ -1798,7 +1958,15 @@ function initStripeButton() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name, email, phone, address, city, notes,
-                    products: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price, weight: i.weight ?? null })),
+                    products: cart.map(i => ({
+                        product_id   : i.product_id ?? i.id,
+                        variant_id   : i.variantId ?? null,
+                        variant_name : i.variantName || '',
+                        name         : i.name,
+                        qty          : i.qty,
+                        price        : i.price,
+                        weight       : i.weight ?? null,
+                    })),
                 }),
             });
             const result = await res.json();

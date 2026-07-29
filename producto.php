@@ -37,6 +37,20 @@ if (!$p) {
 // "Reacondicionado" listings — see categoria.php/index.php for the same filter.
 $related = $p ? sb_get($cfg, "products?is_active=is.true&approval_status=eq.approved&id=neq.$id&category=eq." . rawurlencode((string)($p['category'] ?? '')) . "&name=not.ilike.*Reacondicionado*&order=created_at.desc&limit=4") : [];
 
+// VARIANT SUPPORT: fetch active variants for the main product AND the 4
+// related products in ONE request (in= filter across all 5 ids) rather than
+// 5 separate round-trips. Products with no variants simply get an empty
+// array here — bb_product_to_js()/renderProductDetails() already treat that
+// as "no variant selector, behave exactly as before" (see script.js).
+$variantsByProduct = [];
+if ($p) {
+    $variantProductIds = array_merge([(int)$p['id']], array_map(fn($rp) => (int)$rp['id'], $related));
+    $variantRows = sb_get($cfg, 'product_variants?is_active=is.true&product_id=in.(' . implode(',', $variantProductIds) . ')&order=product_id.asc,sort_order.asc');
+    foreach ($variantRows as $v) {
+        $variantsByProduct[(int)$v['product_id']][] = $v;
+    }
+}
+
 $pageTitle = $p ? ($p['meta_title'] ?: $p['name']) : 'Producto no encontrado';
 
 // <title>: "<name> | KhurmiStore", truncated so the total stays ~60 chars
@@ -169,8 +183,29 @@ if ($p) {
     ];
 }
 
+/**
+ * Maps one product_variants row to the shape script.js's variant selector
+ * expects. price/image stay null when the DB column is null/empty — that's
+ * the deliberate "fall back to the product's own price/image" signal,
+ * resolved client-side in script.js (variant.price ?? product.price, etc.),
+ * not baked in here.
+ */
+function bb_variant_to_js(array $v): array
+{
+    $image = trim((string)($v['image_url'] ?? ''));
+    return [
+        'id'        => (int)$v['id'],
+        'name'      => (string)($v['name'] ?? ''),
+        'price'     => isset($v['price']) && $v['price'] !== null ? (float)$v['price'] : null,
+        'image'     => $image !== '' ? $image : null,
+        'stock'     => (int)($v['stock'] ?? 0),
+        'isActive'  => ($v['is_active'] ?? true) !== false,
+        'sortOrder' => (int)($v['sort_order'] ?? 0),
+    ];
+}
+
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
-function bb_product_to_js(array $p): array
+function bb_product_to_js(array $p, array $variantsByProduct = []): array
 {
     // image_url stores multiple images comma-separated (e.g. "url1,url2,url3");
     // split into a real gallery array instead of repeating a single image.
@@ -183,6 +218,7 @@ function bb_product_to_js(array $p): array
     if (!empty($p['bullet_points'])) {
         $features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $p['bullet_points']))));
     }
+    $variants = array_map('bb_variant_to_js', $variantsByProduct[(int)$p['id']] ?? []);
     return [
         'id'          => (int)$p['id'],
         'name'        => $p['name'],
@@ -198,6 +234,7 @@ function bb_product_to_js(array $p): array
         'isActive'    => ($p['is_active'] ?? true) !== false,
         'description' => $p['description_optimized'] ?: ($p['long_description'] ?: ($p['description'] ?? '')),
         'features'    => $features ?: null, // null lets getProductDetails() fall back to its generic defaults
+        'variants'    => $variants, // [] for a product with no variants — script.js treats that as "no selector, behave as before"
     ];
 }
 ?>
@@ -531,8 +568,8 @@ function bb_product_to_js(array $p): array
     // initial (dummy-data) render.
     document.addEventListener('DOMContentLoaded', function () {
         <?php if ($p): ?>
-        var mainProduct = <?= json_encode(bb_product_to_js($p), JSON_UNESCAPED_UNICODE) ?>;
-        var relatedProducts = <?= json_encode(array_map('bb_product_to_js', $related), JSON_UNESCAPED_UNICODE) ?>;
+        var mainProduct = <?= json_encode(bb_product_to_js($p, $variantsByProduct), JSON_UNESCAPED_UNICODE) ?>;
+        var relatedProducts = <?= json_encode(array_map(fn($rp) => bb_product_to_js($rp, $variantsByProduct), $related), JSON_UNESCAPED_UNICODE) ?>;
         products.length = 0;
         products.push(mainProduct);
         Array.prototype.push.apply(products, relatedProducts);

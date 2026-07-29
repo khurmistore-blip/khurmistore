@@ -80,9 +80,16 @@ function build_order_confirmation_email_html(string $orderId, string $name, arra
 {
     $rows = '';
     foreach ($productsJson as $p) {
-        $lineTotal = number_format(((float)$p['price']) * ((int)$p['qty']), 2, ',', '.');
+        $lineTotal   = number_format(((float)$p['price']) * ((int)$p['qty']), 2, ',', '.');
+        $variantName = trim((string)($p['variant_name'] ?? ''));
+        // Colour/variant shown as a bold inline suffix — this is the
+        // highest-risk display point for shipping the wrong item, so it
+        // must never be hidden behind a hover/expand or a muted color.
+        $variantHtml = $variantName !== ''
+            ? ' <strong style="color:#FF6B35;">— ' . htmlspecialchars($variantName) . '</strong>'
+            : '';
         $rows .= '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#444;">'
-            . '<span>' . htmlspecialchars((string)$p['name']) . ' x' . (int)$p['qty'] . '</span>'
+            . '<span>' . htmlspecialchars((string)$p['name']) . $variantHtml . ' x' . (int)$p['qty'] . '</span>'
             . '<span>' . $lineTotal . ' &euro;</span></div>';
     }
     $totalFormatted = number_format($total, 2, ',', '.');
@@ -138,15 +145,30 @@ function saveOrder(array $data): array
     $datetime       = date('Y-m-d H:i:s');
 
     // ── Construir resumen de productos ────────────────────────────────────
+    // product_id/variant_id are kept for admin joins/reporting; variant_name
+    // is denormalized (copied as plain text) so it survives even if the
+    // variant row is later edited/deleted — fulfilment reads this string,
+    // not a live join. Products with no variant get variant_id/variant_name
+    // = null/'' — the exact same line shape as before this feature existed.
     $productLines = [];
     $productsJson = [];
     foreach ($products as $p) {
-        $pName     = trim((string)($p['name']  ?? '?'));
-        $pQty      = max(1, (int)($p['qty']    ?? 1));
-        $pPrice    = (float)($p['price']       ?? 0.0);
-        $lineTotal = number_format($pPrice * $pQty, 2, ',', '.') . ' €';
-        $productLines[] = "{$pName} x{$pQty} – {$lineTotal}";
-        $productsJson[] = ['name' => $pName, 'qty' => $pQty, 'price' => $pPrice];
+        $pName        = trim((string)($p['name']  ?? '?'));
+        $pQty         = max(1, (int)($p['qty']    ?? 1));
+        $pPrice       = (float)($p['price']       ?? 0.0);
+        $pProductId   = isset($p['product_id']) && $p['product_id'] !== null ? (int)$p['product_id'] : null;
+        $pVariantId   = isset($p['variant_id']) && $p['variant_id'] !== null ? (int)$p['variant_id'] : null;
+        $pVariantName = trim((string)($p['variant_name'] ?? ''));
+        $lineTotal    = number_format($pPrice * $pQty, 2, ',', '.') . ' €';
+        $productLines[] = $pName . ($pVariantName !== '' ? " — {$pVariantName}" : '') . " x{$pQty} – {$lineTotal}";
+        $productsJson[] = [
+            'product_id'   => $pProductId,
+            'variant_id'   => $pVariantId,
+            'variant_name' => $pVariantName,
+            'name'         => $pName,
+            'qty'          => $pQty,
+            'price'        => $pPrice,
+        ];
     }
     $productsSummary = implode(' | ', $productLines);
     $productsText    = implode("\n", array_map(static fn($l) => "  • {$l}", $productLines));

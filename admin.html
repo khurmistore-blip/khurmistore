@@ -564,6 +564,26 @@
         </table>
       </div>
     </div>
+
+    <div class="panel" style="margin-top:24px;">
+      <div class="panelHead"><span class="panelTitle">🎨 Variantes de Producto (color, etc.)</span></div>
+      <div class="toolbar" style="padding:12px 16px;">
+        <select id="variantProductSelect" onchange="loadVariantsForSelectedProduct()" style="min-width:280px;">
+          <option value="">Selecciona un producto…</option>
+        </select>
+      </div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Orden</th><th>Nombre</th><th>SKU</th><th>Precio (€)</th>
+              <th>Imagen URL</th><th>Stock</th><th>Activo</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="variantsBody"><tr><td colspan="8" class="emptyState">Selecciona un producto arriba</td></tr></tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -808,6 +828,7 @@
     loadPendingProducts();
     loadShippingCosts();
     loadCartEvents();
+    loadVariantProductsList();
     // auto-refresh every 60s so new orders appear without reloading
     if(autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(()=>loadOrders(false), 60000);
@@ -876,6 +897,113 @@
     }catch(e){
       alert('⚠️ Could not reach approve_products.php — make sure it is uploaded');
     }
+  }
+
+  // ---------- PRODUCT VARIANTS (product_variants table — direct sb reads/writes, ----------
+  // same authenticated-client pattern as the orders panel above, since RLS on
+  // product_variants grants writes `to authenticated` — no separate PHP
+  // endpoint needed, unlike approve_products.php/sync_products.php which use
+  // the service_role key from outside a logged-in session.)
+  let currentVariantProductId = null;
+
+  async function loadVariantProductsList(){
+    const sel = document.getElementById('variantProductSelect');
+    if(!sel) return;
+    const { data, error } = await sb.from('products').select('id,name').order('name');
+    if(error){ console.error(error); return; }
+    const selected = sel.value;
+    sel.innerHTML = '<option value="">Selecciona un producto…</option>' +
+      (data || []).map(p=>`<option value="${p.id}">${escHtml(p.name || '')} (#${p.id})</option>`).join('');
+    if(selected) sel.value = selected;
+  }
+
+  async function loadVariantsForSelectedProduct(){
+    const sel = document.getElementById('variantProductSelect');
+    const body = document.getElementById('variantsBody');
+    if(!sel || !body) return;
+    const pid = sel.value ? parseInt(sel.value, 10) : null;
+    currentVariantProductId = pid;
+    if(!pid){ body.innerHTML = '<tr><td colspan="8" class="emptyState">Selecciona un producto arriba</td></tr>'; return; }
+    body.innerHTML = '<tr><td colspan="8" class="emptyState">Loading...</td></tr>';
+    const { data, error } = await sb.from('product_variants').select('*').eq('product_id', pid).order('sort_order');
+    if(error){ body.innerHTML = '<tr><td colspan="8" class="emptyState">Error loading variants</td></tr>'; console.error(error); return; }
+    renderVariantRows(data || []);
+  }
+
+  function renderVariantRows(variants){
+    document.getElementById('variantsBody').innerHTML = variants.map(variantRowHtml).join('') + newVariantRowHtml();
+  }
+
+  function variantRowHtml(v){
+    return `<tr data-vid="${v.id}">
+      <td><input type="number" class="v_sort" value="${v.sort_order ?? 0}" style="width:60px"></td>
+      <td><input type="text" class="v_name" value="${escAttr(v.name || '')}" style="min-width:120px"></td>
+      <td><input type="text" class="v_sku" value="${escAttr(v.sku || '')}" style="width:100px"></td>
+      <td><input type="number" step="0.01" class="v_price" value="${v.price ?? ''}" style="width:90px" placeholder="=producto"></td>
+      <td><input type="text" class="v_image" value="${escAttr(v.image_url || '')}" style="min-width:160px" placeholder="=producto"></td>
+      <td><input type="number" class="v_stock" value="${v.stock ?? 0}" style="width:70px"></td>
+      <td style="text-align:center"><input type="checkbox" class="v_active" ${v.is_active !== false ? 'checked' : ''}></td>
+      <td style="white-space:nowrap">
+        <button class="iconBtn" title="Guardar" onclick="saveVariantRow(${v.id})">💾</button>
+        <button class="iconBtn delBtn" title="Eliminar" onclick="deleteVariantRow(${v.id})">🗑</button>
+      </td>
+    </tr>`;
+  }
+
+  function newVariantRowHtml(){
+    return `<tr data-vid="new">
+      <td><input type="number" class="v_sort" value="0" style="width:60px"></td>
+      <td><input type="text" class="v_name" placeholder="p.ej. Negro" style="min-width:120px"></td>
+      <td><input type="text" class="v_sku" style="width:100px"></td>
+      <td><input type="number" step="0.01" class="v_price" placeholder="=producto" style="width:90px"></td>
+      <td><input type="text" class="v_image" placeholder="=producto" style="min-width:160px"></td>
+      <td><input type="number" class="v_stock" value="0" style="width:70px"></td>
+      <td style="text-align:center"><input type="checkbox" class="v_active" checked></td>
+      <td><button class="iconBtn" title="Añadir" onclick="addNewVariantRow()">➕</button></td>
+    </tr>`;
+  }
+
+  function readVariantRowInputs(tr){
+    const priceVal = tr.querySelector('.v_price').value;
+    const imageVal = tr.querySelector('.v_image').value.trim();
+    const skuVal   = tr.querySelector('.v_sku').value.trim();
+    return {
+      name       : tr.querySelector('.v_name').value.trim(),
+      sku        : skuVal !== '' ? skuVal : null,
+      price      : priceVal !== '' ? parseFloat(priceVal) : null,
+      image_url  : imageVal !== '' ? imageVal : null,
+      stock      : parseInt(tr.querySelector('.v_stock').value, 10) || 0,
+      is_active  : tr.querySelector('.v_active').checked,
+      sort_order : parseInt(tr.querySelector('.v_sort').value, 10) || 0,
+    };
+  }
+
+  async function saveVariantRow(id){
+    const tr = document.querySelector(`#variantsBody tr[data-vid="${id}"]`);
+    if(!tr) return;
+    const fields = readVariantRowInputs(tr);
+    if(!fields.name){ alert('El nombre de la variante es obligatorio'); return; }
+    const { error } = await sb.from('product_variants').update(fields).eq('id', id);
+    if(error){ alert('Error guardando variante: ' + error.message); return; }
+    loadVariantsForSelectedProduct();
+  }
+
+  async function addNewVariantRow(){
+    const tr = document.querySelector('#variantsBody tr[data-vid="new"]');
+    if(!tr || !currentVariantProductId) return;
+    const fields = readVariantRowInputs(tr);
+    if(!fields.name){ alert('El nombre de la variante es obligatorio'); return; }
+    fields.product_id = currentVariantProductId;
+    const { error } = await sb.from('product_variants').insert(fields);
+    if(error){ alert('Error añadiendo variante: ' + error.message); return; }
+    loadVariantsForSelectedProduct();
+  }
+
+  async function deleteVariantRow(id){
+    if(!confirm('¿Eliminar esta variante? Esta acción no se puede deshacer.')) return;
+    const { error } = await sb.from('product_variants').delete().eq('id', id);
+    if(error){ alert('Error eliminando variante: ' + error.message); return; }
+    loadVariantsForSelectedProduct();
   }
 
   // ---------- LOAD SHIPPING COSTS (read-only BigBuy reference, see sync_shipping.php) ----------
@@ -1093,7 +1221,7 @@
     }
 
     tbody.innerHTML = filtered.map(o=>{
-      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name} x${p.qty||1}`).join(', ') : '';
+      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name : ''} x${p.qty||1}`).join(', ') : '';
       const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
 
       const phone = o.phone ? escHtml(o.phone) : '';
@@ -1217,7 +1345,7 @@
     };
 
     rows.forEach(o=>{
-      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name} x${p.qty||1}`).join(' | ') : '';
+      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name : ''} x${p.qty||1}`).join(' | ') : '';
       const dateStr = new Date(o.created_at).toLocaleString('es-ES');
       csvLines.push([
         esc(o.order_number),
@@ -1424,7 +1552,10 @@
 
     const products = Array.isArray(o.products) ? o.products : [];
     const prodHtml = products.length
-      ? products.map(p=>`<div>• ${escHtml(p.name)} × ${p.qty||1}${p.price?` — €${parseFloat(p.price).toFixed(2)}`:''}</div>`).join('')
+      ? products.map(p=>{
+          const variantHtml = p.variant_name ? ` <b style="color:var(--orange)">— ${escHtml(p.variant_name)}</b>` : '';
+          return `<div>• ${escHtml(p.name)}${variantHtml} × ${p.qty||1}${p.price?` — €${parseFloat(p.price).toFixed(2)}`:''}</div>`;
+        }).join('')
       : '<div style="color:var(--muted)">—</div>';
 
     const created = new Date(o.created_at).toLocaleString('es-ES');
