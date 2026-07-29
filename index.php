@@ -1,34 +1,26 @@
 ﻿<?php
 // Fetch homepage product data in as few Supabase round-trips as possible.
-// Previously: 5 separate per-category slider queries + up to 4 more for the
-// hero slides' "prefer a named product" lookups (7-9 requests total) — that
-// request count, not row count, was the actual bottleneck behind the ~5-6s
-// homepage load. Now: ONE combined query covers every category slider, and
-// the two name-preference hero slides (belleza/electronica) search that
-// same in-memory result instead of making their own request. Only the
-// pinned hero slide 1 (fixed id=179) still does its own request — a
-// trivial single-row primary-key lookup, not part of the bottleneck.
+//
+// SMART-WATCH-ONLY PIVOT (2026-07-28): the store now sells exclusively
+// relojes — this used to be a per-category (belleza/electronica/auriculares/
+// accesorios-movil/relojes) slider + hero setup; now everything (sliders AND
+// all 3 hero slides) draws from the single relojes catalog. Other categories'
+// product ROWS still exist in Supabase, just no longer surfaced here — see
+// the note in categories_config.php for what's explicitly still pending as a
+// separate step (categoria.php, blog/legal pages).
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
 
-// Per-category homepage sliders — one row per header "Categorías" dropdown entry.
-// Slugs/labels match categoria.php's $categoryLabels so "Ver Todo" lands on the same page.
 $categorySliderDefs = [
-    ['slug' => 'auriculares',        'label' => 'Auriculares y Audio'],
-    ['slug' => 'relojes',            'label' => 'Relojes'],
-    ['slug' => 'accesorios-movil', 'label' => 'Accesorios para Móvil'],
-    ['slug' => 'belleza',            'label' => 'Belleza'],
-    ['slug' => 'electronica',        'label' => 'Electrónica'],
+    ['slug' => 'relojes', 'label' => 'Relojes Inteligentes'],
 ];
 $categorySlugs = array_column($categorySliderDefs, 'slug');
 
-// Single request for ALL 5 categories at once. order=category.asc,created_at.desc
-// keeps each category's rows contiguous and newest-first, so grouping/slicing
-// to "top 12 per category" below is correct without a per-group LIMIT (which
-// PostgREST doesn't support in a plain REST query). limit=300 is a generous
-// safety cap, not a real constraint at this catalog's size. Excludes
-// refurbished/"Reacondicionado" listings — a reviewer flagged one as looking
-// out of place; hidden from display only, never deleted from the DB.
+// order=category.asc,created_at.desc keeps rows newest-first for the slicing
+// below. limit=300 is a generous safety cap, not a real constraint at this
+// catalog's size. Excludes refurbished/"Reacondicionado" listings — a
+// reviewer flagged one as looking out of place; hidden from display only,
+// never deleted from the DB.
 $allCatProducts = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&stock=gt.0&name=not.ilike.*Reacondicionado*&category=in.(' . implode(',', array_map('rawurlencode', $categorySlugs)) . ')&order=category.asc,created_at.desc&limit=300');
 
 // Group by category, preserving the already-sorted (newest-first) order.
@@ -52,13 +44,6 @@ $featured = !empty($categorySliders)
     ? array_merge(...array_map(fn($s) => $s['products'], $categorySliders))
     : [];
 
-// Hero slider — 3 PINNED real products (not a random/latest category pick,
-// which is what kept breaking: a category query could land on a product
-// whose image_url was dead). Each slide is now tied to a specific product
-// id, using that exact row's image_url — the SAME field/value categoria.php
-// already renders successfully — so the image is confirmed working, not
-// guessed at.
-
 /** First image from a product's comma-separated image_url column. */
 function hero_product_image(?array $p): string
 {
@@ -70,43 +55,32 @@ function hero_product_image(?array $p): string
 
 /**
  * Picks ONE photographed product from an already-fetched in-memory list
- * (newest-first) whose name matches $nameLike (case-insensitive substring)
- * — used to prefer a specific well-known product (e.g. "L'Occitane",
- * "Xiaomi") without hard-coding its id. Falls back to the first photographed
- * product in the list if no name match exists, so the slide is never empty.
- * Searches data already fetched above instead of hitting Supabase directly
- * (that used to cost up to 2 requests per hero slide).
+ * (newest-first), excluding any id already used by an earlier hero slide.
+ * Now that all 3 hero slides draw from the same single relojes catalog
+ * (pre-pivot they each came from a different category, so collisions were
+ * impossible), $excludeIds keeps them from showing the same watch twice.
  */
-function hero_pick_from_group(array $group, string $nameLike = ''): ?array
+function hero_pick_from_group(array $group, array $excludeIds = []): ?array
 {
-    $photographed = array_values(array_filter($group, fn($p) => !empty($p['image_url'])));
-    if ($nameLike !== '') {
-        foreach ($photographed as $p) {
-            if (stripos((string)($p['name'] ?? ''), $nameLike) !== false) {
-                return $p;
-            }
-        }
-    }
+    $photographed = array_values(array_filter(
+        $group,
+        fn($p) => !empty($p['image_url']) && !in_array((int)($p['id'] ?? 0), $excludeIds, true)
+    ));
     return $photographed[0] ?? null;
 }
 
-// Slide 1 — pinned to a specific product: id=179, Hidrolimpiador Facial Hyser.
-$heroP1Rows = sb_get($cfg, 'products?id=eq.179&is_active=is.true&approval_status=eq.approved&limit=1');
-$heroP1     = $heroP1Rows[0] ?? null;
+// 3 hero slides, all drawn from the relojes catalog (the only category
+// left) — distinct products so the same watch photo doesn't repeat.
+$relojes = $productsByCategory['relojes'] ?? [];
 
-// Slide 2 — belleza, prefer a named perfume/L'Occitane product, else any
-// photographed belleza product — searched from the combined fetch above.
-$belleza = $productsByCategory['belleza'] ?? [];
-$heroP2  = hero_pick_from_group($belleza, 'Occitane')
-    ?? hero_pick_from_group($belleza, 'Perfume')
-    ?? hero_pick_from_group($belleza);
+$heroP1 = hero_pick_from_group($relojes);
+$used   = array_values(array_filter([$heroP1['id'] ?? null], fn($v) => $v !== null));
 
-// Slide 3 — electronica, prefer the Xiaomi router or a Startech cable, else
-// any photographed electronica product — searched from the combined fetch above.
-$electronica = $productsByCategory['electronica'] ?? [];
-$heroP3      = hero_pick_from_group($electronica, 'Xiaomi')
-    ?? hero_pick_from_group($electronica, 'Startech')
-    ?? hero_pick_from_group($electronica);
+$heroP2 = hero_pick_from_group($relojes, array_map('intval', $used));
+$used[] = $heroP2['id'] ?? null;
+$used   = array_values(array_filter($used, fn($v) => $v !== null));
+
+$heroP3 = hero_pick_from_group($relojes, array_map('intval', $used));
 
 $heroSlide1Image = hero_product_image($heroP1);
 $heroSlide1Id    = $heroP1['id'] ?? null;
@@ -163,27 +137,27 @@ function render_category_slider_card(array $p, array $cfg): string
     <?php endif; ?>
     
     <!-- SEO Meta Tags -->
-    <title>KhurmiStore | Belleza, Accesorios Móvil y Electrónica</title>
-    <meta name="description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
-    <meta name="keywords" content="belleza, accesorios para móvil, relojes inteligentes, auriculares inalámbricos, electrónica, fundas para móvil, tecnología premium España">
+    <title>KhurmiStore | Relojes Inteligentes España | Envío Gratis</title>
+    <meta name="description" content="Compra relojes inteligentes online en España. Diseño, salud y tecnología en tu muñeca. Envío gratis, pago 100% seguro y garantía de 12 meses.">
+    <meta name="keywords" content="relojes inteligentes, smartwatch, reloj inteligente España, comprar smartwatch online, relojes digitales, relojes deportivos, relojes analógicos">
     <meta name="theme-color" content="#ff6b35">
     <meta name="author" content="KhurmiStore">
     <link rel="canonical" href="https://khurmistore.es/">
-    
+
     <!-- Open Graph Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="KhurmiStore | Belleza, Accesorios Móvil y Electrónica">
-    <meta property="og:description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
+    <meta property="og:title" content="KhurmiStore | Relojes Inteligentes España | Envío Gratis">
+    <meta property="og:description" content="Compra relojes inteligentes online en España. Diseño, salud y tecnología en tu muñeca. Envío gratis, pago 100% seguro y garantía de 12 meses.">
     <meta property="og:url" content="https://khurmistore.es/">
     <meta property="og:image" content="https://khurmistore.es/og-image.jpg">
     <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630"> 
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="es_ES">
-    
-    <!-- Twitter Card Tags -->  
+
+    <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="KhurmiStore | Belleza, Accesorios Móvil y Electrónica">
-    <meta name="twitter:description" content="Tienda online de productos de belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago seguro. ¡Descubre nuestras ofertas!">
+    <meta name="twitter:title" content="KhurmiStore | Relojes Inteligentes España | Envío Gratis">
+    <meta name="twitter:description" content="Compra relojes inteligentes online en España. Diseño, salud y tecnología en tu muñeca. Envío gratis, pago 100% seguro y garantía de 12 meses.">
     <meta name="twitter:image" content="https://khurmistore.es/og-image.jpg">
     
     <!-- Robots Meta -->
@@ -249,7 +223,7 @@ function render_category_slider_card(array $p, array $cfg): string
   "name": "KhurmiStore",
   "url": "https://khurmistore.es",
   "logo": "https://khurmistore.es/images/logo.png",
-  "description": "Tienda online multicategoría en España: belleza, accesorios para móvil, relojes inteligentes, electrónica y mucho más.",
+  "description": "Tienda online especializada en relojes inteligentes en España. Diseño, tecnología y salud en tu muñeca, con envío rápido y pago 100% seguro.",
   "email": "info@khurmistore.es",
   "contactPoint": {
     "@type": "ContactPoint",
@@ -367,16 +341,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide active">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">CUIDADO FACIAL</span>
-                        <h1>Limpieza <span class="highlight">Facial</span><br>Profunda</h1>
-                        <p>Hidrolimpiador facial recargable para una piel radiante</p>
+                        <span class="badge">RELOJES INTELIGENTES</span>
+                        <h1>Relojes <span class="highlight">Inteligentes</span><br>para tu Día a Día</h1>
+                        <p>Estilo, tecnología y salud en tu muñeca. Envío gratis a toda España.</p>
                         <div class="hero-buttons">
                             <button class="btn-primary" onclick="<?= $heroSlide1Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide1Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="Hidrolimpiador facial Hyser" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide1Image) ?>" alt="<?= htmlspecialchars($heroP1['name'] ?? 'Reloj inteligente') ?>" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -384,16 +358,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">BELLEZA PREMIUM</span>
-                        <h2>Perfumería y <span class="highlight">Belleza</span><br>Para Ti</h2>
-                        <p>Descubre nuestra selección de perfumería y cuidado personal</p>
+                        <span class="badge">DISEÑO Y ESTILO</span>
+                        <h2>Diseño Premium,<br><span class="highlight">Tecnología</span> Avanzada</h2>
+                        <p>Monitoriza tu actividad, recibe notificaciones y mucho más — con un diseño que querrás llevar todos los días.</p>
                         <div class="hero-buttons">
                             <button class="btn-primary" onclick="<?= $heroSlide2Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide2Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="<?= htmlspecialchars($heroP2['name'] ?? 'Producto de belleza') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide2Image) ?>" alt="<?= htmlspecialchars($heroP2['name'] ?? 'Reloj inteligente') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -401,16 +375,16 @@ function render_category_slider_card(array $p, array $cfg): string
             <div class="slide">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge">TECNOLOGÍA</span>
-                        <h2>Electrónica y <span class="highlight">Gadgets</span><br>Para tu Día a Día</h2>
-                        <p>Tecnología de calidad al mejor precio, envío rápido a toda España</p>
+                        <span class="badge">ENVÍO GRATIS ESPAÑA</span>
+                        <h2>Tu Reloj Inteligente<br><span class="highlight">Perfecto</span> te Espera</h2>
+                        <p>Autonomía de batería, resistencia al agua y monitor de salud 24/7. Pago 100% seguro.</p>
                         <div class="hero-buttons">
                             <button class="btn-primary" onclick="<?= $heroSlide3Id ? "window.location.href='/producto.php?id=" . (int)$heroSlide3Id . "'" : 'scrollToProducts()' ?>">Comprar Ahora <i class="fas fa-arrow-right"></i></button>
                             <button class="btn-secondary">Explorar</button>
                         </div>
                     </div>
                     <div class="hero-image">
-                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="<?= htmlspecialchars($heroP3['name'] ?? 'Producto de electrónica') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
+                        <div class="floating-3d"><img src="<?= htmlspecialchars($heroSlide3Image) ?>" alt="<?= htmlspecialchars($heroP3['name'] ?? 'Reloj inteligente') ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%230a0e27%22/%3E%3C/svg%3E';"></div>
                         <div class="glow-circle"></div>
                     </div>
                 </div>
@@ -425,7 +399,7 @@ function render_category_slider_card(array $p, array $cfg): string
         </div>
     </section>
 
-    <!-- Sliders de Categoría (uno por cada categoría del menú, datos reales de Supabase) -->
+    <!-- Colección de Relojes Inteligentes (datos reales de Supabase) -->
     <?php foreach ($categorySliders as $slider): ?>
         <section class="category-slider-section" aria-label="<?= htmlspecialchars($slider['label']) ?>">
             <div class="section-header category-slider-header">
@@ -478,7 +452,7 @@ function render_category_slider_card(array $p, array $cfg): string
         <div class="footer-content">
             <div class="footer-col">
                 <div class="logo"><i class="fas fa-wave-square"></i><div class="logo-text"><span class="letter">K</span><span class="letter">h</span><span class="letter">u</span><span class="letter">r</span><span class="letter">m</span><span class="letter">i</span><span class="letter">S</span><span class="letter">t</span><span class="letter">o</span><span class="letter">r</span><span class="letter">e</span></div></div>
-                <p>Tu tienda online de belleza, accesorios para móvil, relojes y electrónica en España.</p>
+                <p>Tu tienda online de relojes inteligentes en España.</p>
                 <p class="footer-legal-info">KhurmiStore &mdash; Calle Doctor Bellido, 46, Bajo, 28018 Madrid, España<br>Titular: Khuram Shahzad &middot; NIE: Y5243613H<br>Tel: +34 662 24 18 60 &middot; info@khurmistore.es</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Facebook"><i class="fab fa-facebook"></i></a>
@@ -500,15 +474,11 @@ function render_category_slider_card(array $p, array $cfg): string
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>Categorías</h3>
+                <h3>Relojes</h3>
                 <ul>
-                    <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
-                    <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                    <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
-                    <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="/categoria.php">Ver todas las categorías</a></li>
-                    <li><a href="/categoria.php">Todos los productos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=analogicos">Analógicos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=digitales">Digitales / Smartwatch</a></li>
+                    <li><a href="/categoria.php?cat=relojes">Todos los relojes</a></li>
                 </ul>
             </div>
             <div class="footer-col">

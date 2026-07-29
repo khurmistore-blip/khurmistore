@@ -8,10 +8,20 @@ declare(strict_types=1);
  *
  * Each node: ['slug' => ..., 'name' => ..., 'children' => [...]]
  * - Top-level slugs match the EXISTING live `category` column values in
- *   Supabase (auriculares, relojes, accesorios-movil, belleza, electronica)
- *   — do not rename these without also migrating existing product rows.
- * - Sub/sub-sub slugs map to the new `subcategoria`/`sub_subcategoria`
- *   columns (see the ALTER TABLE below) — lowercase, ascii, hyphenated.
+ *   Supabase — do not rename these without also migrating existing product
+ *   rows.
+ * - Sub/sub-sub slugs map to the `subcategoria`/`sub_subcategoria` columns
+ *   (see the ALTER TABLE below) — lowercase, ascii, hyphenated.
+ *
+ * SMART-WATCH-ONLY PIVOT (2026-07-28): the store now sells only relojes —
+ * belleza/electronica/auriculares/accesorios-movil were removed from this
+ * tree (and from script.js's CATEGORY_TREE mirror below), so they no longer
+ * appear in nav or on the homepage. Their product ROWS still exist in
+ * Supabase with those `category` values and are still directly reachable
+ * via /categoria.php?cat=belleza (etc.) — categoria.php's own $categoryConfig
+ * wasn't touched, this pivot only covers nav/homepage/config. Unpublishing
+ * or removing those rows, and cleaning up categoria.php/blog/legal pages
+ * that still reference them, is explicitly a separate later step.
  *
  * categoria.php requires this file to resolve breadcrumb/H1 labels via
  * find_category_path() below. The actual on-page nav (desktop per-category
@@ -86,100 +96,4 @@ return [
             ['slug' => 'digitales',  'name' => 'Digitales / Smartwatch', 'children' => []],
         ],
     ],
-    [
-        'slug' => 'belleza',
-        'name' => 'Belleza',
-        'children' => [
-            [
-                'slug' => 'unas-y-herramientas',
-                'name' => 'Uñas y Herramientas',
-                'children' => [],
-            ],
-            [
-                'slug' => 'alimentacion-y-salud',
-                'name' => 'Alimentación y Salud',
-                'children' => [
-                    ['slug' => 'cuidado-de-la-salud', 'name' => 'Cuidado de la Salud', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'cabello-y-accesorios',
-                'name' => 'Cabello y Accesorios',
-                'children' => [
-                    ['slug' => 'diademas-y-cintas',  'name' => 'Diademas y Cintas para el Pelo', 'children' => []],
-                    ['slug' => 'horquillas',          'name' => 'Horquillas para el Pelo', 'children' => []],
-                    ['slug' => 'cabello-humano',      'name' => 'Cabello Humano', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'cabello-sintetico',
-                'name' => 'Cabello Sintético',
-                'children' => [
-                    ['slug' => 'cabello-para-cosplay', 'name' => 'Cabello para Cosplay', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'cuidado-de-la-piel',
-                'name' => 'Cuidado de la Piel',
-                'children' => [
-                    ['slug' => 'maquinillas-de-afeitar', 'name' => 'Maquinillas de Afeitar', 'children' => []],
-                    ['slug' => 'mascarillas-faciales',   'name' => 'Mascarillas Faciales', 'children' => []],
-                    ['slug' => 'proteccion-solar',        'name' => 'Protección Solar', 'children' => []],
-                    ['slug' => 'aceites-esenciales',      'name' => 'Aceites Esenciales', 'children' => []],
-                    ['slug' => 'cuidado-corporal',        'name' => 'Cuidado Corporal', 'children' => []],
-                    ['slug' => 'cuidado-facial',          'name' => 'Cuidado Facial', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'mechones-de-cabello',
-                'name' => 'Mechones de Cabello',
-                'children' => [
-                    ['slug' => 'paquete-pre-coloreado',   'name' => 'Paquete Pre-Coloreado', 'children' => []],
-                    ['slug' => 'tejido-de-cabello',        'name' => 'Tejido de Cabello', 'children' => []],
-                    ['slug' => 'estilismo-de-cabello',     'name' => 'Estilismo de Cabello', 'children' => []],
-                    ['slug' => 'mechones-de-salon',        'name' => 'Mechones de Salón', 'children' => []],
-                    ['slug' => 'mechon-pre-coloreado',     'name' => 'Mechón Pre-Coloreado', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'maquillaje',
-                'name' => 'Maquillaje',
-                'children' => [
-                    ['slug' => 'lapiz-de-cejas',      'name' => 'Lápiz de Cejas', 'children' => []],
-                    ['slug' => 'set-de-maquillaje',   'name' => 'Set de Maquillaje', 'children' => []],
-                    ['slug' => 'sombra-de-ojos',      'name' => 'Sombra de Ojos', 'children' => []],
-                    ['slug' => 'brochas-de-maquillaje', 'name' => 'Brochas de Maquillaje', 'children' => []],
-                    ['slug' => 'pestanas-postizas',   'name' => 'Pestañas Postizas', 'children' => []],
-                    ['slug' => 'pintalabios',         'name' => 'Pintalabios', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'pelucas-y-extensiones',
-                'name' => 'Pelucas y Extensiones',
-                'children' => [
-                    ['slug' => 'peluca-cabello-humano',        'name' => 'Peluca de Cabello Humano', 'children' => []],
-                    ['slug' => 'postizo-sintetico',            'name' => 'Postizo Sintético', 'children' => []],
-                    ['slug' => 'peluca-encaje-sintetica',      'name' => 'Peluca de Encaje Sintética', 'children' => []],
-                    ['slug' => 'peluca-encaje-cabello-humano', 'name' => 'Peluca de Encaje de Cabello Humano', 'children' => []],
-                    ['slug' => 'trenzas',                      'name' => 'Trenzas', 'children' => []],
-                    ['slug' => 'pelucas-sinteticas',           'name' => 'Pelucas Sintéticas', 'children' => []],
-                ],
-            ],
-            [
-                'slug' => 'herramientas-de-belleza',
-                'name' => 'Herramientas de Belleza',
-                'children' => [
-                    ['slug' => 'espejo',                     'name' => 'Espejo', 'children' => []],
-                    ['slug' => 'planchas-de-pelo',           'name' => 'Planchas de Pelo', 'children' => []],
-                    ['slug' => 'limpiador-facial-electrico', 'name' => 'Limpiador Facial Eléctrico', 'children' => []],
-                    ['slug' => 'herramientas-cuidado-facial', 'name' => 'Herramientas de Cuidado Facial', 'children' => []],
-                    ['slug' => 'rizador-de-pelo',            'name' => 'Rizador de Pelo', 'children' => []],
-                    ['slug' => 'vaporizador-facial',         'name' => 'Vaporizador Facial', 'children' => []],
-                ],
-            ],
-        ],
-    ],
-    ['slug' => 'electronica',       'name' => 'Electrónica',             'children' => []],
-    ['slug' => 'auriculares',       'name' => 'Auriculares y Audio',     'children' => []],
-    ['slug' => 'accesorios-movil',  'name' => 'Accesorios para Móvil',   'children' => []],
 ];
