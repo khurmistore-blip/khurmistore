@@ -501,7 +501,7 @@ function render_category_slider_card(array $p, array $cfg): string
             
         </div>
         <div class="footer-bottom">
-            <p class="footer-copyright">&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p>
+            <p class="footer-copyright">&copy; 2026 KhurmiStore España. Todos los derechos reservados.</p>
         </div>
     </footer>
 

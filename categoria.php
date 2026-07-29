@@ -25,6 +25,24 @@ $sub2 = isset($_GET['sub2']) ? trim($_GET['sub2']) : '';
 if ($cat === '') { $sub = ''; }
 if ($sub === '') { $sub2 = ''; }
 
+// SMART-WATCH-ONLY PIVOT (2026-07-28): any ?cat= slug no longer present in
+// categories_config.php's tree (belleza/electronica/auriculares/
+// accesorios-movil — retired, product rows hidden in the DB but the old
+// URLs are still out there in search results/bookmarks/backlinks) gets a
+// permanent redirect to the one category the store still sells, instead of
+// rendering a 200 OK page with zero products for Google to crawl as thin
+// content. Must run before any output (nothing is echoed above this).
+if ($cat !== '') {
+    $catStillExists = false;
+    foreach ($categoryTree as $node) {
+        if ($node['slug'] === $cat) { $catStillExists = true; break; }
+    }
+    if (!$catStillExists) {
+        header('Location: /categoria.php?cat=relojes', true, 301);
+        exit;
+    }
+}
+
 // Excludes refurbished/"Reacondicionado" listings — a reviewer flagged one as
 // looking out of place; hidden from display only, never deleted from the DB.
 $query = 'products?is_active=is.true&approval_status=eq.approved&name=not.ilike.*Reacondicionado*&order=created_at.desc';
@@ -50,36 +68,16 @@ $sub2Label = $catPath[2]['name'] ?? '';
 // (120-155 chars), and a short keyword-rich intro paragraph shown under the
 // H1. Keeps categoria.php's existing single-file-covers-every-category
 // approach — this dict is the only thing that grows as categories change.
+// SMART-WATCH-ONLY PIVOT (2026-07-28): auriculares/accesorios-movil/belleza/
+// electronica entries removed — those ?cat= values now redirect above
+// before this array is ever consulted, so keeping their config here would
+// just be unreachable dead weight.
 $categoryConfig = [
-    'auriculares' => [
-        'label'       => 'Auriculares y Audio',
-        'title'       => 'Auriculares y Cascos | Comprar Online en España | KhurmiStore',
-        'description' => 'Descubre nuestra selección de auriculares inalámbricos, cascos gaming y accesorios de audio. Envío rápido a toda España y pago seguro en KhurmiStore.',
-        'intro'       => 'En KhurmiStore encontrarás una amplia gama de auriculares inalámbricos y cascos gaming pensados para quienes buscan la mejor calidad de sonido. Desde auriculares deportivos hasta modelos con cancelación de ruido, toda nuestra selección de audio llega con envío rápido a toda España.',
-    ],
     'relojes' => [
         'label'       => 'Relojes',
-        'title'       => 'Relojes de Hombre y Mujer | Comprar Online | KhurmiStore',
-        'description' => 'Compra relojes de hombre, mujer y unisex de las mejores marcas al mejor precio. Diseños elegantes y deportivos con envío rápido a toda España.',
-        'intro'       => 'Nuestra colección de relojes incluye modelos de hombre, mujer y unisex de marcas reconocidas, combinando diseños elegantes para el día a día con opciones más deportivas. Encuentra el estilo perfecto y recíbelo rápido en cualquier punto de España.',
-    ],
-    'accesorios-movil' => [
-        'label'       => 'Accesorios para Móvil',
-        'title'       => 'Accesorios para Móvil: Fundas y Protectores | KhurmiStore',
-        'description' => 'Fundas, protectores de pantalla y accesorios para tu móvil y tablet. Protección de calidad al mejor precio, con envío rápido a toda España.',
-        'intro'       => 'Protege tu smartphone con nuestra selección de fundas y protectores de pantalla compatibles con los modelos más populares del mercado. Calidad y protección al mejor precio, con envío rápido a toda España.',
-    ],
-    'belleza' => [
-        'label'       => 'Belleza',
-        'title'       => 'Productos de Belleza y Cuidado Facial | KhurmiStore',
-        'description' => 'Cosmética, cuidado facial, dispositivos de belleza y cuidado del cabello de marcas líderes. Descubre tu rutina ideal con envío rápido a toda España.',
-        'intro'       => 'Descubre cosmética y cuidado facial de marcas líderes, además de dispositivos de belleza y productos para el cuidado del cabello pensados para toda rutina. Encuentra tu próximo imprescindible con envío rápido a toda España.',
-    ],
-    'electronica' => [
-        'label'       => 'Electrónica',
-        'title'       => 'Electrónica y Gadgets | Comprar Online | KhurmiStore',
-        'description' => 'Altavoces, cargadores, cables y gadgets electrónicos al mejor precio. Tecnología de calidad con envío rápido a toda España y pago seguro.',
-        'intro'       => 'Explora nuestra selección de altavoces, cargadores, cables y gadgets electrónicos para el día a día. Tecnología de calidad al mejor precio, con envío rápido a toda España y pago 100% seguro.',
+        'title'       => 'Relojes Inteligentes | Comprar Online | KhurmiStore',
+        'description' => 'Compra relojes inteligentes online en España. Diseño, salud y tecnología en tu muñeca, con envío rápido y pago 100% seguro.',
+        'intro'       => 'Nuestra colección de relojes inteligentes combina diseño, salud y tecnología en tu muñeca: monitoriza tu actividad, recibe notificaciones y mucho más. Encuentra el modelo perfecto y recíbelo rápido en cualquier punto de España.',
     ],
 ];
 
@@ -88,9 +86,9 @@ $categoryConfig = [
 // description, or H1.
 $defaultCatConfig = [
     'label'       => 'Todos los Productos',
-    'title'       => 'Tienda Online | Belleza, Tech y Electrónica | KhurmiStore',
-    'description' => 'Descubre toda la tienda de KhurmiStore: belleza, accesorios para móvil, relojes y electrónica. Envío rápido a toda España y pago 100% seguro.',
-    'intro'       => 'Bienvenido a la tienda de KhurmiStore, con una selección cuidada de productos de belleza, accesorios para móvil, relojes y electrónica. Compra con confianza: envío rápido a toda España y pago 100% seguro.',
+    'title'       => 'Tienda Online | Relojes Inteligentes | KhurmiStore',
+    'description' => 'Descubre toda la tienda de KhurmiStore: relojes inteligentes con envío rápido a toda España y pago 100% seguro.',
+    'intro'       => 'Bienvenido a la tienda de KhurmiStore, especialistas en relojes inteligentes. Compra con confianza: envío rápido a toda España y pago 100% seguro.',
 ];
 
 if ($cat !== '' && isset($categoryConfig[$cat])) {
@@ -384,7 +382,7 @@ $breadcrumbSchema = [
         <div class="footer-content">
             <div class="footer-col">
                 <div class="logo"><i class="fas fa-wave-square"></i><div class="logo-text"><span class="letter">K</span><span class="letter">h</span><span class="letter">u</span><span class="letter">r</span><span class="letter">m</span><span class="letter">i</span><span class="letter">S</span><span class="letter">t</span><span class="letter">o</span><span class="letter">r</span><span class="letter">e</span></div></div>
-                <p>Tu tienda online de belleza, accesorios para móvil, relojes y electrónica en España.</p>
+                <p>Tu tienda online de relojes inteligentes en España.</p>
                 <p class="footer-legal-info">KhurmiStore &mdash; Calle Doctor Bellido, 46, Bajo, 28018 Madrid, España<br>Titular: Khuram Shahzad &middot; NIE: Y5243613H<br>Tel: +34 662 24 18 60 &middot; info@khurmistore.es</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61590018628529" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Facebook"><i class="fab fa-facebook"></i></a>
@@ -406,15 +404,11 @@ $breadcrumbSchema = [
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>Categorías</h3>
+                <h3>Relojes</h3>
                 <ul>
-                    <li><a href="/categoria.php?cat=auriculares">Auriculares y Audio</a></li>
-                    <li><a href="/categoria.php?cat=relojes">Relojes</a></li>
-                    <li><a href="/categoria.php?cat=accesorios-movil">Accesorios para Móvil</a></li>
-                    <li><a href="/categoria.php?cat=belleza">Belleza</a></li>
-                    <li><a href="/categoria.php?cat=electronica">Electrónica</a></li>
-                    <li><a href="/categoria.php">Ver todas las categorías</a></li>
-                    <li><a href="/categoria.php">Todos los productos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=analogicos">Analógicos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=digitales">Digitales / Smartwatch</a></li>
+                    <li><a href="/categoria.php?cat=relojes">Todos los relojes</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -436,7 +430,7 @@ $breadcrumbSchema = [
             </div>
         </div>
         <div class="footer-bottom">
-            <p class="footer-copyright">&copy; 2025 KhurmiStore España. Todos los derechos reservados.</p>
+            <p class="footer-copyright">&copy; 2026 KhurmiStore España. Todos los derechos reservados.</p>
         </div>
     </footer>
 

@@ -28,7 +28,12 @@ header('Content-Type: application/xml; charset=utf-8');
 // `is_active` boolean column; `status` is a text column, filtered here the
 // same way. Using the real existing convention instead of a column that
 // doesn't exist.
-$products = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&order=id.asc');
+// SMART-WATCH-ONLY PIVOT (2026-07-28): category=eq.relojes added as a
+// defensive backstop for Merchant Center — this feed should never submit a
+// belleza/electronica/auriculares/accesorios-movil product regardless of
+// whatever is_active/approval_status state those retired-category rows are
+// actually in at the DB level.
+$products = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&category=eq.relojes&order=id.asc');
 
 // Manual exclusion list by product id — add more ids here as needed.
 $excluded_ids = [176, 178, 183, 185]; // CBD products

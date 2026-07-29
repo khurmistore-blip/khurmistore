@@ -34,14 +34,21 @@ $cfg = require __DIR__ . '/config.php';
 $today = date('Y-m-d');
 
 // Real category slugs — same list used by the header "Categorías" dropdown.
-$categorySlugs = ['auriculares', 'relojes', 'accesorios-movil', 'belleza', 'electronica'];
+// SMART-WATCH-ONLY PIVOT (2026-07-28): reduced to relojes — the other 4
+// categories' product rows are hidden in the DB now, and their /category/
+// slug URLs were left in this list until this fix, which is exactly the
+// "thin/empty content" risk this pivot's cleanup pass was meant to close.
+$categorySlugs = ['relojes'];
 
 // All active, approved products, for individual producto.php?id=X pages.
 // Wrapped defensively so a Supabase error/warning can never leak text into
 // the XML body — worst case the sitemap just omits product URLs this run.
+// category=eq.relojes is a defensive backstop, not just relying on
+// is_active/approval_status to have been set correctly for the retired
+// categories' rows — belt and suspenders for what Google/Merchant Center see.
 $products = [];
 try {
-    $fetched = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&select=id');
+    $fetched = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&category=eq.relojes&select=id');
     if (is_array($fetched)) {
         $products = $fetched;
     }

@@ -120,7 +120,7 @@ if ($customerEmail !== '') {
         . '&#128231; <a href="mailto:info@khurmistore.es" style="color:#FF6B35;">info@khurmistore.es</a><br>'
         . '&#128172; <a href="https://wa.me/34662241860" style="color:#FF6B35;">WhatsApp: +34 662 24 18 60</a></p></div>'
         . '<div style="background:#0A0E27;padding:16px;text-align:center;">'
-        . '<span style="color:#8B92B5;font-size:11px;">&copy; 2025 KhurmiStore Espa&ntilde;a</span></div></div>';
+        . '<span style="color:#8B92B5;font-size:11px;">&copy; 2026 KhurmiStore Espa&ntilde;a</span></div></div>';
 
     $emailSent = send_email($customerEmail, "Tu pedido {$orderNumber} va en camino", $html);
 }
