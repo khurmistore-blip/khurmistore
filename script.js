@@ -1148,6 +1148,10 @@ function selectVariant(variantId) {
     if (promptEl) promptEl.style.display = 'none';
 
     if (variant.image) {
+        // A video (YouTube or self-hosted MP4) sharing this gallery may be the
+        // visible element right now — hide it first so the variant's image is
+        // actually seen, not silently swapped in behind it.
+        hideProductVideo();
         const mainImg = document.getElementById('mainProductImg');
         if (mainImg) mainImg.src = variant.image;
     }
@@ -1236,16 +1240,27 @@ function renderProductDetails() {
     const rawFeatures = Array.isArray(product.features) && product.features.length > 0 ? product.features : [];
     const topFeatures = rawFeatures.slice(0, 2);
 
-    // Video thumbnail (from BigBuy's video_id, if any) — inserted as the 2nd
-    // thumbnail so it stays prominent without displacing the default main
-    // image (gallery[0], still shown/active first). No-op when videoId is
-    // null/empty — gallery behaves exactly as before in that case.
+    // Video thumbnail — inserted as the 2nd thumbnail so it stays prominent
+    // without displacing the default main image (gallery[0], still shown/
+    // active first). A self-hosted MP4 (videoUrl, AliExpress-sourced
+    // products) takes precedence over a YouTube videoId when a product
+    // somehow has both; the YouTube branch below is untouched otherwise —
+    // no-op (gallery behaves exactly as before) when neither is set.
+    const hasMp4Video      = !!p.videoUrl;
+    const hasYoutubeVideo  = !hasMp4Video && !!p.videoId;
     const galleryThumbs = p.gallery.map((img, i) => `
         <div class="thumb ${i === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
             <img src="${img}" alt="${p.name} vista ${i+1}">
         </div>
     `);
-    if (p.videoId) {
+    if (hasMp4Video) {
+        galleryThumbs.splice(1, 0, `
+            <div class="thumb thumb-video" id="thumbVideoMp4" onclick="playProductVideoMp4(this)">
+                <img src="${p.gallery[0]}" alt="${p.name} vídeo">
+                <span class="thumb-play-icon"><i class="fas fa-play"></i></span>
+            </div>
+        `);
+    } else if (hasYoutubeVideo) {
         galleryThumbs.splice(1, 0, `
             <div class="thumb thumb-video" id="thumbVideo" onclick="playProductVideo('${p.videoId}', this)">
                 <img src="https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg" alt="${p.name} vídeo">
@@ -1270,16 +1285,28 @@ function renderProductDetails() {
                 <div class="main-image" id="mainImageWrap">
                     ${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}
                     <img id="mainProductImg" src="${p.gallery[0]}" alt="${p.name}">
-                    ${p.videoId ? `
+                    ${hasMp4Video ? `
+                    <button type="button" class="watch-video-btn" onclick="playProductVideoMp4(document.getElementById('thumbVideoMp4'))">
+                        <i class="fas fa-play"></i> Ver vídeo
+                    </button>
+                    ` : ''}
+                    ${hasYoutubeVideo ? `
                     <button type="button" class="watch-video-btn" onclick="playProductVideo('${p.videoId}', document.getElementById('thumbVideo'))">
                         <i class="fas fa-play"></i> Ver vídeo
                     </button>
                     ` : ''}
                 </div>
+                ${hasMp4Video ? `
+                <div class="main-image main-video-wrap" id="mainProductVideoMp4Wrap" style="display:none;">
+                    <video id="mainProductVideoMp4" controls playsinline preload="metadata" muted loop poster="${p.gallery[0]}">
+                        <source src="${p.videoUrl}" type="video/mp4">
+                    </video>
+                </div>
+                ` : ''}
                 <div class="main-image main-video-wrap" id="mainProductVideoWrap" style="display:none;">
                     <iframe id="mainProductVideoFrame" src="" title="${p.name} vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
-                ${(p.gallery.length > 1 || p.videoId) ? `
+                ${(p.gallery.length > 1 || hasMp4Video || hasYoutubeVideo) ? `
                 <div class="thumbnail-list">
                     ${galleryThumbs.join('')}
                 </div>
@@ -1483,12 +1510,33 @@ function playProductVideo(videoId, thumb) {
     if (thumb) thumb.classList.add('active');
 }
 
+// Self-hosted MP4 counterpart to playProductVideo() (YouTube). Muted per the
+// player's `muted` attribute, so calling .play() here on a user click is not
+// an autoplay-with-sound violation — same click-to-play interaction as the
+// YouTube thumbnail/"Ver vídeo" button.
+function playProductVideoMp4(thumb) {
+    const imgWrap   = document.getElementById('mainImageWrap');
+    const videoWrap = document.getElementById('mainProductVideoMp4Wrap');
+    const video     = document.getElementById('mainProductVideoMp4');
+    if (!imgWrap || !videoWrap || !video) return;
+    imgWrap.style.display = 'none';
+    videoWrap.style.display = 'block';
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    if (thumb) thumb.classList.add('active');
+    video.currentTime = 0;
+    video.play().catch(() => {}); // ignore rejected play() (e.g. browser blocks it)
+}
+
 function hideProductVideo() {
     const imgWrap   = document.getElementById('mainImageWrap');
     const videoWrap = document.getElementById('mainProductVideoWrap');
     const frame     = document.getElementById('mainProductVideoFrame');
+    const mp4Wrap   = document.getElementById('mainProductVideoMp4Wrap');
+    const mp4Video  = document.getElementById('mainProductVideoMp4');
     if (videoWrap) videoWrap.style.display = 'none';
-    if (frame) frame.src = ''; // stops playback when switching away
+    if (frame) frame.src = ''; // stops YouTube playback when switching away
+    if (mp4Wrap) mp4Wrap.style.display = 'none';
+    if (mp4Video) { mp4Video.pause(); mp4Video.currentTime = 0; } // stops MP4 playback when switching away
     if (imgWrap) imgWrap.style.display = '';
 }
 

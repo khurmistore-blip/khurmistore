@@ -229,6 +229,10 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
         'image'       => $image,
         'gallery'     => $gallery,
         'videoId'     => !empty($p['video_id']) ? trim((string)$p['video_id']) : null,
+        // Self-hosted MP4 (AliExpress-sourced products, uploaded to /img/product/).
+        // Takes precedence over videoId when both are present — decided in
+        // script.js's renderProductDetails(), not here.
+        'videoUrl'    => !empty($p['video_url']) ? trim((string)$p['video_url']) : null,
         'tag'         => '',
         'stock'       => (int)($p['stock'] ?? 0),
         'isActive'    => ($p['is_active'] ?? true) !== false,
@@ -295,6 +299,7 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
     .thumb-video{position:relative}
     .thumb-video .thumb-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,39,.35);color:#fff;font-size:20px;pointer-events:none}
     .main-image.main-video-wrap iframe{width:100%;height:100%;border:0;display:block}
+    .main-image.main-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;background:#0A0E27}
     .watch-video-btn{position:absolute;left:16px;bottom:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:none;border-radius:999px;background:rgba(10,14,39,.72);color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
     .watch-video-btn:hover{background:rgba(10,14,39,.88)}
     .watch-video-btn i{color:var(--primary)}
