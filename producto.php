@@ -51,6 +51,15 @@ if ($p) {
     }
 }
 
+// REVIEWS: only approved reviews, only for the main product (not the related
+// mini-cards — no fake/aggregate rating shown there or anywhere else). No
+// AggregateRating/Review JSON-LD schema is emitted anywhere on this page —
+// this store had a Google Merchant Center suspension for misleading content
+// that was partly resolved by REMOVING fake reviews and review schema.
+// Schema markup must only be reintroduced later, and only once real
+// verified reviews exist — do not add it back without an explicit request.
+$reviews = $p ? sb_get($cfg, 'product_reviews?product_id=eq.' . (int)$p['id'] . '&is_approved=eq.true&order=created_at.desc') : [];
+
 $pageTitle = $p ? ($p['meta_title'] ?: $p['name']) : 'Producto no encontrado';
 
 // <title>: "<name> | KhurmiStore", truncated so the total stays ~60 chars
@@ -201,6 +210,22 @@ function bb_variant_to_js(array $v): array
         'stock'     => (int)($v['stock'] ?? 0),
         'isActive'  => ($v['is_active'] ?? true) !== false,
         'sortOrder' => (int)($v['sort_order'] ?? 0),
+    ];
+}
+
+/**
+ * Maps one approved product_reviews row to the shape script.js's reviews
+ * section expects. author_name/comment are raw user-submitted text —
+ * script.js MUST escape them before rendering (never trust this as safe HTML).
+ */
+function bb_review_to_js(array $r): array
+{
+    return [
+        'id'         => (int)$r['id'],
+        'authorName' => (string)($r['author_name'] ?? ''),
+        'rating'     => max(1, min(5, (int)($r['rating'] ?? 0))),
+        'comment'    => (string)($r['comment'] ?? ''),
+        'createdAt'  => (string)($r['created_at'] ?? ''),
     ];
 }
 
@@ -570,17 +595,35 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
         </div>
     </div>
     <script src="https://www.paypal.com/sdk/js?client-id=AcSRbzZiZ0p7nBGqQjPKfcNB6RgdqvJlWnCrSNgtjN9B9_HZwjeHMNfzizsstCGjdWomaNtsBJo0vAEn&amp;currency=EUR&amp;locale=es_ES" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="/script.js" defer></script>
     <script>
+    // Anon-key Supabase client, used ONLY for the review submission INSERT
+    // (script.js's submitProductReview()). The anon key is safe to expose —
+    // access is governed entirely by product_reviews' RLS policies (public
+    // can SELECT approved rows and INSERT new rows forced to is_approved=false;
+    // nothing else). Same key sb_get() already uses server-side (supabase.php).
+    // Declared here (global, initially null) but only ASSIGNED inside the
+    // DOMContentLoaded handler below, once the deferred supabase-js CDN
+    // script has actually finished loading — this inline script itself runs
+    // immediately during parsing, well before that.
+    var reviewsSb = null;
+
     // Seed script.js's global `products` array with the real Supabase product(s)
     // for this page, then re-run renderProductDetails() so the exact same
     // gallery/cart/PayPal template renders with live data. DOMContentLoaded
     // always fires after deferred scripts, so this runs after script.js's own
     // initial (dummy-data) render.
     document.addEventListener('DOMContentLoaded', function () {
+        if (window.supabase) {
+            reviewsSb = window.supabase.createClient(<?= json_encode($cfg['supabase_url'] ?? '', JSON_UNESCAPED_UNICODE) ?>, <?= json_encode($cfg['supabase_anon_key'] ?? '', JSON_UNESCAPED_UNICODE) ?>);
+        }
         <?php if ($p): ?>
         var mainProduct = <?= json_encode(bb_product_to_js($p, $variantsByProduct), JSON_UNESCAPED_UNICODE) ?>;
         var relatedProducts = <?= json_encode(array_map(fn($rp) => bb_product_to_js($rp, $variantsByProduct), $related), JSON_UNESCAPED_UNICODE) ?>;
+        // Reviews only ever attach to the MAIN product — no aggregate/review
+        // display anywhere else (related mini-cards, category grids, etc.).
+        mainProduct.reviews = <?= json_encode(array_map('bb_review_to_js', $reviews), JSON_UNESCAPED_UNICODE) ?>;
         products.length = 0;
         products.push(mainProduct);
         Array.prototype.push.apply(products, relatedProducts);

@@ -434,3 +434,37 @@ body.announcement-active .product-details-page{padding-top:172px}
 .see-more-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(255,107,53,0.08);}
 .see-more-btn i{color:var(--primary);}
 @media (max-width:768px){.description-images-section{padding:20px 0;}.description-images-section h2{padding:0 20px;}.see-more-btn{width:calc(100% - 40px);margin:16px 20px 0;}}
+
+/* ===== PRODUCT REVIEWS (producto.php) — no fake data, no schema markup ===== */
+.reviews-summary{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.reviews-average{font-size:32px;font-weight:800;background:var(--gradient2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.reviews-stars{color:var(--primary);font-size:16px;letter-spacing:2px;}
+.reviews-stars .far{color:#555;}
+.reviews-count{color:#888;font-size:14px;}
+.reviews-empty-state{color:#ccc;font-size:15px;margin:0 0 20px;}
+.reviews-list{display:flex;flex-direction:column;gap:16px;margin-bottom:24px;}
+.review-item{padding:16px 18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;}
+.review-item-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+.review-author{font-weight:700;color:#fff;font-size:14px;}
+.review-date{color:#888;font-size:12px;}
+.review-stars{color:var(--primary);font-size:13px;letter-spacing:1px;margin-bottom:8px;}
+.review-stars .far{color:#555;}
+.review-comment{color:#ccc;font-size:14px;line-height:1.6;margin:0;white-space:pre-line;}
+.review-form-wrap{border-top:1px solid rgba(255,255,255,0.08);padding-top:22px;}
+.review-form-wrap h3{color:#fff;font-size:17px;margin:0 0 16px;}
+.review-form{display:flex;flex-direction:column;gap:16px;max-width:480px;}
+.review-form-row{display:flex;flex-direction:column;gap:6px;}
+.review-form-row label{color:#c7cbe0;font-size:13px;font-weight:600;}
+.review-form-row input[type="text"],.review-form-row textarea{padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-family:inherit;font-size:14px;resize:vertical;transition:0.2s;}
+.review-form-row input[type="text"]:focus,.review-form-row textarea:focus{outline:none;border-color:var(--primary);background:rgba(255,255,255,0.06);}
+.review-star-picker{display:flex;gap:6px;font-size:24px;}
+.review-star-picker i{color:#555;cursor:pointer;transition:0.15s;}
+.review-star-picker i.active,.review-star-picker i:hover{color:var(--primary);}
+.review-submit-btn{align-self:flex-start;padding:12px 28px;}
+.review-form-msg{color:#4ade80;font-size:13px;font-weight:600;margin:8px 0 0;}
+.review-form-msg-error{color:#ff4444;}
+/* Honeypot: off-screen, never display:none (some bots skip display:none
+   fields entirely but still fill visually-hidden ones). Real users never
+   see or reach it — aria-hidden + tabindex="-1" keep it out of AT/tab order. */
+.review-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+@media (max-width:768px){.review-form{max-width:none;}.reviews-average{font-size:26px;}}

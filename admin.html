@@ -584,6 +584,30 @@
         </table>
       </div>
     </div>
+
+    <div class="panel" style="margin-top:24px;">
+      <div class="panelHead"><span class="panelTitle">⭐ Opiniones de Clientes</span></div>
+      <div class="toolbar" style="padding:12px 16px;">
+        <select id="reviewsFilter" onchange="loadReviews()">
+          <option value="pending">Pendientes</option>
+          <option value="approved">Aprobadas</option>
+          <option value="all">Todas</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="rangeSummary" id="reviewsSummary"></span>
+      </div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th><th>Autor</th><th>Valoración</th><th>Comentario</th>
+              <th>Fecha</th><th>Estado</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="reviewsBody"><tr><td colspan="7" class="emptyState">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -829,6 +853,7 @@
     loadShippingCosts();
     loadCartEvents();
     loadVariantProductsList();
+    loadReviews();
     // auto-refresh every 60s so new orders appear without reloading
     if(autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(()=>loadOrders(false), 60000);
@@ -1004,6 +1029,77 @@
     const { error } = await sb.from('product_variants').delete().eq('id', id);
     if(error){ alert('Error eliminando variante: ' + error.message); return; }
     loadVariantsForSelectedProduct();
+  }
+
+  // ---------- PRODUCT REVIEWS MODERATION (product_reviews table) ----------
+  // No reviews are ever seeded/faked anywhere in this codebase — this panel
+  // only moderates what real customers submitted via producto.php's form.
+  async function loadReviews(){
+    const body      = document.getElementById('reviewsBody');
+    const filterSel = document.getElementById('reviewsFilter');
+    const summaryEl = document.getElementById('reviewsSummary');
+    if(!body || !filterSel) return;
+    const filter = filterSel.value;
+    body.innerHTML = '<tr><td colspan="7" class="emptyState">Loading...</td></tr>';
+
+    let query = sb.from('product_reviews').select('*, products(name)').order('created_at', { ascending: false });
+    if(filter === 'pending') query = query.eq('is_approved', false);
+    else if(filter === 'approved') query = query.eq('is_approved', true);
+
+    const { data, error } = await query;
+    if(error){ body.innerHTML = '<tr><td colspan="7" class="emptyState">Error loading reviews</td></tr>'; console.error(error); return; }
+    if(!data || data.length === 0){
+      body.innerHTML = '<tr><td colspan="7" class="emptyState">No hay opiniones</td></tr>';
+      if(summaryEl) summaryEl.textContent = '';
+      return;
+    }
+    if(summaryEl) summaryEl.textContent = data.length + (data.length === 1 ? ' opinión' : ' opiniones');
+    body.innerHTML = data.map(reviewRowHtml).join('');
+  }
+
+  function reviewRowHtml(r){
+    const rating        = Math.max(0, Math.min(5, r.rating || 0));
+    const stars          = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const date            = r.created_at ? new Date(r.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'}) : '—';
+    const productName  = (r.products && r.products.name) ? r.products.name : ('#' + r.product_id);
+    const comment        = r.comment || '';
+    const commentShort = comment.length > 80 ? escHtml(comment.slice(0,80)) + '…' : escHtml(comment);
+    const statusBadge  = r.is_approved
+      ? '<span class="payPill paid">✓ Aprobada</span>'
+      : '<span class="payPill unpaid">• Pendiente</span>';
+    const actions = r.is_approved
+      ? `<button class="iconBtn" title="Despublicar" onclick="unapproveReview(${r.id})">↩️</button>
+         <button class="iconBtn delBtn" title="Eliminar" onclick="deleteReview(${r.id})">🗑</button>`
+      : `<button class="iconBtn" title="Aprobar" onclick="approveReview(${r.id})">✅</button>
+         <button class="iconBtn delBtn" title="Rechazar (eliminar)" onclick="deleteReview(${r.id})">❌</button>`;
+    return `<tr>
+      <td>${escHtml(productName)}</td>
+      <td>${escHtml(r.author_name || '')}</td>
+      <td title="${rating}/5" style="white-space:nowrap;color:var(--orange)">${stars}</td>
+      <td title="${escAttr(comment)}" style="max-width:260px">${commentShort || '—'}</td>
+      <td>${date}</td>
+      <td>${statusBadge}</td>
+      <td style="white-space:nowrap">${actions}</td>
+    </tr>`;
+  }
+
+  async function approveReview(id){
+    const { error } = await sb.from('product_reviews').update({ is_approved: true }).eq('id', id);
+    if(error){ alert('Error aprobando opinión: ' + error.message); return; }
+    loadReviews();
+  }
+
+  async function unapproveReview(id){
+    const { error } = await sb.from('product_reviews').update({ is_approved: false }).eq('id', id);
+    if(error){ alert('Error despublicando opinión: ' + error.message); return; }
+    loadReviews();
+  }
+
+  async function deleteReview(id){
+    if(!confirm('¿Eliminar esta opinión? Esta acción no se puede deshacer.')) return;
+    const { error } = await sb.from('product_reviews').delete().eq('id', id);
+    if(error){ alert('Error eliminando opinión: ' + error.message); return; }
+    loadReviews();
   }
 
   // ---------- LOAD SHIPPING COSTS (read-only BigBuy reference, see sync_shipping.php) ----------

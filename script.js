@@ -1162,6 +1162,194 @@ function toggleDescriptionImages() {
         : '<span>Ver más</span> <i class="fas fa-chevron-down"></i>';
 }
 
+// ===== PRODUCT REVIEWS (product_reviews table, producto.php only) =====
+//
+// This store previously had a Google Merchant Center suspension for
+// "información engañosa" (misleading content), resolved in part by REMOVING
+// fake reviews and review/AggregateRating JSON-LD schema. Nothing in this
+// section fabricates, seeds, or defaults review data — an empty reviews
+// array always renders the honest "be the first to review" empty state, and
+// NO Review/AggregateRating structured data is emitted anywhere on this
+// page. Do not add that schema back until real, verified reviews exist —
+// and even then, only on explicit request. See producto.php's $reviews
+// fetch for the matching note.
+
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[ch]));
+}
+
+function renderStarsHtml(rating) {
+    const rounded = Math.round(Math.max(0, Math.min(5, rating || 0)));
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += `<i class="${i <= rounded ? 'fas' : 'far'} fa-star"></i>`;
+    }
+    return html;
+}
+
+function formatReviewDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function buildReviewsSectionHtml(reviews, productId) {
+    const list    = Array.isArray(reviews) ? reviews : [];
+    const count   = list.length;
+    const average = count ? list.reduce((sum, r) => sum + (r.rating || 0), 0) / count : 0;
+
+    const summaryHtml = count > 0
+        ? `<div class="reviews-summary">
+               <span class="reviews-average">${average.toFixed(1)}</span>
+               <span class="reviews-stars">${renderStarsHtml(average)}</span>
+               <span class="reviews-count">${count} ${count === 1 ? 'opinión' : 'opiniones'}</span>
+           </div>`
+        : `<p class="reviews-empty-state">Sé el primero en opinar sobre este producto.</p>`;
+
+    // author_name/comment are raw user-submitted text — ALWAYS escaped here,
+    // never trusted as safe HTML (this content is rendered to every visitor).
+    const listHtml = count > 0
+        ? `<div class="reviews-list">
+               ${list.map(r => `
+               <div class="review-item">
+                   <div class="review-item-head">
+                       <span class="review-author">${escapeHtml(r.authorName || 'Anónimo')}</span>
+                       <span class="review-date">${formatReviewDate(r.createdAt)}</span>
+                   </div>
+                   <div class="review-stars">${renderStarsHtml(r.rating)}</div>
+                   ${r.comment ? `<p class="review-comment">${escapeHtml(r.comment)}</p>` : ''}
+               </div>
+               `).join('')}
+           </div>`
+        : '';
+
+    return `
+        <div class="product-section reviews-section">
+            <h2>Opiniones de clientes</h2>
+            ${summaryHtml}
+            ${listHtml}
+            <div class="review-form-wrap">
+                <h3>${count > 0 ? 'Escribe tu opinión' : 'Opina sobre este producto'}</h3>
+                <form class="review-form" id="reviewForm" onsubmit="return submitProductReview(event, ${productId})">
+                    <div class="review-form-row">
+                        <label for="reviewAuthorName">Nombre</label>
+                        <input type="text" id="reviewAuthorName" name="authorName" maxlength="80" required>
+                    </div>
+                    <div class="review-form-row">
+                        <label>Valoración</label>
+                        <div class="review-star-picker" id="reviewStarPicker">
+                            ${[1, 2, 3, 4, 5].map(n => `<i class="far fa-star" data-value="${n}" onclick="selectReviewRating(${n})"></i>`).join('')}
+                        </div>
+                        <input type="hidden" id="reviewRating" name="rating" value="">
+                    </div>
+                    <div class="review-form-row">
+                        <label for="reviewComment">Comentario</label>
+                        <textarea id="reviewComment" name="comment" rows="4" maxlength="1000" required></textarea>
+                    </div>
+                    <!-- Honeypot: visually hidden via CSS off-screen (NOT display:none —
+                         simple bots skip display:none fields but still fill this one).
+                         A filled value means a bot submitted the form; submitProductReview()
+                         silently skips the actual insert but still shows the success
+                         message, so the bot gets no signal to adapt from. -->
+                    <div class="review-honeypot" aria-hidden="true">
+                        <label for="reviewCompany">Empresa</label>
+                        <input type="text" id="reviewCompany" name="company" tabindex="-1" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-primary review-submit-btn">Enviar opinión</button>
+                    <p class="review-form-msg" id="reviewFormMsg" style="display:none;"></p>
+                </form>
+            </div>
+        </div>`;
+}
+
+function selectReviewRating(n) {
+    const picker = document.getElementById('reviewStarPicker');
+    const input  = document.getElementById('reviewRating');
+    if (!picker || !input) return;
+    input.value = n;
+    picker.querySelectorAll('i').forEach(star => {
+        const isFilled = Number(star.dataset.value) <= n;
+        star.classList.toggle('fas', isFilled);
+        star.classList.toggle('far', !isFilled);
+        star.classList.toggle('active', isFilled);
+    });
+}
+
+const REVIEW_RATE_LIMIT_MS = 60000; // basic client-side throttle, not a substitute for server-side abuse prevention
+
+async function submitProductReview(event, productId) {
+    event.preventDefault(); // blocks the native form submit regardless of what this returns below
+    const form  = event.target;
+    const msgEl = document.getElementById('reviewFormMsg');
+    const showMsg = (text, isError) => {
+        if (!msgEl) return;
+        msgEl.textContent = text;
+        msgEl.style.display = 'block';
+        msgEl.classList.toggle('review-form-msg-error', !!isError);
+    };
+
+    const lastTs = parseInt(localStorage.getItem('kw_last_review_ts') || '0', 10);
+    if (Date.now() - lastTs < REVIEW_RATE_LIMIT_MS) {
+        showMsg('Por favor espera un momento antes de enviar otra opinión.', true);
+        return false;
+    }
+
+    const authorName = form.querySelector('#reviewAuthorName').value.trim();
+    const rating      = parseInt(form.querySelector('#reviewRating').value, 10);
+    const comment     = form.querySelector('#reviewComment').value.trim();
+    const honeypot    = form.querySelector('#reviewCompany').value.trim();
+
+    if (!authorName) { showMsg('Por favor, indica tu nombre.', true); return false; }
+    if (!rating || rating < 1 || rating > 5) { showMsg('Por favor, selecciona una valoración.', true); return false; }
+    if (!comment) { showMsg('Por favor, escribe un comentario.', true); return false; }
+
+    localStorage.setItem('kw_last_review_ts', String(Date.now()));
+
+    // Honeypot filled -> almost certainly a bot. Skip the insert entirely,
+    // but still show success so there's nothing for the bot to react to.
+    if (honeypot) {
+        form.reset();
+        selectReviewRating(0);
+        showMsg('Gracias, tu opinión se publicará tras revisión.', false);
+        return false;
+    }
+
+    if (!reviewsSb) {
+        showMsg('No se pudo enviar tu opinión. Inténtalo de nuevo más tarde.', true);
+        return false;
+    }
+
+    const submitBtn = form.querySelector('.review-submit-btn');
+    if (submitBtn) submitBtn.disabled = true;
+
+    // is_approved intentionally NOT sent — the column default (false) and
+    // product_reviews' RLS "with check (is_approved = false)" on the anon
+    // INSERT policy both enforce this server-side; a client can't self-
+    // approve even by explicitly sending is_approved:true (RLS rejects it).
+    const { error } = await reviewsSb.from('product_reviews').insert({
+        product_id: productId,
+        author_name: authorName.slice(0, 80),
+        rating: rating,
+        comment: comment.slice(0, 1000),
+    });
+
+    if (submitBtn) submitBtn.disabled = false;
+
+    if (error) {
+        console.error('product_reviews insert error:', error);
+        showMsg('No se pudo enviar tu opinión. Inténtalo de nuevo más tarde.', true);
+        return false;
+    }
+
+    form.reset();
+    selectReviewRating(0);
+    showMsg('Gracias, tu opinión se publicará tras revisión.', false);
+    return false;
+}
+
 /**
  * Fires when a swatch/pill is clicked. Updates the active swatch, the main
  * gallery image (only if THIS variant has its own image — otherwise the
@@ -1419,6 +1607,8 @@ function renderProductDetails() {
         </div>
 
         ${buildDescriptionImagesHtml(p.descriptionImages, p.name)}
+
+        ${buildReviewsSectionHtml(p.reviews, p.id)}
 
         <div class="product-section">
             <h2>Envío y devoluciones</h2>
