@@ -214,6 +214,11 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
         $gallery = [''];
     }
     $image = $gallery[0];
+    // Supplier long-form infographics (specs/materials/size charts, etc.),
+    // same comma-separated-URLs pattern as image_url. Empty when the column
+    // is null/blank — no [''] fallback like $gallery, since an empty array
+    // here correctly means "render nothing" (see script.js).
+    $descriptionImages = array_values(array_filter(array_map('trim', explode(',', $p['description_images'] ?? ''))));
     $features = [];
     if (!empty($p['bullet_points'])) {
         $features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $p['bullet_points']))));
@@ -228,6 +233,7 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
         'shippingCost' => calcShipping(isset($p['weight']) && $p['weight'] !== null ? (float)$p['weight'] : null),
         'image'       => $image,
         'gallery'     => $gallery,
+        'descriptionImages' => $descriptionImages, // [] renders nothing — see script.js
         'videoId'     => !empty($p['video_id']) ? trim((string)$p['video_id']) : null,
         // Self-hosted MP4 (AliExpress-sourced products, uploaded to /img/product/).
         // Takes precedence over videoId when both are present — decided in

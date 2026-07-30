@@ -424,3 +424,13 @@ body.announcement-active .product-details-page{padding-top:172px}
 .cart-item-variant{display:block;font-size:12px;color:var(--primary);font-weight:600;margin:2px 0;}
 .cart-summary-item-img{width:32px;height:32px;border-radius:8px;object-fit:cover;flex:0 0 auto;margin-right:8px;}
 @media (max-width:768px){.variant-swatch-img-wrap,.variant-swatch-label{width:64px;height:64px;min-width:64px;}.variant-swatch-caption{max-width:68px;}}
+
+/* ===== PRODUCT DESCRIPTION IMAGES (producto.php) — supplier infographic strip ===== */
+.description-images-section{padding:30px 0 30px;overflow:hidden;}
+.description-images-section h2{padding:0 30px;}
+.description-images-stack{display:flex;flex-direction:column;gap:0;}
+.description-images-stack img{width:100%;height:auto;display:block;}
+.see-more-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 60px);margin:16px 30px 0;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:0.2s;}
+.see-more-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(255,107,53,0.08);}
+.see-more-btn i{color:var(--primary);}
+@media (max-width:768px){.description-images-section{padding:20px 0;}.description-images-section h2{padding:0 20px;}.see-more-btn{width:calc(100% - 40px);margin:16px 20px 0;}}

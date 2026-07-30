@@ -1123,6 +1123,45 @@ function buildVariantSelectorHtml(variants) {
         </div>`;
 }
 
+// Supplier long-form infographics render below the description section, one
+// per row, no gaps/borders between them (a continuous strip, matching how
+// they're designed to read). Beyond this count they're collapsed behind a
+// "Ver más" toggle with the rest hidden — the page shouldn't grow endlessly
+// long for products with a dozen+ of these.
+const DESCRIPTION_IMAGES_VISIBLE_COUNT = 3;
+
+function buildDescriptionImagesHtml(images, productName) {
+    if (!Array.isArray(images) || images.length === 0) return '';
+    const imgTag = (src, i) => `<img src="${src}" alt="${productName} - detalle ${i + 1}" loading="lazy">`;
+    const visible = images.slice(0, DESCRIPTION_IMAGES_VISIBLE_COUNT).map(imgTag).join('');
+    const rest    = images.slice(DESCRIPTION_IMAGES_VISIBLE_COUNT);
+    const hasMore = rest.length > 0;
+    return `
+        <div class="product-section description-images-section">
+            <h2>Detalles del producto</h2>
+            <div class="description-images-stack">${visible}</div>
+            ${hasMore ? `
+            <div class="description-images-stack description-images-more" id="descriptionImagesMore" style="display:none;">
+                ${rest.map((src, i) => imgTag(src, i + DESCRIPTION_IMAGES_VISIBLE_COUNT)).join('')}
+            </div>
+            <button type="button" class="see-more-btn" id="descriptionImagesToggle" onclick="toggleDescriptionImages()">
+                <span>Ver más</span> <i class="fas fa-chevron-down"></i>
+            </button>
+            ` : ''}
+        </div>`;
+}
+
+function toggleDescriptionImages() {
+    const more = document.getElementById('descriptionImagesMore');
+    const btn  = document.getElementById('descriptionImagesToggle');
+    if (!more || !btn) return;
+    const isHidden = more.style.display === 'none' || !more.style.display;
+    more.style.display = isHidden ? 'block' : 'none';
+    btn.innerHTML = isHidden
+        ? '<span>Ver menos</span> <i class="fas fa-chevron-up"></i>'
+        : '<span>Ver más</span> <i class="fas fa-chevron-down"></i>';
+}
+
 /**
  * Fires when a swatch/pill is clicked. Updates the active swatch, the main
  * gallery image (only if THIS variant has its own image — otherwise the
@@ -1378,6 +1417,8 @@ function renderProductDetails() {
             <h2>Descripción</h2>
             <div class="product-description">${p.description}</div>
         </div>
+
+        ${buildDescriptionImagesHtml(p.descriptionImages, p.name)}
 
         <div class="product-section">
             <h2>Envío y devoluciones</h2>
