@@ -1606,6 +1606,8 @@ function renderProductDetails() {
             <div class="product-description">${p.description}</div>
         </div>
 
+        ${p.specsHtml || ''}
+
         ${buildDescriptionImagesHtml(p.descriptionImages, p.name)}
 
         ${buildReviewsSectionHtml(p.reviews, p.id)}

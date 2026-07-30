@@ -229,6 +229,43 @@ function bb_review_to_js(array $r): array
     ];
 }
 
+/**
+ * Builds the full "Especificaciones" section HTML (same .product-section
+ * card/heading style as Descripción and Detalles del producto) from the
+ * especificaciones column — one "Label: Value" pair per line. Returns ''
+ * when the column is empty, so nothing renders. Already-escaped, safe HTML
+ * by construction — script.js interpolates this string directly, no
+ * further processing needed there.
+ */
+function bb_build_specs_section_html(?string $especificaciones): string
+{
+    $especificaciones = trim((string)$especificaciones);
+    if ($especificaciones === '') {
+        return '';
+    }
+    $lines = preg_split('/\r\n|\r|\n/', $especificaciones);
+    $rows = '';
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        // Value may itself contain ":" (e.g. "Hora: 10:30"), so split on the
+        // FIRST colon only.
+        $parts = explode(':', $line, 2);
+        $label = trim($parts[0]);
+        $value = isset($parts[1]) ? trim($parts[1]) : '';
+        if ($label === '') {
+            continue;
+        }
+        $rows .= '<tr><th>' . htmlspecialchars($label) . '</th><td>' . htmlspecialchars($value) . '</td></tr>';
+    }
+    if ($rows === '') {
+        return '';
+    }
+    return '<div class="product-section specs-section"><h2>Especificaciones</h2><table class="specs-table">' . $rows . '</table></div>';
+}
+
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
 function bb_product_to_js(array $p, array $variantsByProduct = []): array
 {
@@ -244,6 +281,7 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
     // is null/blank — no [''] fallback like $gallery, since an empty array
     // here correctly means "render nothing" (see script.js).
     $descriptionImages = array_values(array_filter(array_map('trim', explode(',', $p['description_images'] ?? ''))));
+    $specsHtml = bb_build_specs_section_html($p['especificaciones'] ?? null);
     $features = [];
     if (!empty($p['bullet_points'])) {
         $features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $p['bullet_points']))));
@@ -259,6 +297,7 @@ function bb_product_to_js(array $p, array $variantsByProduct = []): array
         'image'       => $image,
         'gallery'     => $gallery,
         'descriptionImages' => $descriptionImages, // [] renders nothing — see script.js
+        'specsHtml'   => $specsHtml, // '' renders nothing — already-escaped HTML built above
         'videoId'     => !empty($p['video_id']) ? trim((string)$p['video_id']) : null,
         // Self-hosted MP4 (AliExpress-sourced products, uploaded to /img/product/).
         // Takes precedence over videoId when both are present — decided in
