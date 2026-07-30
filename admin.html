@@ -1317,7 +1317,7 @@
     }
 
     tbody.innerHTML = filtered.map(o=>{
-      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name : ''} x${p.qty||1}`).join(', ') : '';
+      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name + (p.variant_sku ? ' [' + p.variant_sku + ']' : '') : ''} x${p.qty||1}`).join(', ') : '';
       const date = new Date(o.created_at).toLocaleDateString('es-ES', {day:'2-digit',month:'short',year:'numeric'});
 
       const phone = o.phone ? escHtml(o.phone) : '';
@@ -1441,7 +1441,7 @@
     };
 
     rows.forEach(o=>{
-      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name : ''} x${p.qty||1}`).join(' | ') : '';
+      const products = Array.isArray(o.products) ? o.products.map(p=>`${p.name}${p.variant_name ? ' - ' + p.variant_name + (p.variant_sku ? ' [' + p.variant_sku + ']' : '') : ''} x${p.qty||1}`).join(' | ') : '';
       const dateStr = new Date(o.created_at).toLocaleString('es-ES');
       csvLines.push([
         esc(o.order_number),
@@ -1649,7 +1649,7 @@
     const products = Array.isArray(o.products) ? o.products : [];
     const prodHtml = products.length
       ? products.map(p=>{
-          const variantHtml = p.variant_name ? ` <b style="color:var(--orange)">— ${escHtml(p.variant_name)}</b>` : '';
+          const variantHtml = p.variant_name ? ` <b style="color:var(--orange)">— ${escHtml(p.variant_name)}${p.variant_sku ? ' [' + escHtml(p.variant_sku) + ']' : ''}</b>` : '';
           return `<div>• ${escHtml(p.name)}${variantHtml} × ${p.qty||1}${p.price?` — €${parseFloat(p.price).toFixed(2)}`:''}</div>`;
         }).join('')
       : '<div style="color:var(--muted)">—</div>';

@@ -150,6 +150,14 @@ function saveOrder(array $data): array
     // variant row is later edited/deleted — fulfilment reads this string,
     // not a live join. Products with no variant get variant_id/variant_name
     // = null/'' — the exact same line shape as before this feature existed.
+    //
+    // variant_sku is OWNER/ADMIN-FACING ONLY: $productLines below feeds the
+    // CSV, the owner's plaintext notification email, and the owner's
+    // CallMeBot WhatsApp message — none of which the customer ever sees —
+    // so it's safe to bake "Name — Variant [SKU]" directly into those lines.
+    // build_order_confirmation_email_html() (the CUSTOMER-facing email)
+    // reads $productsJson directly and only ever uses variant_name, never
+    // variant_sku — do not change that.
     $productLines = [];
     $productsJson = [];
     foreach ($products as $p) {
@@ -159,12 +167,17 @@ function saveOrder(array $data): array
         $pProductId   = isset($p['product_id']) && $p['product_id'] !== null ? (int)$p['product_id'] : null;
         $pVariantId   = isset($p['variant_id']) && $p['variant_id'] !== null ? (int)$p['variant_id'] : null;
         $pVariantName = trim((string)($p['variant_name'] ?? ''));
+        $pVariantSku  = trim((string)($p['variant_sku'] ?? ''));
         $lineTotal    = number_format($pPrice * $pQty, 2, ',', '.') . ' €';
-        $productLines[] = $pName . ($pVariantName !== '' ? " — {$pVariantName}" : '') . " x{$pQty} – {$lineTotal}";
+        $variantSuffix = $pVariantName !== ''
+            ? " — {$pVariantName}" . ($pVariantSku !== '' ? " [{$pVariantSku}]" : '')
+            : '';
+        $productLines[] = $pName . $variantSuffix . " x{$pQty} – {$lineTotal}";
         $productsJson[] = [
             'product_id'   => $pProductId,
             'variant_id'   => $pVariantId,
             'variant_name' => $pVariantName,
+            'variant_sku'  => $pVariantSku,
             'name'         => $pName,
             'qty'          => $pQty,
             'price'        => $pPrice,

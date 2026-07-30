@@ -198,6 +198,7 @@ function loadCart() {
     cart.forEach(item => {
         if (item.variantId === undefined) item.variantId = null;
         if (item.variantName === undefined) item.variantName = '';
+        if (item.variantSku === undefined) item.variantSku = '';
         if (!item.product_id) item.product_id = item.id;
         if (!item.cartKey) item.cartKey = `${item.id}_${item.variantId ?? 0}`;
     });
@@ -238,6 +239,10 @@ function addToCart(id, qty = 1, variantId = null) {
     const price       = variant?.price ?? product.price;
     const image       = variant?.image ?? product.image;
     const variantName = variant ? variant.name : '';
+    // Owner/admin-facing ONLY (WhatsApp notification, admin.html) — never
+    // rendered anywhere customer-facing (cart, checkout summary, product
+    // page, or the customer's confirmation email all use variantName alone).
+    const variantSku  = variant ? (variant.sku || '') : '';
     const cartKey      = `${id}_${variantId ?? 0}`;
 
     const existing = cart.find(item => item.cartKey === cartKey);
@@ -245,7 +250,7 @@ function addToCart(id, qty = 1, variantId = null) {
         existing.qty += qty;
     } else {
         const { variants: _variants, ...productRest } = product;
-        cart.push({ ...productRest, price, image, qty, product_id: id, variantId, variantName, cartKey });
+        cart.push({ ...productRest, price, image, qty, product_id: id, variantId, variantName, variantSku, cartKey });
     }
     saveCart();
     updateCart();
@@ -2164,6 +2169,7 @@ function initPayPalButtons() {
                             product_id   : i.product_id ?? i.id,
                             variant_id   : i.variantId ?? null,
                             variant_name : i.variantName || '',
+                            variant_sku  : i.variantSku || '',
                             name         : i.name,
                             qty          : i.qty,
                             price        : i.price,
@@ -2182,7 +2188,16 @@ function initPayPalButtons() {
             fbq('track', 'Purchase', { value: total, currency: 'EUR' }, { eventID: 'purchase_' + details.id });
 
             // 3. WhatsApp al dueño (puede estar bloqueado; el pedido ya está guardado)
-            const items = cart.map(i => `• ${i.name}${i.variantName ? ' - ' + i.variantName : ''} x${i.qty} - ${formatPrice(i.price * i.qty)}`).join('\n');
+            // Owner-facing only: variant name + SKU in brackets (e.g. "Plata /
+            // Verde [OL5885-SG]") so fulfilment can match the exact stocked
+            // item — never shown to the customer anywhere (cart, checkout,
+            // confirmation email all use variantName alone, no SKU).
+            const items = cart.map(i => {
+                const variantSuffix = i.variantName
+                    ? ' - ' + i.variantName + (i.variantSku ? ` [${i.variantSku}]` : '')
+                    : '';
+                return `• ${i.name}${variantSuffix} x${i.qty} - ${formatPrice(i.price * i.qty)}`;
+            }).join('\n');
             const msg   = `✅ PEDIDO PAGADO con PayPal - KhurmiStore\n\nID Transacción: ${details.id}\n\nProductos:\n${items}\n\nSUBTOTAL: ${formatPrice(subtotal)}\nENVÍO: ${formatPrice(shippingCost)}\nTOTAL COBRADO: ${formatPrice(total)}\n\nCliente:\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nCiudad: ${city}\nCódigo Postal: ${postal}\nNotas: ${notes}`;
             window.open('https://wa.me/34662241860?text=' + encodeURIComponent(msg), '_blank');
 
@@ -2243,6 +2258,7 @@ function initStripeButton() {
                         product_id   : i.product_id ?? i.id,
                         variant_id   : i.variantId ?? null,
                         variant_name : i.variantName || '',
+                        variant_sku  : i.variantSku || '',
                         name         : i.name,
                         qty          : i.qty,
                         price        : i.price,

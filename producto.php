@@ -205,6 +205,11 @@ function bb_variant_to_js(array $v): array
     return [
         'id'        => (int)$v['id'],
         'name'      => (string)($v['name'] ?? ''),
+        // SKU is owner/admin-facing ONLY (WhatsApp notification, admin.html)
+        // — never rendered to the customer (selector, cart, checkout, email).
+        // script.js keeps it on a separate variantSku field for exactly that
+        // reason, never merged into the customer-visible variant name.
+        'sku'       => (string)($v['sku'] ?? ''),
         'price'     => isset($v['price']) && $v['price'] !== null ? (float)$v['price'] : null,
         'image'     => $image !== '' ? $image : null,
         'stock'     => (int)($v['stock'] ?? 0),

@@ -68,11 +68,16 @@ foreach ($products as $p) {
     $pProductId  = isset($p['product_id']) && $p['product_id'] !== null ? (int)$p['product_id'] : null;
     $pVariantId  = isset($p['variant_id']) && $p['variant_id'] !== null ? (int)$p['variant_id'] : null;
     $pVariantName = trim((string)($p['variant_name'] ?? ''));
+    // Owner/admin-facing only (WhatsApp notification, admin.html) — never
+    // shown to the customer anywhere, same rule as variant_name is subject to
+    // the opposite treatment.
+    $pVariantSku  = trim((string)($p['variant_sku'] ?? ''));
     $subtotal += $pPrice * $pQty;
     $productsClean[] = [
         'product_id'   => $pProductId,
         'variant_id'   => $pVariantId,
         'variant_name' => $pVariantName,
+        'variant_sku'  => $pVariantSku,
         'name'         => $pName,
         'qty'          => $pQty,
         'price'        => $pPrice,
