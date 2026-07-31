@@ -235,12 +235,14 @@ function bb_review_to_js(array $r): array
 }
 
 /**
- * Builds the full "Especificaciones" section HTML (same .product-section
- * card/heading style as Descripción and Detalles del producto) from the
- * especificaciones column — one "Label: Value" pair per line. Returns ''
- * when the column is empty, so nothing renders. Already-escaped, safe HTML
- * by construction — script.js interpolates this string directly, no
- * further processing needed there.
+ * Builds the full "Especificaciones" section HTML (visually matches the
+ * Descripción card via shared CSS selectors — see style.css's
+ * .product-section, .product-specs rule) from the especificaciones column —
+ * one "Label: Value" pair per line. Returns '' when the column is empty or
+ * every line is blank/colon-less, so nothing renders (no empty container,
+ * no stray heading). Already-escaped, safe HTML by construction —
+ * script.js interpolates this string directly, no further processing
+ * needed there.
  */
 function bb_build_specs_section_html(?string $especificaciones): string
 {
@@ -255,11 +257,15 @@ function bb_build_specs_section_html(?string $especificaciones): string
         if ($line === '') {
             continue;
         }
-        // Value may itself contain ":" (e.g. "Hora: 10:30"), so split on the
-        // FIRST colon only.
+        // Value may itself contain ":", dashes, and parentheses (e.g.
+        // "Resistencia al agua: 3 bar (30 m) — resistente..."), so split on
+        // the FIRST colon only and preserve everything after it intact.
         $parts = explode(':', $line, 2);
+        if (count($parts) < 2) {
+            continue; // no colon at all — skip per spec
+        }
         $label = trim($parts[0]);
-        $value = isset($parts[1]) ? trim($parts[1]) : '';
+        $value = trim($parts[1]);
         if ($label === '') {
             continue;
         }
@@ -268,7 +274,7 @@ function bb_build_specs_section_html(?string $especificaciones): string
     if ($rows === '') {
         return '';
     }
-    return '<div class="product-section specs-section"><h2>Especificaciones</h2><table class="specs-table">' . $rows . '</table></div>';
+    return '<section class="product-specs"><h2>Especificaciones</h2><table class="specs-table"><tbody>' . $rows . '</tbody></table></section>';
 }
 
 // Map a Supabase product row to the shape script.js's getProductDetails()/renderProductDetails() expect.
