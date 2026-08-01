@@ -412,11 +412,12 @@ function toggleCategoryDropdown(event) {
 // renders as its own <li>, inserted directly into the main nav <ul>
 // alongside Inicio/Tienda/etc via the #categoryNavSlot placeholder.
 //
-// SMART-WATCH-ONLY PIVOT (2026-07-28): reduced to relojes only, mirroring
-// categories_config.php — belleza/electronica/auriculares/accesorios-movil
-// removed from nav sitewide (their product rows still exist in Supabase,
-// just no longer linked from the header/footer/homepage).
-const CATEGORY_TREE = [{"slug":"relojes","name":"Relojes","children":[{"slug":"analogicos","name":"Analógicos","children":[]},{"slug":"digitales","name":"Digitales / Smartwatch","children":[]}]}];
+// TWO-BRANCH CATALOGUE (2026-07-31): relojes and joyeria, each split by
+// gender (hombre/mujer), each gender split by product sub-type — mirrors
+// categories_config.php's tree exactly (keep both in sync when editing).
+// Empty nodes (zero live products) are hidden after render — see
+// applyCategoryCounts() below — not by editing this tree itself.
+const CATEGORY_TREE = [{"slug":"relojes","name":"Relojes","children":[{"slug":"hombre","name":"Hombre","children":[{"slug":"analogicos","name":"Analógicos","children":[]},{"slug":"digitales","name":"Digitales","children":[]}]},{"slug":"mujer","name":"Mujer","children":[{"slug":"analogicos","name":"Analógicos","children":[]},{"slug":"digitales","name":"Digitales","children":[]}]}]},{"slug":"joyeria","name":"Joyería","children":[{"slug":"hombre","name":"Hombre","children":[{"slug":"pulseras","name":"Pulseras","children":[]},{"slug":"collares","name":"Collares","children":[]},{"slug":"anillos","name":"Anillos","children":[]}]},{"slug":"mujer","name":"Mujer","children":[{"slug":"pulseras","name":"Pulseras","children":[]},{"slug":"collares","name":"Collares","children":[]},{"slug":"anillos","name":"Anillos","children":[]}]}]}];
 
 function catHref(catSlug, subSlug, sub2Slug) {
     let href = '/categoria.php?cat=' + encodeURIComponent(catSlug);
@@ -439,22 +440,23 @@ function catHref(catSlug, subSlug, sub2Slug) {
 function renderCategoryNavItems(tree) {
     return tree.map(function (node) {
         if (!node.children || node.children.length === 0) {
-            return `<li><a href="${catHref(node.slug)}">${node.name}</a></li>`;
+            return `<li data-path="${node.slug}"><a href="${catHref(node.slug)}">${node.name}</a></li>`;
         }
         const subItems = node.children.map(function (sub) {
+            const subPath = node.slug + '>' + sub.slug;
             if (!sub.children || sub.children.length === 0) {
-                return `<li><a class="submenu-link" href="${catHref(node.slug, sub.slug)}">${sub.name}</a></li>`;
+                return `<li data-path="${subPath}"><a class="submenu-link" href="${catHref(node.slug, sub.slug)}">${sub.name}</a></li>`;
             }
             const subSubItems = sub.children.map(function (sub2) {
-                return `<li><a class="submenu-link submenu-link-flyout" href="${catHref(node.slug, sub.slug, sub2.slug)}">${sub2.name}</a></li>`;
+                return `<li data-path="${subPath}>${sub2.slug}"><a class="submenu-link submenu-link-flyout" href="${catHref(node.slug, sub.slug, sub2.slug)}">${sub2.name}</a></li>`;
             }).join('');
-            return `<li class="has-children">`
+            return `<li class="has-children" data-path="${subPath}">`
                 + `<div class="submenu-row"><a class="submenu-link" href="${catHref(node.slug, sub.slug)}">${sub.name}</a>`
                 + `<button type="button" class="dropdown-toggle-caret dropdown-toggle-caret-sm" aria-expanded="false" aria-label="Mostrar más de ${sub.name}" onclick="toggleCategoryDropdown(event)"><i class="fas fa-chevron-right"></i></button></div>`
                 + `<ul class="submenu-flyout">${subSubItems}</ul>`
                 + `</li>`;
         }).join('');
-        return `<li class="nav-item dropdown" data-slug="${node.slug}">`
+        return `<li class="nav-item dropdown" data-slug="${node.slug}" data-path="${node.slug}">`
             + `<div class="nav-cat-row"><a href="${catHref(node.slug)}">${node.name}</a>`
             + `<button type="button" class="dropdown-toggle-caret" aria-expanded="false" aria-label="Mostrar subcategorías de ${node.name}" onclick="toggleCategoryDropdown(event)"><i class="fas fa-chevron-down"></i></button></div>`
             + `<ul class="submenu">${subItems}</ul>`
@@ -474,26 +476,27 @@ function renderMobileCategoryNavItems(tree) {
     let counter = 0;
     return tree.map(function (node) {
         if (!node.children || node.children.length === 0) {
-            return `<li class="mobile-cat-item"><a href="${catHref(node.slug)}" onclick="closeMobileMenu()">${node.name}</a></li>`;
+            return `<li class="mobile-cat-item" data-path="${node.slug}"><a href="${catHref(node.slug)}" onclick="closeMobileMenu()">${node.name}</a></li>`;
         }
         counter++;
         const panelId = 'mobileCat-' + counter;
         const subItems = node.children.map(function (sub) {
+            const subPath = node.slug + '>' + sub.slug;
             if (!sub.children || sub.children.length === 0) {
-                return `<li class="mobile-cat-subitem"><a class="mobile-cat-link mobile-cat-link-sub" href="${catHref(node.slug, sub.slug)}" onclick="closeMobileMenu()">${sub.name}</a></li>`;
+                return `<li class="mobile-cat-subitem" data-path="${subPath}"><a class="mobile-cat-link mobile-cat-link-sub" href="${catHref(node.slug, sub.slug)}" onclick="closeMobileMenu()">${sub.name}</a></li>`;
             }
             counter++;
             const subPanelId = 'mobileCat-' + counter;
             const subSubItems = sub.children.map(function (sub2) {
-                return `<li><a class="mobile-cat-link mobile-cat-link-subsub" href="${catHref(node.slug, sub.slug, sub2.slug)}" onclick="closeMobileMenu()">${sub2.name}</a></li>`;
+                return `<li data-path="${subPath}>${sub2.slug}"><a class="mobile-cat-link mobile-cat-link-subsub" href="${catHref(node.slug, sub.slug, sub2.slug)}" onclick="closeMobileMenu()">${sub2.name}</a></li>`;
             }).join('');
-            return `<li class="mobile-cat-subitem has-children">`
+            return `<li class="mobile-cat-subitem has-children" data-path="${subPath}">`
                 + `<div class="mobile-cat-row"><a class="mobile-cat-link mobile-cat-link-sub" href="${catHref(node.slug, sub.slug)}" onclick="closeMobileMenu()">${sub.name}</a>`
                 + `<button type="button" class="mobile-cat-toggle" aria-expanded="false" aria-controls="${subPanelId}" onclick="toggleMobileCatPanel(this)"><i class="fas fa-chevron-down"></i></button></div>`
                 + `<ul class="mobile-cat-subsub" id="${subPanelId}">${subSubItems}</ul>`
                 + `</li>`;
         }).join('');
-        return `<li class="mobile-cat-item has-children">`
+        return `<li class="mobile-cat-item has-children" data-path="${node.slug}">`
             + `<div class="mobile-cat-row"><a href="${catHref(node.slug)}" onclick="closeMobileMenu()">${node.name}</a>`
             + `<button type="button" class="mobile-cat-toggle" aria-expanded="false" aria-controls="${panelId}" onclick="toggleMobileCatPanel(this)"><i class="fas fa-chevron-down"></i></button></div>`
             + `<ul class="mobile-cat-sub" id="${panelId}">${subItems}</ul>`
@@ -536,6 +539,13 @@ function toggleMobileCatPanel(btn) {
  * and Blog) with the real per-category <li>s built from CATEGORY_TREE. Runs
  * on every page since most of this site's 29 pages are static .html and
  * can't render this server-side.
+ *
+ * The full unfiltered tree renders FIRST, synchronously — this is the
+ * zero-regression baseline and works even if category_counts.php is slow,
+ * unreachable, or errors. Product counts are then fetched best-effort and
+ * used only to HIDE (not re-render) individual already-rendered elements
+ * via their data-path attribute — see applyCategoryCounts() — so a failed
+ * fetch just leaves every category visible instead of breaking the nav.
  */
 function initCategoryMenus() {
     const desktopSlot = document.getElementById('categoryNavSlot');
@@ -546,8 +556,27 @@ function initCategoryMenus() {
     if (mobileSlot) {
         mobileSlot.outerHTML = renderMobileCategoryNavItems(CATEGORY_TREE);
     }
+
+    fetch('/category_counts.php')
+        .then(r => r.ok ? r.json() : null)
+        .then(counts => { if (counts) applyCategoryCounts(counts); })
+        .catch(() => {}); // best-effort only — nav above already works unfiltered
 }
 document.addEventListener('DOMContentLoaded', initCategoryMenus);
+
+/**
+ * Hides every rendered nav <li data-path="..."> (desktop dropdown + mobile
+ * accordion — both carry the same data-path values) whose product count is
+ * zero or missing from the map. A missing key is treated as 0 rather than
+ * "unknown/keep visible" — categories_config.php's build_category_counts()
+ * only ever OMITS a path when literally no product matched it.
+ */
+function applyCategoryCounts(counts) {
+    document.querySelectorAll('[data-path]').forEach(function (el) {
+        const count = counts[el.dataset.path] || 0;
+        el.style.display = count > 0 ? '' : 'none';
+    });
+}
 
 // Close mobile menu - used when a link is clicked
 function closeMobileMenu() {

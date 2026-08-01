@@ -10,18 +10,25 @@ declare(strict_types=1);
  * - Top-level slugs match the EXISTING live `category` column values in
  *   Supabase — do not rename these without also migrating existing product
  *   rows.
- * - Sub/sub-sub slugs map to the `subcategoria`/`sub_subcategoria` columns
- *   (see the ALTER TABLE below) — lowercase, ascii, hyphenated.
+ * - Sub slugs map to the `subcategoria` column, sub-sub slugs map to
+ *   `sub_subcategoria` (see the ALTER TABLE below) — lowercase, ascii,
+ *   hyphenated.
  *
- * SMART-WATCH-ONLY PIVOT (2026-07-28): the store now sells only relojes —
- * belleza/electronica/auriculares/accesorios-movil were removed from this
- * tree (and from script.js's CATEGORY_TREE mirror below), so they no longer
- * appear in nav or on the homepage. Their product ROWS still exist in
- * Supabase with those `category` values and are still directly reachable
- * via /categoria.php?cat=belleza (etc.) — categoria.php's own $categoryConfig
- * wasn't touched, this pivot only covers nav/homepage/config. Unpublishing
- * or removing those rows, and cleaning up categoria.php/blog/legal pages
- * that still reference them, is explicitly a separate later step.
+ * TWO-BRANCH CATALOGUE (2026-07-31): relojes and joyeria, each split by
+ * gender (hombre/mujer) at the `subcategoria` level, with the actual
+ * product sub-type (analogicos/digitales for relojes; pulseras/collares/
+ * anillos for joyeria) pushed down to `sub_subcategoria`. This is a DEEPER
+ * tree than before — relojes previously had analogicos/digitales directly
+ * as its `subcategoria` values; those are now `sub_subcategoria` values
+ * nested under a gender. Existing relojes product rows whose `subcategoria`
+ * is still literally "analogicos"/"digitales" will NOT match either new
+ * "hombre"/"mujer" node until reclassified (a data migration, not a code
+ * change) — until then they still count toward the top-level "Relojes" nav
+ * item (see build_category_counts() below, which counts top-level by
+ * `category` alone) but won't populate the new Hombre/Mujer/sub-type nav
+ * links, which will correctly stay hidden as "empty" in the meantime.
+ * joyeria is a brand-new top-level category with zero product rows today —
+ * expected to render as hidden in nav until real joyeria products exist.
  *
  * categoria.php requires this file to resolve breadcrumb/H1 labels via
  * find_category_path() below. The actual on-page nav (desktop per-category
@@ -87,13 +94,88 @@ function find_category_path(array $tree, string $catSlug, string $subSlug = '', 
     return $path;
 }
 
+/**
+ * Builds a flat product-count map keyed by tree path ("cat", "cat>sub",
+ * "cat>sub>sub2") from a list of product rows, each expected to have
+ * category/subcategoria/sub_subcategoria keys (exactly what
+ * `select=category,subcategoria,sub_subcategoria` returns from Supabase).
+ * Shared by category_counts.php (nav "hide empty category" endpoint) and
+ * sitemap.php (skip emitting empty category URLs), so both agree on exactly
+ * what "has products" means for a given path — a top-level count includes
+ * EVERY product under that category regardless of whether subcategoria is
+ * set, so an existing category with not-yet-reclassified products still
+ * shows up even while its gender/sub-type children are still empty.
+ */
+function build_category_counts(array $products): array
+{
+    $counts = [];
+    foreach ($products as $p) {
+        $cat  = trim((string)($p['category'] ?? ''));
+        $sub  = trim((string)($p['subcategoria'] ?? ''));
+        $sub2 = trim((string)($p['sub_subcategoria'] ?? ''));
+        if ($cat === '') {
+            continue;
+        }
+        $counts[$cat] = ($counts[$cat] ?? 0) + 1;
+        if ($sub === '') {
+            continue;
+        }
+        $subKey = $cat . '>' . $sub;
+        $counts[$subKey] = ($counts[$subKey] ?? 0) + 1;
+        if ($sub2 === '') {
+            continue;
+        }
+        $sub2Key = $subKey . '>' . $sub2;
+        $counts[$sub2Key] = ($counts[$sub2Key] ?? 0) + 1;
+    }
+    return $counts;
+}
+
 return [
     [
         'slug' => 'relojes',
         'name' => 'Relojes',
         'children' => [
-            ['slug' => 'analogicos', 'name' => 'Analógicos', 'children' => []],
-            ['slug' => 'digitales',  'name' => 'Digitales / Smartwatch', 'children' => []],
+            [
+                'slug' => 'hombre',
+                'name' => 'Hombre',
+                'children' => [
+                    ['slug' => 'analogicos', 'name' => 'Analógicos', 'children' => []],
+                    ['slug' => 'digitales',  'name' => 'Digitales', 'children' => []],
+                ],
+            ],
+            [
+                'slug' => 'mujer',
+                'name' => 'Mujer',
+                'children' => [
+                    ['slug' => 'analogicos', 'name' => 'Analógicos', 'children' => []],
+                    ['slug' => 'digitales',  'name' => 'Digitales', 'children' => []],
+                ],
+            ],
+        ],
+    ],
+    [
+        'slug' => 'joyeria',
+        'name' => 'Joyería',
+        'children' => [
+            [
+                'slug' => 'hombre',
+                'name' => 'Hombre',
+                'children' => [
+                    ['slug' => 'pulseras', 'name' => 'Pulseras', 'children' => []],
+                    ['slug' => 'collares', 'name' => 'Collares', 'children' => []],
+                    ['slug' => 'anillos',  'name' => 'Anillos', 'children' => []],
+                ],
+            ],
+            [
+                'slug' => 'mujer',
+                'name' => 'Mujer',
+                'children' => [
+                    ['slug' => 'pulseras', 'name' => 'Pulseras', 'children' => []],
+                    ['slug' => 'collares', 'name' => 'Collares', 'children' => []],
+                    ['slug' => 'anillos',  'name' => 'Anillos', 'children' => []],
+                ],
+            ],
         ],
     ],
 ];

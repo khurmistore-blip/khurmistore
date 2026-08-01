@@ -30,27 +30,33 @@ http_response_code(200);
 
 require_once __DIR__ . '/supabase.php';
 $cfg = require __DIR__ . '/config.php';
+// Single require_once: defines find_category_path()/build_category_counts()
+// AND yields the tree array (its return value) in one shot — requiring it a
+// second time would try to redeclare those functions and fatal.
+$categoryTree = require_once __DIR__ . '/categories_config.php';
 
 $today = date('Y-m-d');
 
-// Real category slugs — same list used by the header "Categorías" dropdown.
-// SMART-WATCH-ONLY PIVOT (2026-07-28): reduced to relojes — the other 4
-// categories' product rows are hidden in the DB now, and their /category/
-// slug URLs were left in this list until this fix, which is exactly the
-// "thin/empty content" risk this pivot's cleanup pass was meant to close.
-$categorySlugs = ['relojes'];
-
-// All active, approved products, for individual producto.php?id=X pages.
-// Wrapped defensively so a Supabase error/warning can never leak text into
-// the XML body — worst case the sitemap just omits product URLs this run.
-// category=eq.relojes is a defensive backstop, not just relying on
-// is_active/approval_status to have been set correctly for the retired
-// categories' rows — belt and suspenders for what Google/Merchant Center see.
+// All active, approved products across every CURRENT top-level category
+// (relojes, joyeria, and whatever's added to categories_config.php later —
+// this list is read from the tree, not hardcoded, so new categories are
+// picked up automatically). Wrapped defensively so a Supabase error/warning
+// can never leak text into the XML body — worst case the sitemap just
+// omits product/category URLs this run.
+// category=in.(...) is a defensive backstop, not just relying on
+// is_active/approval_status to have been set correctly for retired
+// categories' rows (belleza/electronica/auriculares/accesorios-movil, still
+// present in the DB) — belt and suspenders for what Google sees, same as
+// before, just no longer hardcoded to "relojes" alone.
+$topLevelSlugs = array_column($categoryTree, 'slug');
 $products = [];
+$categoryCounts = [];
 try {
-    $fetched = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&category=eq.relojes&select=id');
+    $catFilter = implode(',', array_map('rawurlencode', $topLevelSlugs));
+    $fetched = sb_get($cfg, 'products?is_active=is.true&approval_status=eq.approved&category=in.(' . $catFilter . ')&select=id,category,subcategoria,sub_subcategoria');
     if (is_array($fetched)) {
         $products = $fetched;
+        $categoryCounts = build_category_counts($fetched);
     }
 } catch (Throwable $e) {
     error_log('sitemap.php: product fetch failed - ' . $e->getMessage());
@@ -62,11 +68,44 @@ $urls = [];
 $urls[] = ['loc' => 'https://khurmistore.es/', 'changefreq' => 'weekly', 'priority' => '1.0'];
 $urls[] = ['loc' => 'https://khurmistore.es/categoria.php', 'changefreq' => 'weekly', 'priority' => '0.9'];
 
-// ── Categorías (contenido real, vía categoria.php, URL amigable sin query
-// string — /category/slug ya reescribe internamente a categoria.php?cat=slug
-// según .htaccess) ────────────────────────────────────────────────────────
-foreach ($categorySlugs as $slug) {
-    $urls[] = ['loc' => 'https://khurmistore.es/category/' . $slug, 'changefreq' => 'daily', 'priority' => '0.9'];
+// ── Categorías (contenido real, vía categoria.php) — walks categories_config.php's
+// tree recursively so new categories/genders/sub-types are picked up
+// automatically without editing this file again. A node with zero matching
+// products (per $categoryCounts, built above) is skipped entirely — same
+// "no thin/empty content for Google" principle the old hardcoded list was
+// meant to enforce, just generalized to every depth instead of only the
+// top level. Top-level URLs use the friendly /category/slug form (rewritten
+// to categoria.php?cat=slug by .htaccess); sub/sub2 URLs use the raw query
+// string (?sub=/&sub2=) since there's no friendly rewrite for those levels.
+foreach ($categoryTree as $catNode) {
+    if (($categoryCounts[$catNode['slug']] ?? 0) <= 0) {
+        continue;
+    }
+    $urls[] = ['loc' => 'https://khurmistore.es/category/' . $catNode['slug'], 'changefreq' => 'daily', 'priority' => '0.9'];
+
+    foreach ($catNode['children'] ?? [] as $subNode) {
+        $subKey = $catNode['slug'] . '>' . $subNode['slug'];
+        if (($categoryCounts[$subKey] ?? 0) <= 0) {
+            continue;
+        }
+        $urls[] = [
+            'loc'        => 'https://khurmistore.es/category/' . $catNode['slug'] . '?sub=' . rawurlencode($subNode['slug']),
+            'changefreq' => 'daily',
+            'priority'   => '0.8',
+        ];
+
+        foreach ($subNode['children'] ?? [] as $sub2Node) {
+            $sub2Key = $subKey . '>' . $sub2Node['slug'];
+            if (($categoryCounts[$sub2Key] ?? 0) <= 0) {
+                continue;
+            }
+            $urls[] = [
+                'loc'        => 'https://khurmistore.es/category/' . $catNode['slug'] . '?sub=' . rawurlencode($subNode['slug']) . '&sub2=' . rawurlencode($sub2Node['slug']),
+                'changefreq' => 'daily',
+                'priority'   => '0.7',
+            ];
+        }
+    }
 }
 
 // ── Fichas de producto reales (vía producto.php) ────────────────────────

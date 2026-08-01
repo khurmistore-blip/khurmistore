@@ -32,14 +32,45 @@ if ($sub === '') { $sub2 = ''; }
 // permanent redirect to the one category the store still sells, instead of
 // rendering a 200 OK page with zero products for Google to crawl as thin
 // content. Must run before any output (nothing is echoed above this).
+$catNode = null;
 if ($cat !== '') {
-    $catStillExists = false;
     foreach ($categoryTree as $node) {
-        if ($node['slug'] === $cat) { $catStillExists = true; break; }
+        if ($node['slug'] === $cat) { $catNode = $node; break; }
     }
-    if (!$catStillExists) {
+    if (!$catNode) {
         header('Location: /categoria.php?cat=relojes', true, 301);
         exit;
+    }
+}
+
+// TWO-BRANCH CATALOGUE (2026-07-31): relojes gained a hombre/mujer level,
+// pushing analogicos/digitales down a level (sub_subcategoria instead of
+// subcategoria) — so old bookmarked/indexed URLs like
+// ?cat=relojes&sub=analogicos no longer match a real node under the new
+// tree. There's no way to recover which gender the visitor meant from the
+// old URL alone (that dimension didn't exist before), so — same principle
+// as the cat-level redirect above — an unrecognized sub/sub2 redirects to
+// the nearest STILL-VALID ancestor instead of silently 200-ing with zero
+// products. Generic by design: this also catches any future tree edit that
+// retires a sub/sub2 value, not just this specific migration.
+if ($sub !== '' && $catNode !== null) {
+    $subNode = null;
+    foreach ($catNode['children'] ?? [] as $child) {
+        if ($child['slug'] === $sub) { $subNode = $child; break; }
+    }
+    if (!$subNode) {
+        header('Location: /categoria.php?cat=' . rawurlencode($cat), true, 301);
+        exit;
+    }
+    if ($sub2 !== '') {
+        $sub2Exists = false;
+        foreach ($subNode['children'] ?? [] as $child2) {
+            if ($child2['slug'] === $sub2) { $sub2Exists = true; break; }
+        }
+        if (!$sub2Exists) {
+            header('Location: /categoria.php?cat=' . rawurlencode($cat) . '&sub=' . rawurlencode($sub), true, 301);
+            exit;
+        }
     }
 }
 
@@ -78,6 +109,15 @@ $categoryConfig = [
         'title'       => 'Relojes Inteligentes | Comprar Online | KhurmiStore',
         'description' => 'Compra relojes inteligentes online en España. Diseño, salud y tecnología en tu muñeca, con envío rápido y pago 100% seguro.',
         'intro'       => 'Nuestra colección de relojes inteligentes combina diseño, salud y tecnología en tu muñeca: monitoriza tu actividad, recibe notificaciones y mucho más. Encuentra el modelo perfecto y recíbelo rápido en cualquier punto de España.',
+    ],
+    // Added for the two-branch catalogue (2026-07-31) — brand-new category,
+    // currently zero product rows (expected: it renders via the "todavía no
+    // hay productos" empty state below until real joyería stock exists).
+    'joyeria' => [
+        'label'       => 'Joyería',
+        'title'       => 'Joyería Online | Pulseras, Collares y Anillos | KhurmiStore',
+        'description' => 'Compra joyería online en España: pulseras, collares y anillos para hombre y mujer, con envío rápido y pago 100% seguro.',
+        'intro'       => 'Descubre nuestra colección de joyería para hombre y mujer: pulseras, collares y anillos pensados para el día a día. Encuentra tu pieza favorita y recíbela rápido en cualquier punto de España.',
     ],
 ];
 
@@ -406,8 +446,10 @@ $breadcrumbSchema = [
             <div class="footer-col">
                 <h3>Relojes</h3>
                 <ul>
-                    <li><a href="/categoria.php?cat=relojes&amp;sub=analogicos">Analógicos</a></li>
-                    <li><a href="/categoria.php?cat=relojes&amp;sub=digitales">Digitales / Smartwatch</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=hombre&amp;sub2=analogicos">Hombre Analógicos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=hombre&amp;sub2=digitales">Hombre Digitales</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=mujer&amp;sub2=analogicos">Mujer Analógicos</a></li>
+                    <li><a href="/categoria.php?cat=relojes&amp;sub=mujer&amp;sub2=digitales">Mujer Digitales</a></li>
                     <li><a href="/categoria.php?cat=relojes">Todos los relojes</a></li>
                 </ul>
             </div>
